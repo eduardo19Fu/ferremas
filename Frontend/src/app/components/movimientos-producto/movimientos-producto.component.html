@@ -1,0 +1,85 @@
+<!-- CREAR INVENTARIO -->
+<app-busqueda-movimientos></app-busqueda-movimientos>
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>{{title}}</h1>
+                <br>
+
+                <button type="button" class="btn bg-gradient-success" [routerLink]="['/productos/inventario/create']">
+                    <i class="fas fa-plus-circle"></i>
+                    Nuevo
+                </button>&nbsp;
+
+                <button type="button" class="btn btn-outline-warning" data-toggle="modal" data-target="#modal-busqueda">
+                    <i class="fas fa-print"></i>
+                    Imprimir
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="card">
+    <div class="card-header">
+        Listado de Tipos de Identificación
+    </div>
+    <div class="card-body table-responsive">
+
+        <div *ngIf="movimientosProducto?.length == 0" class="alert alert-info alert-dismissible">
+            <h5>
+                <i class="icon fas fa-info"></i>
+                Atención!
+            </h5>
+
+            No existe ningún movimiento registrado en la base de datos!
+        </div>
+
+        <table id="movimientos" class="table table-hover table-striped table-bordered dataTable dtr-inline table-sm"
+            role="grid" *ngIf="movimientosProducto?.length > 0">
+            <thead>
+                <tr>
+                    <th>No. Movimiento</th>
+                    <th>Fecha</th>
+                    <th>Tipo de Movimiento</th>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Creador</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let movimiento of movimientosProducto">
+                    <td>{{movimiento.idMovimiento}}</td>
+                    <td>{{movimiento.fechaMovimiento | date: 'dd/MM/yyyy - HH:mm'}}</td>
+                    <td>
+                        <span class="badge"
+                            [ngClass]="{'badge-warning': movimiento.tipoMovimiento.tipoMovimiento === 'ENTRADA', 
+                                        'badge-danger' : movimiento.tipoMovimiento.tipoMovimiento === 'SALIDA',
+                                        'badge-dark':movimiento.tipoMovimiento.tipoMovimiento === 'ANULACION FACTURA', 
+                                        'badge-info': movimiento.tipoMovimiento.tipoMovimiento === 'VENTA',
+                                        'badge-success': movimiento.tipoMovimiento.tipoMovimiento === 'COMPRA'}">
+                            {{movimiento.tipoMovimiento.tipoMovimiento}}
+                        </span>
+                    </td>
+                    <td>{{movimiento.producto.nombre}}</td>
+                    <td>{{movimiento.cantidad}}</td>
+                    <td>{{movimiento.usuario.usuario}}</td>
+                </tr>
+            </tbody>
+
+            <tfoot>
+                <tr>
+                    <th>No. Movimiento</th>
+                    <th>Fecha</th>
+                    <th>Tipo de Movimiento</th>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Creador</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>

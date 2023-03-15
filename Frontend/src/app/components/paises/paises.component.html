@@ -1,0 +1,70 @@
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>{{title}}</h1>
+                <br>
+                <a [routerLink]="['/paises/create']" class="btn bg-gradient-success">
+                    <i class="fas fa-plus-circle"></i>
+                    Nuevo
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="card">
+    <div class="card-header">
+        Listado de Pa&iacute;ses
+    </div>
+
+    <div class="card-body table-responsive">
+        <div *ngIf="paises?.length === 0" class="alert alert-info alert-dismissible">
+            <h5>
+                <i class="icon fas fa-info"></i>
+                ¡Atenci&oacute;n!
+            </h5>
+
+            No existe ning&uacute;n pa&iacute;s registrado en la base de datos!
+        </div>
+
+        <table id="paises" class="table table-hover table-striped table-bordered dataTable dtr-inline table-sm" role="grid"
+            *ngIf="paises?.length > 0">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Pais</th>
+                    <th>Opciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let pais of paises">
+                    <td>{{pais.idPais}}</td>
+                    <td>{{pais.nombre}}</td>
+                    <td class="center-options">
+
+                        <button class="btn bg-gradient-info margin" placement="top" ngbTooltip="Editar"
+                            [routerLink]="['/paises/create', pais.idPais]"
+                            *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_INVENTARIO')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+
+                        <button class="btn bg-gradient-danger margin" placement="top" ngbTooltip="Eliminar"
+                            *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_INVENTARIO')">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+
+            <tfoot>
+                <tr>
+                    <th>#</th>
+                    <th>Pais</th>
+                    <th>Opciones</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
