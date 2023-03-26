@@ -9,6 +9,7 @@ export class Producto {
     precioCompra: number;
     precioVenta: number;
     porcentajeGanancia: number;
+    segundoPrecio: number;
     fechaVencimiento: Date;
     fechaIngreso: Date;
     fechaRegistro: Date;

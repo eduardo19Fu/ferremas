@@ -236,4 +236,12 @@ export class CreateCompraComponent implements OnInit {
     (document.getElementById('precio-venta') as HTMLInputElement).value
       = this.producto.calcularPrecioVenta(this.producto.precioCompra, this.producto.porcentajeGanancia).toString();
   }
+
+  mostrarPorcentajeGanancia(): void {
+    console.log(this.producto.precioCompra);
+    console.log(this.producto.precioVenta);
+    (document.getElementById('porcentaje-ganancia') as HTMLInputElement).value
+      = this.producto.calcularPorcentajeGanancia(this.producto.precioCompra, this.producto.precioVenta).toString();
+      console.log(this.producto.calcularPorcentajeGanancia(this.producto.precioCompra, this.producto.precioVenta).toString());
+  }
 }

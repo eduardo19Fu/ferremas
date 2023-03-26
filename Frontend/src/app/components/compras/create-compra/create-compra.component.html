@@ -130,29 +130,37 @@
                                 </div>
                             </div>
                         </div>
-                        
-
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="porcentaje-ganancia">% Ganancia</label>
-                                <input type="number" class="form-control" name="porcentaje-ganancia"
-                                    [(ngModel)]="producto.porcentajeGanancia" #porcentajeGanancia="ngModel"
-                                    [required]="!producto.porcentajeGanancia && compra.items.length <= 0"
-                                    (blur)="mostrarPrecioVenta()">
-                                    
-                                <div *ngIf="porcentajeGanancia.invalid && (porcentajeGanancia.touched || porcentajeGanancia.dirty)">
-                                    <span class="requerido">
-                                        Ingrese un valor válido.
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
 
                         <div class="col">
                             <div class="form-group">
                                 <label for="precio-venta">Precio Venta</label>
                                 <input type="number" name="precio-venta" id="precio-venta" class="form-control"
-                                    [(ngModel)]="producto.precioVenta" (blur)="mostrarPrecioVenta()" readonly>
+                                    #precioVenta="ngModel" [(ngModel)]="producto.precioVenta" (blur)="mostrarPorcentajeGanancia()"
+                                    [required]="!producto.porcentajeGanancia && compra.items.length <= 0">
+                            </div>
+
+                            <div *ngIf="precioVenta.invalid && (precioVenta.touched || precioVenta.dirty)">
+                                <span class="requerido">
+                                    Ingrese un valor válido.
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="porcentaje-ganancia">% Ganancia</label>
+                                <input type="number" class="form-control" name="porcentaje-ganancia" id="porcentaje-ganancia"
+                                    [(ngModel)]="producto.porcentajeGanancia" #porcentajeGanancia="ngModel"
+                                    (blur)="mostrarPorcentajeGanancia()" readonly>
+                                    
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="segundo-precio">Segundo Precio</label>
+                                <input type="number" name="segundo-precio" id="segundo-precio" class="form-control"
+                                    [(ngModel)]="producto.segundoPrecio">
                             </div>
                         </div>
                     </div>

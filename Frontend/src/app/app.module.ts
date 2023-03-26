@@ -58,6 +58,12 @@ import { ModalVentasMensualesComponent } from './components/reportes/modales/mod
 import { ModalVentasDiariasComponent } from './components/reportes/modales/modal-ventas-diarias/modal-ventas-diarias.component';
 import { ModalEnviosRealizadosComponent } from './components/reportes/modales/modal-envios-realizados/modal-envios-realizados.component';
 import { ModalProductosInventarioComponent } from './components/reportes/modales/modal-productos-inventario/modal-productos-inventario.component';
+import { NotasCreditoComponent } from './components/notas-credito/notas-credito.component';
+import { DetailComponent } from './components/notas-credito/detail/detail.component';
+import { CreateNotaComponent } from './components/notas-credito/create-nota/create-nota.component';
+import { PagosParcialesComponent } from './components/pagos-parciales/pagos-parciales.component';
+import { CreatePagoParcialComponent } from './components/pagos-parciales/create-pago-parcial/create-pago-parcial.component';
+import { ModalNotasCreditoComponent } from './components/notas-credito/modal-notas-credito/modal-notas-credito.component';
 
 @NgModule({
   declarations: [
@@ -110,7 +116,13 @@ import { ModalProductosInventarioComponent } from './components/reportes/modales
     ModalVentasMensualesComponent,
     ModalVentasDiariasComponent,
     ModalEnviosRealizadosComponent,
-    ModalProductosInventarioComponent
+    ModalProductosInventarioComponent,
+    NotasCreditoComponent,
+    DetailComponent,
+    CreateNotaComponent,
+    PagosParcialesComponent,
+    CreatePagoParcialComponent,
+    ModalNotasCreditoComponent
   ],
   imports: [
     BrowserModule,

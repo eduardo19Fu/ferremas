@@ -1,0 +1,66 @@
+<!-- MODAL PARA BUSQUEDA DE NOTAS DE CREDITO -->
+<app-modal-notas-credito (notaCredito)="cargarNotaCredito($event)"></app-modal-notas-credito>
+
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">{{title}}</h1>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
+<!-- /.content-header -->
+
+<div class="row">
+
+    <div class="col-md-9">
+        <div class="card card-red">
+            <div class="card-header">
+                <h3 class="card-title">Ingrese los datos</h3>
+            </div>
+            <!-- /.card-header -->
+            <!-- form start -->
+            <form>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="cliente">Cliente</label>
+                                <input class="form-control" type="text" name="usuario"
+                                    value="{{cliente.nombre}}" [disabled]="cliente">
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <label for="buscar" style="display: block;">Buscar</label>
+                            <input #mybuscar type="text" id="buscar" name="buscar" class="form-control"
+                                style="width: 70%; display: inline; margin-right: 10px;">
+
+                            <button type="button" role="button" class="btn bg-fuchsia" data-toggle="modal"
+                                data-target="#modal-notas-credito">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="nombre">Monto</label>
+                                <input type="number" class="form-control" name="nombre" [(ngModel)]="pagoParcial.pago">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <input type="submit" value="Guardar" class="btn bg-gradient-info" (click)="createPagoParcial()">
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>

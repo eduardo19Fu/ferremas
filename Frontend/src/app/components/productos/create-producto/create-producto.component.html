@@ -76,7 +76,7 @@
                                 </div>
                             </div>
 
-                            <!-- <div class="col">
+                            <div class="col">
                                 <label for="precio-venta">Precio Venta</label>
                                 <input type="number" id="precio-venta" name="precio-venta" class="form-control"
                                     [(ngModel)]="producto.precioVenta" required #precioVenta="ngModel"
@@ -88,23 +88,28 @@
                                         El precio venta no puede estar vacío.
                                     </span>
                                 </div>
-                            </div> -->
-
-                            <!-- <div class="col">
-                                <label for="porcentaje-ganancia">% Ganancia</label>
-                                <input [(ngModel)]="producto.porcentajeGanancia" type="number" id="porcentaje-ganancia"
-                                    name="porcentaje-ganancia" class="form-control" readonly>
-                            </div> -->
+                            </div>
 
                             <div class="col">
                                 <label for="porcentaje-ganancia">% Ganancia</label>
                                 <input [(ngModel)]="producto.porcentajeGanancia" type="number" id="porcentaje-ganancia"
+                                    name="porcentaje-ganancia" class="form-control" readonly>
+                            </div>
+
+                            <div class="col">
+                                <label for="segundo-precio">Segundo Precio</label>
+                                <input type="number" class="form-control" name="segundo-precio" id="segundo-precio"
+                                    [(ngModel)]="producto.segundoPrecio" placeholder="Ingrese valor de segundo precio si aplica">
+                            </div>
+
+                            <!-- <div class="col">
+                                <label for="porcentaje-ganancia">% Ganancia</label>
+                                <input [(ngModel)]="producto.porcentajeGanancia" type="number" id="porcentaje-ganancia"
                                     name="porcentaje-ganancia" class="form-control"
                                     placeholder="Ingrese porcentaje de ganancia deseado" required
-                                    #porcentajeGanancia="ngModel" (blur)="calcularPrecioVenta()">
+                                    #porcentajeGanancia="ngModel">
 
-                                <div
-                                    *ngIf="porcentajeGanancia.invalid && (porcentajeGanancia.dirty || porcentajeGanancia.touched)">
+                                <div *ngIf="porcentajeGanancia.invalid && (porcentajeGanancia.dirty || porcentajeGanancia.touched)">
                                     <span class="requerido" *ngIf="porcentajeGanancia.errors.required">
                                         El porcentaje de ganancia no puede estar vacío.
                                     </span>
@@ -116,7 +121,7 @@
                                 <input type="number" id="precio-venta" name="precio-venta" class="form-control"
                                     [(ngModel)]="producto.precioVenta" required #precioVenta="ngModel" readonly>
 
-                            </div>
+                            </div> -->
                         </div>
                         <br>
                         <hr>
@@ -173,7 +178,7 @@
                 <!-- /.card-body -->
 
                 <div class="card-footer">
-                    <button type="submit" role="button" class="btn btn-primary"
+                    <button type="submit" role="button" class="btn btn-primary" [disabled]="!productoForm.form.valid"
                         *ngIf="!producto.idProducto else elseblock" (click)="create()">
                         Guardar
                     </button>
