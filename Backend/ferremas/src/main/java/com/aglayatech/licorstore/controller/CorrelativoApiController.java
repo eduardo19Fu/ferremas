@@ -30,7 +30,7 @@ import com.aglayatech.licorstore.service.ICorrelativoService;
 import com.aglayatech.licorstore.service.IEstadoService;
 import com.aglayatech.licorstore.service.IUsuarioService;
 
-@CrossOrigin(origins = { "http://localhost:4200", "https://dtodojalapa.xyz", "http://dtodojalapa.xyz" })
+@CrossOrigin(origins = { "${ferremas.origins}" })
 @RestController
 @RequestMapping(value = "/api")
 public class CorrelativoApiController {

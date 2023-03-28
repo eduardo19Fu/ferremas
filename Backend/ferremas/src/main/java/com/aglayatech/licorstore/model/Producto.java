@@ -34,6 +34,7 @@ public class Producto implements Serializable {
 	private Double precioCompra;
 	private Double precioVenta;
 	private float porcentajeGanancia;
+	private Double segundoPrecio;
 	private String imagen;
 	private String descripcion;
 	private String link;
@@ -127,6 +128,14 @@ public class Producto implements Serializable {
 		this.porcentajeGanancia = porcentajeGanancia;
 	}
 
+	public Double getSegundoPrecio() {
+		return segundoPrecio;
+	}
+
+	public void setSegundoPrecio(Double segundoPrecio) {
+		this.segundoPrecio = segundoPrecio;
+	}
+
 	public Date getFechaVencimiento() {
 		return fechaVencimiento;
 	}
@@ -217,11 +226,27 @@ public class Producto implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Producto [idProducto=" + idProducto + ", codProducto=" + codProducto + ", nombre=" + nombre
-				+ ", precioCompra=" + precioCompra + ", precioVenta=" + precioVenta + ", porcentajeGanancia="
-				+ porcentajeGanancia + ", imagen=" + imagen + ", fechaVencimiento=" + fechaVencimiento
-				+ ", fechaIngreso=" + fechaIngreso + ", fechaRegistro=" + fechaRegistro + ", stock=" + stock
-				+ ", marcaProducto=" + marcaProducto + ", tipoProducto=" + tipoProducto + ", estado=" + estado + "]";
+		final StringBuilder sb = new StringBuilder("Producto{");
+		sb.append("idProducto=").append(idProducto);
+		sb.append(", codProducto='").append(codProducto).append('\'');
+		sb.append(", nombre='").append(nombre).append('\'');
+		sb.append(", precioCompra=").append(precioCompra);
+		sb.append(", precioVenta=").append(precioVenta);
+		sb.append(", porcentajeGanancia=").append(porcentajeGanancia);
+		sb.append(", segundoPrecio=").append(segundoPrecio);
+		sb.append(", imagen='").append(imagen).append('\'');
+		sb.append(", descripcion='").append(descripcion).append('\'');
+		sb.append(", link='").append(link).append('\'');
+		sb.append(", fechaVencimiento=").append(fechaVencimiento);
+		sb.append(", fechaIngreso=").append(fechaIngreso);
+		sb.append(", fechaRegistro=").append(fechaRegistro);
+		sb.append(", stock=").append(stock);
+		sb.append(", marcaProducto=").append(marcaProducto);
+		sb.append(", tipoProducto=").append(tipoProducto);
+		sb.append(", estado=").append(estado);
+		sb.append(", movimientos=").append(movimientos);
+		sb.append('}');
+		return sb.toString();
 	}
 
 	private static final long serialVersionUID = 1L;

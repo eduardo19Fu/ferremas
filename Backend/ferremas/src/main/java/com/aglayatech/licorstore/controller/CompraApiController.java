@@ -20,7 +20,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@CrossOrigin(value = {"http://localhost:4200"})
+@CrossOrigin(value = {"${ferremas.origins}"})
 @RestController
 @RequestMapping("/api")
 public class CompraApiController {

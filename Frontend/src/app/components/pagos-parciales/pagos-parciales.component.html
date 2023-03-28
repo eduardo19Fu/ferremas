@@ -1,0 +1,87 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>{{title}}</h1>
+                <br>
+                <a [routerLink]="['/pagos-parciales/create']" class="btn bg-gradient-success">
+                    <i class="fas fa-plus-circle"></i>
+                    Nuevo
+                </a>&nbsp;
+
+                <!-- <button type="button" class="btn btn-outline-warning" data-toggle="modal" data-target="#modal-poliza">
+                    <i class="fa fa-print"></i>
+                    Poliza
+                </button> -->
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<div class="card">
+    <div class="card-header">
+        Listado de Pagos Parciales
+    </div>
+    <div class="card-body table-responsive">
+
+        <div *ngIf="pagosParciales?.length == 0" class="alert alert-info alert-dismissible">
+            <h5>
+                <i class="icon fas fa-info"></i>
+                Atención!
+            </h5>
+
+            No existe ningún pago registrado en la base de datos!
+        </div>
+
+        <table id="pagos-parciales" class="table table-hover table-striped table-bordered dataTable dtr-inline table-sm" role="grid" 
+            *ngIf="pagosParciales?.length > 0">
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha de Pago</th>
+                    <th>Fecha Pr&oacute;ximo Pago</th>
+                    <th>Total del Pago</th>
+                    <th>Nota de Cr&eacute;dito</th>
+                    <th>Cliente</th>
+                    <th>Estado</th>
+                    <th *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">Opciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let pago of pagosParciales">
+                    <td>{{pago.idPagoParcial}}</td>
+                    <td>{{pago.fechaPago}}</td>
+                    <td>{{pago.fechaProximoPago}}</td>
+                    <td>{{pago.pago}}</td>
+                    <td>{{pago.notaCredito.idNotaCredito}}</td>
+                    <td>{{pago.notaCredito.cliente.nombre}}</td>
+                    <td>{{pago.fechaRegistro | date: 'dd/MM/yyyy - hh:mm'}}</td>
+                    <td *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')" class="center-options">
+
+                        <button class="btn bg-gradient-danger margin" type="button" name="delete" (click)="delete(pago)"
+                        placement="top" ngbTooltip="Eliminar Cliente" title="Eliminar">
+
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+
+            <tfoot>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha de Pago</th>
+                    <th>Fecha Pr&oacute;ximo Pago</th>
+                    <th>Total del Pago</th>
+                    <th>Nota de Cr&eacute;dito</th>
+                    <th>Cliente</th>
+                    <th>Estado</th>
+                    <th *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">Opciones</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>

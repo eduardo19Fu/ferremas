@@ -149,7 +149,7 @@
                                 <th>Producto</th>
                                 <th>Precio</th>
                                 <th>Cantidad</th>
-                                <th>Descuento</th>
+                                <th>Segundo Precio</th>
                                 <th>N. Precio</th>
                                 <th>Total</th>
                             </tr>
@@ -166,10 +166,11 @@
                                         (keyup)="actualizarCantidad(item.producto.idProducto, $event)">
                                 </td>
                                 <td>
-                                    <input type="number" id="descuento" name="descuento" value="{{item.descuento}}"
+                                    <!-- <input type="number" id="descuento" name="descuento" value="{{item.descuento}}"
                                         class="form-control col-sm-6"
                                         (change)="actualizarCantidadDescuento(item.producto.idProducto, $event)"
-                                        (keyup)="actualizarCantidadDescuento(item.producto.idProducto, $event)">
+                                        (keyup)="actualizarCantidadDescuento(item.producto.idProducto, $event)"> -->
+                                    <input type="checkbox" name="usar" id="usar">
                                 </td>
 
                                 <td>

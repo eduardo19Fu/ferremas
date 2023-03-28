@@ -32,6 +32,10 @@ import { CreateCompraComponent } from './components/compras/create-compra/create
 import { EnviosComponent } from './components/envios/envios.component';
 import { CreateEnvioComponent } from './components/envios/create-envio/create-envio.component';
 import { ReportesComponent } from './components/reportes/reportes.component';
+import { NotasCreditoComponent } from './components/notas-credito/notas-credito.component';
+import { CreateNotaComponent } from './components/notas-credito/create-nota/create-nota.component';
+import { PagosParcialesComponent } from './components/pagos-parciales/pagos-parciales.component';
+import { CreatePagoParcialComponent } from './components/pagos-parciales/create-pago-parcial/create-pago-parcial.component';
 
 const appRoutes: Routes = [
     {path: '', component: LoginComponent},
@@ -73,6 +77,14 @@ const appRoutes: Routes = [
     {path: 'envios/index', component: EnviosComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_INVENTARIO']}},
     {path: 'envios/create', component: CreateEnvioComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_INVENTARIO']}},
     {path: 'envios/create/:id', component: CreateEnvioComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_INVENTARIO']}},
+
+    /****** MENUS DE NOTAS DE CREDITO ******/
+    {path: 'notas-credito/index', component: NotasCreditoComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_INVENTARIO']}},
+    {path: 'notas-credito/create', component: CreateNotaComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_INVENTARIO']}},
+
+    /****** MENUS DE PAGOS PARCIALES ******/
+    {path: 'pagos-parciales/index', component: PagosParcialesComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_COBRADOR']}},
+    {path: 'pagos-parciales/create', component: CreatePagoParcialComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_COBRADOR']}},
 
     /****** MENUS DE PROVEEDORES ******/
     {path: 'proveedores/index', component: ProveedoresComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_INVENTARIO']}},

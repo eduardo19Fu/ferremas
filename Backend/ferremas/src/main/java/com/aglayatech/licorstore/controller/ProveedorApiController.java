@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@CrossOrigin(value = {"http://localhost:4200"})
+@CrossOrigin(value = {"${ferremas.origins}"})
 @RestController
 @RequestMapping("/api")
 public class ProveedorApiController {
