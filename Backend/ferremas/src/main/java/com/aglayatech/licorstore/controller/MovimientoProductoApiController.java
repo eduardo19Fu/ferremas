@@ -37,7 +37,7 @@ import com.aglayatech.licorstore.service.IProductoService;
 
 import net.sf.jasperreports.engine.JRException;
 
-@CrossOrigin({ "http://localhost:4200", "https://dtodojalapa.xyz", "http://dtodojalapa.xyz" })
+@CrossOrigin(origins = { "${ferremas.origins}" })
 @RestController
 @RequestMapping(value = "/api")
 public class MovimientoProductoApiController {

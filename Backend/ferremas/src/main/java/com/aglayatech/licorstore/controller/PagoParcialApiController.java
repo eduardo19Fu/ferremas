@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin(value = {"*"})
+@CrossOrigin(value = {"${ferremas.origins}"})
 @RestController
 @RequestMapping(value = "/api/pagos-parciales")
 public class PagoParcialApiController {

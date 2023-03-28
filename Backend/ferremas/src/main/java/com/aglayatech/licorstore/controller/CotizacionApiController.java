@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin(value = {"http://localhost:4200", "https://dtodojalapa.xyz", "http://dtodojalapa.xyz"})
+@CrossOrigin(value = {"${ferremas.origins}"})
 @RestController
 @RequestMapping("/api")
 public class CotizacionApiController {

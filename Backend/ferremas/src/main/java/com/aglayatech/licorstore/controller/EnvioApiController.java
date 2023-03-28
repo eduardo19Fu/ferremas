@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin(value = {"http://localhost:4200"})
+@CrossOrigin(value = {"${ferremas.origins}"})
 @RestController
 @RequestMapping("/api")
 public class EnvioApiController {

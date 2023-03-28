@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.sf.jasperreports.engine.JRException;
 
-@CrossOrigin(origins = {"http://localhost:4200", "https://dtodojalapa.xyz", "http://dtodojalapa.xyz"})
+@CrossOrigin(origins = {"${ferremas.origins}"})
 @RestController
 @RequestMapping(value = {"/api"})
 public class FacturaApiController {

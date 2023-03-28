@@ -49,7 +49,7 @@ import net.sf.jasperreports.engine.JRException;
 
 import javax.servlet.http.HttpServletResponse;
 
-@CrossOrigin(origins = { "http://localhost:4200", "https://dtodojalapa.xyz", "http://dtodojalapa.xyz" })
+@CrossOrigin(origins = { "${ferremas.origins}" })
 @RestController
 @RequestMapping(value = "/api")
 public class ProductoApiController {

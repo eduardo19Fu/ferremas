@@ -36,6 +36,10 @@ export class LoginComponent implements OnInit {
 
   login(): void {
 
+    const pathHome = '/home';
+    const baseUrl = window.location.origin;
+    const fullUrl = baseUrl + pathHome;
+
     if (this.usuario.usuario == null || this.usuario.password == null) {
       swal.fire('Error en login', 'Usuario y/o contraseña estan vacíos', 'error');
       return;

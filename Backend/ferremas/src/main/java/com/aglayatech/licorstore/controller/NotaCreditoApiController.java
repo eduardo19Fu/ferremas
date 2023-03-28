@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin(value = {"*"})
+@CrossOrigin(origins = {"${ferremas.origins}"})
 @RestController
 @RequestMapping("/api")
 public class NotaCreditoApiController {
