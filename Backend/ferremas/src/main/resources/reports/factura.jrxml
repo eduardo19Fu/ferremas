@@ -4,7 +4,7 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Ferremas Adapter"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<parameter name="idfactura" class="java.lang.Long"/>
 	<queryString>
@@ -19,7 +19,7 @@
         fd.sub_total_descuento,
         fd.descuento,
         f.total,
-        p.precio_venta,
+        fd.precio_unitario,
         (
 			SELECT get_numero_letras(f.total)
         ) as cantidad_letras
@@ -87,10 +87,10 @@ WHERE f.id_factura =  $P{idfactura}]]>
 		<property name="com.jaspersoft.studio.field.label" value="total"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="facturas"/>
 	</field>
-	<field name="precio_venta" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="precio_venta"/>
-		<property name="com.jaspersoft.studio.field.label" value="precio_venta"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="productos"/>
+	<field name="precio_unitario" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="precio_unitario"/>
+		<property name="com.jaspersoft.studio.field.label" value="precio_unitario"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="facturas_detalle"/>
 	</field>
 	<field name="cantidad_letras" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="get_numero_letras(f.total)"/>
@@ -106,15 +106,15 @@ WHERE f.id_factura =  $P{idfactura}]]>
 		<band height="230" splitType="Stretch">
 			<image scaleImage="FillFrame">
 				<reportElement x="24" y="2" width="158" height="160" uuid="4f60832d-0e14-4e65-901f-a4355a943110"/>
-				<imageExpression><![CDATA[this.getClass().getResourceAsStream("/static/images/reports-image/techos-logo.jpeg")]]></imageExpression>
+				<imageExpression><![CDATA[this.getClass().getResourceAsStream("/static/images/reports-image/ferremas-log.png")]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement x="22" y="140" width="208" height="50" isPrintWhenDetailOverflows="true" uuid="f2905273-c25e-4135-8a12-46fcfac10f9b"/>
+				<reportElement x="22" y="140" width="238" height="50" isPrintWhenDetailOverflows="true" uuid="f2905273-c25e-4135-8a12-46fcfac10f9b"/>
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Calzada Justo Rufino Barrios
-Media cuadra adelante de la Purina
+				<text><![CDATA[Aldea El Terrero Mataquescuintla, Jalapa
+NIT: 34453148
 Teléfono: 50112831 - 45545833]]></text>
 			</staticText>
 			<staticText>
@@ -267,19 +267,10 @@ Teléfono: 50112831 - 45545833]]></text>
 				</textElement>
 				<text><![CDATA[SUB TOTAL]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="460" y="0" width="90" height="18" uuid="24dcac1c-335a-40b5-a801-cb2a30c2aa61">
-					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="f0ab0a7b-35d0-4cee-ad0a-b3d9a32d0051"/>
-				</reportElement>
-				<textElement>
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[DESCUENTO AP.]]></text>
-			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="15" splitType="Stretch">
+		<band height="16" splitType="Stretch">
 			<textField textAdjust="StretchHeight">
 				<reportElement x="6" y="0" width="144" height="14" isPrintWhenDetailOverflows="true" uuid="a2ce8709-9f50-43ff-8914-5d76edc28175">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="1a2d2280-fd68-43b9-ba9f-845a10f137ac"/>
@@ -297,15 +288,6 @@ Teléfono: 50112831 - 45545833]]></text>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
-			</textField>
-			<textField textAdjust="ScaleFont" pattern="¤#,##0.00;¤-#,##0.00">
-				<reportElement x="219" y="0" width="60" height="14" uuid="dd1b1186-a4f3-4690-a8df-b5e4d6a9acbc">
-					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="f255c242-7dc9-4234-a21c-871251ae070e"/>
-				</reportElement>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{precio_venta}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="290" y="0" width="70" height="14" uuid="eeb0e5a9-8b52-4667-86ae-fc0db71c377a">
@@ -325,22 +307,22 @@ Teléfono: 50112831 - 45545833]]></text>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{sub_total}]]></textFieldExpression>
 			</textField>
-			<textField pattern="¤#,##0.00;¤-#,##0.00">
-				<reportElement x="460" y="0" width="90" height="14" uuid="4b772922-8b14-4f1f-a419-b7968c52f429">
-					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="f0ab0a7b-35d0-4cee-ad0a-b3d9a32d0051"/>
+			<textField>
+				<reportElement x="219" y="0" width="60" height="14" uuid="cfdc2a38-bed5-4415-9aca-729c8668fde5">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="70f3fadd-571c-49d3-8cbc-6136f69b0f5a"/>
 				</reportElement>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{sub_total_descuento}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{precio_unitario}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
 	<columnFooter>
-		<band height="3" splitType="Stretch"/>
+		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="2" splitType="Stretch"/>
+		<band splitType="Stretch"/>
 	</pageFooter>
 	<lastPageFooter>
 		<band height="69">

@@ -6,6 +6,7 @@ export class DetalleFactura {
     subTotal: number;
     descuento: number;
     subTotalDescuento: number;
+    precioUnitario: number;
 
     producto: Producto;
 
@@ -13,6 +14,16 @@ export class DetalleFactura {
         return this.producto.precioVenta * this.cantidad;
 
         // return this.producto.precioVenta * this.cantidad;
+    }
+
+    /**
+     * Método que calcula el importe de la línea con base al segundo precio configurado
+     * para el producto seleccionado
+     * @returns Number
+     * 
+     */
+    public calcularImporteSegundoPrecio(): number {
+        return this.producto.segundoPrecio * this.cantidad;
     }
 
     public calcularPrecioDescuento(): number{

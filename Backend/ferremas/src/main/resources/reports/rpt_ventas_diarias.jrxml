@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.9.0.final using JasperReports Library version 6.9.0-cb8f9004be492ccc537180b49c026951f4220bf3  -->
+<!-- Created with Jaspersoft Studio version 6.19.1.final using JasperReports Library version 6.19.1-867c00bf88cd4d784d404379d6c05e1b419e8a4c  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rpt_ventas_diarias" pageWidth="612" pageHeight="792" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6258d5cd-d125-4108-afba-4748a1c67a04">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="quitapenas"/>
@@ -60,13 +60,13 @@ GROUP BY p.id_producto]]>
 			</staticText>
 			<image>
 				<reportElement x="0" y="10" width="230" height="101" uuid="130fce4c-81ba-408b-9514-5b122af1a1e8"/>
-				<imageExpression><![CDATA["static/images/reports-image/dimsa-logo.jpeg"]]></imageExpression>
+				<imageExpression><![CDATA[this.getClass().getResourceAsStream("/static/images/reports-image/ferremas-logo.png")]]></imageExpression>
 			</image>
 		</band>
 	</title>
 	<pageHeader>
 		<band height="70" splitType="Stretch">
-			<textField isStretchWithOverflow="true">
+			<textField textAdjust="StretchHeight">
 				<reportElement x="110" y="17" width="268" height="20" uuid="df236442-ccca-4af4-a10b-6db374000d86"/>
 				<textElement textAlignment="Center">
 					<font size="11"/>
@@ -171,7 +171,7 @@ GROUP BY p.id_producto]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField textAdjust="StretchHeight">
 				<reportElement x="65" y="0" width="188" height="15" uuid="e56eb9b9-d40b-417d-b8e9-d63445e6a61f">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4b64254e-029f-4015-9365-7b9f8736f24d"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>

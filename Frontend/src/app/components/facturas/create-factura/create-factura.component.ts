@@ -35,7 +35,8 @@ export class CreateFacturaComponent implements OnInit {
 
   title: string;
   nitIngresado: string;
-  pagar = false;
+  pagar = false; // variable no usada
+  isSegundoPrecio = false;
 
   producto: Producto;
   cliente: Cliente;
@@ -167,8 +168,17 @@ export class CreateFacturaComponent implements OnInit {
               (document.getElementById('cantidad') as HTMLInputElement).value = '';
             } else {
               item.producto = this.producto;
-              item.subTotalDescuento = item.calcularImporte();
-              item.subTotal = item.calcularImporte();
+
+              if(item.producto.checked) {
+                item.subTotalDescuento = item.calcularImporteSegundoPrecio();
+                item.subTotal = item.calcularImporteSegundoPrecio();
+                item.precioUnitario = this.producto.segundoPrecio;
+              } else {
+                item.subTotalDescuento = item.calcularImporte();
+                item.subTotal = item.calcularImporte();
+                item.precioUnitario = this.producto.precioVenta;
+              }
+
               this.factura.itemsFactura.push(item);
               this.producto = new Producto();
 
@@ -194,8 +204,12 @@ export class CreateFacturaComponent implements OnInit {
           swal.fire('Stock Insuficiente', 'No existen las suficientes existencias de este producto.', 'warning');
         } else {
           item.cantidad = cantidad;
-          item.subTotal = item.calcularImporte();
-          item.subTotalDescuento = item.calcularImporteDescuento();
+          if (!item.producto.checked) {
+            item.subTotal = item.calcularImporte();
+            item.subTotalDescuento = item.calcularImporteDescuento();
+          } else {
+            item.subTotal = item.calcularImporteSegundoPrecio();
+          }
         }
       }
 
@@ -231,8 +245,16 @@ export class CreateFacturaComponent implements OnInit {
     this.factura.itemsFactura = this.factura.itemsFactura.map((item: DetalleFactura) => {
       if (idProducto === item.producto.idProducto) {
         item.cantidad = item.cantidad + cantidad;
-        item.subTotal = item.calcularImporte();
-        item.subTotalDescuento = item.calcularImporteDescuento();
+        
+        if(item.producto.checked) {
+          item.subTotal = item.calcularImporteSegundoPrecio();
+          item.subTotalDescuento = item.calcularImporteDescuento();
+          item.precioUnitario = item.producto.segundoPrecio;
+        } else {
+          item.subTotal = item.calcularImporte();
+          item.subTotalDescuento = item.calcularImporteDescuento();
+          item.precioUnitario = item.producto.precioVenta;
+        }
       }
 
       return item;
@@ -247,7 +269,7 @@ export class CreateFacturaComponent implements OnInit {
     let tipoFactura: TipoFactura = new TipoFactura();
 
     // Retornamos el valor asignado a tipo factura determinando si existe o no el envío pasado por url.
-    return (!this.envio ? tipoFactura = {idTipoFactura: 1, tipoFactura: "NORMAL"} : tipoFactura = {idTipoFactura: 3, tipoFactura: "PAGO_ENVIO"});
+    return (!this.envio ? tipoFactura = { idTipoFactura: 1, tipoFactura: "NORMAL" } : tipoFactura = { idTipoFactura: 3, tipoFactura: "PAGO_ENVIO" });
 
   }
 
@@ -289,7 +311,7 @@ export class CreateFacturaComponent implements OnInit {
           error => {
             swal.fire(`Error al crear factura para imprimir.`, error.message, 'error');
           });
-        
+
         /*
         ------- Código para abrir una url en caso de tener activado FEL ---------
         const url = 'https://report.feel.com.gt/ingfacereport/ingfacereport_documento?uuid=' + response.factura.certificacionSat;
@@ -327,7 +349,7 @@ export class CreateFacturaComponent implements OnInit {
    * 
    */
 
-   loadEnvio(): void {
+  loadEnvio(): void {
     this.activatedRoute.params.subscribe(param => {
       const idenvio = param.envio;
 
@@ -357,15 +379,34 @@ export class CreateFacturaComponent implements OnInit {
 
     envio.itemsEnvio.forEach((env: DetalleEnvio) => {
       itemFactura = new DetalleFactura();
-      
+
       itemFactura.producto = env.producto;
       itemFactura.cantidad = env.cantidad;
       itemFactura.subTotal = env.subTotal;
       itemFactura.descuento = env.descuento;
       itemFactura.subTotalDescuento = env.subTotalDescuento;
-      
+
       this.factura.itemsFactura.push(itemFactura);
     });
+  }
+
+  cambioSegundoPrecio(event: any, itemCambiado: DetalleFactura): void {
+    
+    if (event.target.checked) {
+      
+      itemCambiado.producto.checked = event.target.checked;
+      itemCambiado.subTotal = itemCambiado.calcularImporteSegundoPrecio();
+      itemCambiado.precioUnitario = itemCambiado.producto.segundoPrecio;
+
+      this.factura.total = this.factura.calcularTotal();
+      console.log('Sub Total con segundo precio es: ' + itemCambiado.subTotal);
+    
+    } else {
+      itemCambiado.producto.checked = event.target.checked;
+      itemCambiado.subTotal = itemCambiado.calcularImporteDescuento();
+      itemCambiado.precioUnitario = itemCambiado.producto.precioVenta;
+      console.log('Sub Total normal es: ' + itemCambiado.subTotal);
+    }
   }
 
 }

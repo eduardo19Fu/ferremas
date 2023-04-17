@@ -28,7 +28,11 @@ export class Factura {
     calcularTotal(): number{
         this.total = 0;
         this.itemsFactura.forEach((item: DetalleFactura) => {
-            this.total += item.calcularImporteDescuento();
+            if(!item.producto.checked) {
+                this.total += item.calcularImporteDescuento();
+            } else {
+                this.total += item.calcularImporteSegundoPrecio();
+            }
         });
 
         return this.total;

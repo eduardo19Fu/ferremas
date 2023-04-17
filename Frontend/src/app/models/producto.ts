@@ -17,6 +17,7 @@ export class Producto {
     imagen: string;
     descripcion: string;
     link: string;
+    checked?: boolean;
 
     tipoProducto: TipoProducto;
     marcaProducto: MarcaProducto;

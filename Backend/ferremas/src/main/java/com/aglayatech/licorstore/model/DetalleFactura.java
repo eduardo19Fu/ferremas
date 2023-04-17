@@ -24,6 +24,7 @@ public class DetalleFactura implements Serializable {
 	private Double subTotal;
 	private Double descuento;
 	private Double subTotalDescuento;
+	private Double precioUnitario;
 
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -83,6 +84,14 @@ public class DetalleFactura implements Serializable {
 		this.subTotalDescuento = subTotalDescuento;
 	}
 
+	public Double getPrecioUnitario() {
+		return precioUnitario;
+	}
+
+	public void setPrecioUnitario(Double precioUnitario) {
+		this.precioUnitario = precioUnitario;
+	}
+
 	public Double calcularImporte() {
 		/*if(this.descuento == 0)
 			return this.cantidad.doubleValue() * this.producto.getPrecioVenta();
@@ -95,8 +104,16 @@ public class DetalleFactura implements Serializable {
 
 	@Override
 	public String toString() {
-		return "DetalleFactura [idDetalle=" + idDetalle + ", cantidad=" + cantidad + ", subTotal=" + subTotal
-				+ ", producto=" + producto + "]";
+		final StringBuilder sb = new StringBuilder("DetalleFactura{");
+		sb.append("idDetalle=").append(idDetalle);
+		sb.append(", cantidad=").append(cantidad);
+		sb.append(", subTotal=").append(subTotal);
+		sb.append(", descuento=").append(descuento);
+		sb.append(", subTotalDescuento=").append(subTotalDescuento);
+		sb.append(", precioUnitario=").append(precioUnitario);
+		sb.append(", producto=").append(producto);
+		sb.append('}');
+		return sb.toString();
 	}
 
 	private static final long serialVersionUID = 1L;
