@@ -115,7 +115,7 @@ WHERE f.id_factura =  $P{idfactura}]]>
 				</textElement>
 				<text><![CDATA[Aldea El Terrero Mataquescuintla, Jalapa
 NIT: 34453148
-Teléfono: 50112831 - 45545833]]></text>
+Teléfono: 50024143 - 31450819]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="337" y="64" width="50" height="20" uuid="f7f13798-e128-4510-97a9-a0988cb1b656"/>
