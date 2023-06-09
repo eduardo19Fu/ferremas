@@ -58,4 +58,13 @@ export class PaisService {
     );
   }
 
+  delete(id: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.url}/paises/${id}`).pipe(
+      catchError(e => {
+        Swal.fire(e.error.mensaje, e.error.error, 'error');
+        return throwError(e);
+      })
+    );
+  }
+
 }

@@ -49,6 +49,33 @@
                     <div class="row">
                         <div class="col">
                             <div class="form-group">
+                                <label for="id-nota-credito">Nota Cr&eacute;dito</label>
+                                <input type="text" class="form-control" name="id-nota-credito" id="id-nota-credito"
+                                    [(ngModel)]="notaCredito.idNotaCredito" disabled>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="fecha-creacion">Fecha Creaci&oacute;n</label>
+                                <input type="text" class="form-control" name="fecha-creacion" id="fecha-creacion"
+                                    value="{{notaCredito.fechaCreacion | date: 'dd-MM-yyyy HH:mm'}}" disabled>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="restante">Saldo Restante</label>
+                                <input type="text" class="form-control" name="restante" id="restante"
+                                    value="{{notaCredito.restante | currency: 'Q' : 'symbol'}}">
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
                                 <label for="nombre">Monto</label>
                                 <input type="number" class="form-control" name="nombre" [(ngModel)]="pagoParcial.pago">
 

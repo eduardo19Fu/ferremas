@@ -57,4 +57,13 @@ export class ProveedorService {
       })
     )
   }
+
+  delete(id: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.url}/proveedores/${id}`).pipe(
+      catchError(e => {
+        Swal.fire(e.error.mensaje, e.error.error, 'error');
+        return throwError(e);
+      })
+    );
+  }
 }
