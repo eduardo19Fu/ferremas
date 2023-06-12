@@ -169,7 +169,7 @@
                         <div class="col">
                             <div class="form-group">
                                 <label for="marca">Marcas Producto</label>
-                                <select [(ngModel)]="producto.marcaProducto" name="marca" id="marca" class="form-control">
+                                <select [compareWith]="compararMarca" [(ngModel)]="producto.marcaProducto" name="marca" id="marca" class="form-control">
                                     <option [ngValue]="undefined">Elija una marca</option>
                                     <option *ngFor="let marca of marcasProducto" [ngValue]="marca">
                                         {{marca.marca}}
@@ -181,7 +181,7 @@
                         <div class="col">
                             <div class="form-group">
                                 <label for="tipo-producto">Tipo Producto</label>
-                                <select name="tipo-producto" id="tipo-producto" [(ngModel)]="producto.tipoProducto" class="form-control">
+                                <select [compareWith]="compararTipo" name="tipo-producto" id="tipo-producto" [(ngModel)]="producto.tipoProducto" class="form-control">
                                     <option [ngValue]="undefined">Elija un tipo</option>
                                     <option *ngFor="let tipo of tiposProducto" [ngValue]="tipo">
                                         {{tipo.tipoProducto}}
