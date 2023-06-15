@@ -63,6 +63,16 @@ export class CompraService {
     );
   }
 
+  delete(id: number): Observable<any> 
+  {
+    return this.httpClient.delete<any>(`${this.url}/compras/${id}`).pipe(
+      catchError(e => {
+        Swal.fire(e.error.mensaje, e.error.error, 'error');
+        return throwError(e);
+      })
+    );
+  }
+
   getTiposComprobante(): Observable<TipoComprobante[]> 
   {
     return this.httpClient.get<TipoComprobante[]>(`${this.url}/compras/tipos-comprobante/get`);
