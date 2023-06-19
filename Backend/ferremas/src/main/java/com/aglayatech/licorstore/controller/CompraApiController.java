@@ -156,9 +156,17 @@ public class CompraApiController {
     public ResponseEntity<?> delete(@PathVariable("id") Integer id) {
 
         Map<String, Object> response = new HashMap<>();
+        Compra compraToDelete = null;
 
         try {
+            compraToDelete = compraService.getCompra(id);
+
+            for(DetalleCompra item : compraToDelete.getItems()) {
+                eliminarExistenciasCompra(item.getProducto(), item.getCantidad());
+            }
+
             compraService.delete(id);
+
         } catch(DataAccessException e) {
             response.put("mensaje", "¡Ha ocurrido un error en la Base de Datos!");
             response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
@@ -186,6 +194,17 @@ public class CompraApiController {
     public void updateExistencias(Producto producto, int cantidad) {
         Producto productoUpdated = new Producto();
         producto.setStock(producto.getStock() + cantidad);
+        productoUpdated = productoService.save(producto);
+    }
+
+    /**
+     * Función encargado de la actualización de existencias cuando se elimina una compra
+     * @param producto producto a actualizar existencias
+     * @param cantidad cantidad a eliminar de las existencias del producto
+     * */
+    public void eliminarExistenciasCompra(Producto producto, int cantidad) {
+        Producto productoUpdated = new Producto();
+        producto.setStock(producto.getStock() - cantidad);
         productoUpdated = productoService.save(producto);
     }
 
