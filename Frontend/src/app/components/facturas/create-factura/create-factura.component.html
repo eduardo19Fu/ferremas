@@ -75,15 +75,22 @@
                         <div class="col">
                             <div class="form-group">
                                 <label for="nit">NIT:</label>
-                                <input type="text" class="form-control" name="nit"
-                                    value="{{cliente ? cliente.nit : ''}}" disabled>
+                                <input type="text" class="form-control" name="nit" #myNit
+                                    [(ngModel)]="cliente.nit">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="nit">Identificaci&oacute;n:</label>
+                                <input type="text" class="form-control" name="identificacion" #myIdentificacion
+                                    [(ngModel)]="cliente.identificacion">
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-group">
                                 <label for="nombre">Nombre:</label>
-                                <input type="text" class="form-control" name="nombre"
-                                    value="{{cliente ? cliente.nombre : ''}}" disabled>
+                                <input type="text" class="form-control" name="nombre" #myNombre
+                                    [(ngModel)]="cliente.nombre">
                             </div>
                         </div>
                     </div>
@@ -92,8 +99,8 @@
                         <div class="col">
                             <div class="form-group">
                                 <label for="direccion">Dirección:</label>
-                                <input type="text" class="form-control" name="direccion"
-                                    value="{{cliente ? cliente.direccion : ''}}" disabled>
+                                <input type="text" class="form-control" name="direccion" #myDireccion
+                                    [(ngModel)]="cliente.direccion">
                             </div>
                         </div>
                     </div>
@@ -148,6 +155,7 @@
                                 <th>Codigo</th>
                                 <th>Producto</th>
                                 <th>Precio</th>
+                                <th>Segundo Precio</th>
                                 <th>Cantidad</th>
                                 <th>Segundo Precio</th>
                                 <th>Total</th>
@@ -158,6 +166,7 @@
                                 <td>{{item.producto.codProducto}}</td>
                                 <td>{{item.producto.nombre}}</td>
                                 <td>{{item.producto.checked ? item.producto.segundoPrecio : item.producto.precioVenta | currency: "Q" : "symbol"}}</td>
+                                <td>{{item.producto.segundoPrecio ? item.producto.segundoPrecio : 0.0}}</td>
                                 <td>
                                     <input type="number" id="cant" value="{{item.cantidad}}"
                                         class="form-control col-sm-6"
@@ -249,7 +258,7 @@
 
             <div class="card-footer">
                 <input type="submit" role="button" class="btn btn-primary" value="Pagar"
-                    [disabled]="!cliente.idCliente || (factura.itemsFactura.length <= 0)" (click)="createFactura()">
+                    [disabled]="!cliente.idCliente && (factura.itemsFactura.length <= 0)" (click)="createFactura()">
             </div>
         </div>
     </div>
