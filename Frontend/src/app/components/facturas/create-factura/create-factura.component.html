@@ -152,7 +152,7 @@
                     <table class="table table-hover table-sm">
                         <thead>
                             <tr>
-                                <th>Codigo</th>
+                                <!-- <th>Codigo</th> -->
                                 <th>Producto</th>
                                 <th>Precio</th>
                                 <th>Segundo Precio</th>
@@ -163,7 +163,7 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let item of factura.itemsFactura; let i = index">
-                                <td>{{item.producto.codProducto}}</td>
+                                <!-- <td>{{item.producto.codProducto}}</td> -->
                                 <td>{{item.producto.nombre}}</td>
                                 <td>{{item.producto.checked ? item.producto.segundoPrecio : item.producto.precioVenta | currency: "Q" : "symbol"}}</td>
                                 <td>{{item.producto.segundoPrecio ? item.producto.segundoPrecio : 0.0}}</td>
@@ -174,23 +174,10 @@
                                         (keyup)="actualizarCantidad(item.producto.idProducto, $event)">
                                 </td>
                                 <td>
-                                    <!-- <input type="number" id="descuento" name="descuento" value="{{item.descuento}}"
-                                        class="form-control col-sm-6"
-                                        (change)="actualizarCantidadDescuento(item.producto.idProducto, $event)"
-                                        (keyup)="actualizarCantidadDescuento(item.producto.idProducto, $event)"> -->
                                     <input type="checkbox" class="form-input-check" name="is-segundo-precio" id="is-segundo-precio"
                                         (change)="cambioSegundoPrecio($event, item)">
                                 </td>
 
-                                <!-- <td>
-                                    {{  
-                                        (!isSegundoPrecio && !item.producto.segundoPrecio) 
-                                        ? (item.subTotalDescuento | currency: "Q" : "symbol")
-                                        : (isSegundoPrecio && item.producto.segundoPrecio) 
-                                        ? (item.calcularImporteSegundoPrecio() )
-                                        : 0 | currency: "Q" : "symbol"
-                                    }}
-                                </td> -->
                                 <td>{{item.producto.checked ? (item.calcularImporteSegundoPrecio() | currency: "Q" : "symbol") : (item.subTotalDescuento | currency: "Q" : "symbol")}}</td>
                                 <td>
                                     <button type="button" class="btn bg-gradient-danger" (click)="eliminarItem(i)">
