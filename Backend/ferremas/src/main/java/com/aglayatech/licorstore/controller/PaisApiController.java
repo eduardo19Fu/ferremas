@@ -117,4 +117,22 @@ public class PaisApiController {
         response.put("pais", updated);
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
+
+    @Secured(value = {"ROLE_ADMIN"})
+    @DeleteMapping("/paises/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Integer id) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            paisService.delete(id);
+        } catch(DataAccessException e) {
+            response.put("mensaje", "¡Ha ocurrido un error en la Base de Datos!");
+            response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        response.put("mensaje", "¡El país ha sido eliminado con éxito!");
+        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+    }
 }

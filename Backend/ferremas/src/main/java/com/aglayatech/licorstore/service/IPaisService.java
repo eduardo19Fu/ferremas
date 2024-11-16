@@ -11,4 +11,6 @@ public interface IPaisService {
     public Pais getPais(Integer idpais);
 
     public Pais save(Pais pais);
+
+    public void delete(Integer idpais);
 }

@@ -28,4 +28,9 @@ public class PaisServiceImpl implements IPaisService {
     public Pais save(Pais pais) {
         return this.paisRepository.save(pais);
     }
+
+    @Override
+    public void delete(Integer idpais) {
+        this.paisRepository.deleteById(idpais);
+    }
 }

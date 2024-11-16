@@ -15,7 +15,7 @@ export class ModalNotasCreditoComponent implements OnInit {
   title: string;
   notasCredito: NotaCredito[];
 
-  jQueryConfigs: JqueryConfigs;
+  jQueryConfigs: JqueryConfigs = new JqueryConfigs();
 
   constructor(
     private notasService: NotasCreditoService
@@ -31,6 +31,7 @@ export class ModalNotasCreditoComponent implements OnInit {
     this.notasService.getNotasCreditoActivas().subscribe(
       response => {
         this.notasCredito = response;
+        this.jQueryConfigs.configDataTable('notas-credito');
       }
     );
   }

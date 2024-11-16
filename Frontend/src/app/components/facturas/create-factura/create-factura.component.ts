@@ -30,6 +30,13 @@ import { TipoFactura } from '../../../models/tipo-factura';
 })
 export class CreateFacturaComponent implements OnInit {
 
+  // Items para almacenar los valores del cliente
+  @ViewChild('myNit') myNit: ElementRef;
+  @ViewChild('myDireccion') myDireccion: ElementRef;
+  @ViewChild('myNombre') myNombre: ElementRef;
+  @ViewChild('myIdentificacion') myIdentificacion: ElementRef;
+
+  // Items extras
   @ViewChild('mybuscar') myBuscarTexto: ElementRef;
   @ViewChild('myEfectivo') myEfectivoRef: ElementRef;
 
@@ -169,7 +176,7 @@ export class CreateFacturaComponent implements OnInit {
             } else {
               item.producto = this.producto;
 
-              if(item.producto.checked) {
+              if (item.producto.checked) {
                 item.subTotalDescuento = item.calcularImporteSegundoPrecio();
                 item.subTotal = item.calcularImporteSegundoPrecio();
                 item.precioUnitario = this.producto.segundoPrecio;
@@ -245,8 +252,8 @@ export class CreateFacturaComponent implements OnInit {
     this.factura.itemsFactura = this.factura.itemsFactura.map((item: DetalleFactura) => {
       if (idProducto === item.producto.idProducto) {
         item.cantidad = item.cantidad + cantidad;
-        
-        if(item.producto.checked) {
+
+        if (item.producto.checked) {
           item.subTotal = item.calcularImporteSegundoPrecio();
           item.subTotalDescuento = item.calcularImporteDescuento();
           item.precioUnitario = item.producto.segundoPrecio;
@@ -273,54 +280,111 @@ export class CreateFacturaComponent implements OnInit {
 
   }
 
+  createClienteIfNotExists(): Cliente {
+    var cliente: Cliente = new Cliente();
+
+    cliente.nombre = this.myNombre.nativeElement.value;
+    cliente.nit = this.myNit.nativeElement.value;
+    cliente.direccion = this.myDireccion.nativeElement.value;
+
+    console.log("cliente a guardar: ");
+    console.log(cliente);
+
+    this.clienteService.create(this.cliente).subscribe(response => {
+      cliente = response.cliente;
+      console.log("Cliente guardado");
+      console.log(cliente);
+    });
+
+    return cliente;
+  }
+
   createFactura(): void {
-    this.factura.noFactura = this.correlativo.correlativoActual;
-    this.factura.serie = this.correlativo.serie;
-    this.factura.cliente = this.cliente;
-    this.factura.usuario = this.usuario;
-    this.factura.envio = this.envio;
-    this.factura.total = this.factura.calcularTotal();
-    this.factura.tipoFactura = this.validarTipoFactura();
 
-    this.facturaService.create(this.factura).subscribe(
-      response => {
-        this.cliente = new Cliente();
-        this.factura = new Factura();
-        this.cargarCorrelativo();
-        this.myBuscarTexto.nativeElement.value = '';
-        swal.fire('Venta Realizada', `Factura No. ${response.factura.noFactura} creada con éxito!`, 'success');
-        this.myBuscarTexto.nativeElement.focus();
-        this.cambio = 0;
-        this.myEfectivoRef.nativeElement.value = '';
+    if (!this.cliente.idCliente) {
+      this.clienteService.create(this.cliente).subscribe(response => {
+        this.cliente = response.cliente;
+        console.log("Cliente guardado");
+        console.log(this.cliente);
 
-        this.facturaService.getBillPDF(response.factura.idFactura).subscribe(res => {
-          const url = window.URL.createObjectURL(res.data);
-          const a = document.createElement('a');
-          document.body.appendChild(a);
-          a.setAttribute('style', 'display: none');
-          a.setAttribute('target', 'blank');
-          a.href = url;
-          /*
-            opcion para pedir descarga de la respuesta obtenida
-            a.download = response.filename;
-          */
-          window.open(a.toString(), '_blank');
-          window.URL.revokeObjectURL(url);
-          a.remove();
-        },
-          error => {
-            swal.fire(`Error al crear factura para imprimir.`, error.message, 'error');
-          });
+        this.factura.cliente = this.cliente;
+        this.factura.noFactura = this.correlativo.correlativoActual;
+        this.factura.serie = this.correlativo.serie;
+        this.factura.usuario = this.usuario;
+        this.factura.envio = this.envio;
+        this.factura.total = this.factura.calcularTotal();
+        this.factura.tipoFactura = this.validarTipoFactura();
 
-        /*
-        ------- Código para abrir una url en caso de tener activado FEL ---------
-        const url = 'https://report.feel.com.gt/ingfacereport/ingfacereport_documento?uuid=' + response.factura.certificacionSat;
+        this.facturaService.create(this.factura).subscribe(
+          response => {
+            // this.cliente = new Cliente();
+            // this.factura = new Factura();
+            // this.cargarCorrelativo();
+            // this.myBuscarTexto.nativeElement.value = '';
+            swal.fire('Venta Realizada', `Factura No. ${response.factura.noFactura} creada con éxito!`, 'success');
+            // this.myBuscarTexto.nativeElement.focus();
+            // this.cambio = 0;
+            // this.myEfectivoRef.nativeElement.value = '';
 
-        const a = document.createElement('a');
-        window.open(url, '_blank').focus(); */
+            this.generarComprobante(response.factura);
 
-      }
-    );
+          }, error => {
+            console.log(<any>error);
+          }
+        );
+      });
+    } else {
+      this.factura.cliente = this.cliente;
+      this.factura.noFactura = this.correlativo.correlativoActual;
+      this.factura.serie = this.correlativo.serie;
+      this.factura.usuario = this.usuario;
+      this.factura.envio = this.envio;
+      this.factura.total = this.factura.calcularTotal();
+      this.factura.tipoFactura = this.validarTipoFactura();
+
+      this.facturaService.create(this.factura).subscribe(
+        response => {
+          this.cliente = new Cliente();
+          this.factura = new Factura();
+          this.cargarCorrelativo();
+          this.myBuscarTexto.nativeElement.value = '';
+          swal.fire('Venta Realizada', `Factura No. ${response.factura.noFactura} creada con éxito!`, 'success');
+          this.myBuscarTexto.nativeElement.focus();
+          this.cambio = 0;
+          this.myEfectivoRef.nativeElement.value = '';
+
+          this.generarComprobante(response.factura);
+
+        }, error => {
+          console.log(<any>error);
+        }
+      );
+    }
+  }
+
+  /**
+   * Genera el comprobante en pdf de la venta
+   */
+  generarComprobante(factura: Factura): void {
+    this.facturaService.getBillPDF(factura.idFactura).subscribe(res => {
+      const url = window.URL.createObjectURL(res.data);
+      const a = document.createElement('a');
+      document.body.appendChild(a);
+      a.setAttribute('style', 'display: none');
+      a.setAttribute('target', 'blank');
+      a.href = url;
+      /*
+        opcion para pedir descarga de la respuesta obtenida
+        a.download = response.filename;
+      */
+      window.open(a.toString(), '_blank');
+      window.URL.revokeObjectURL(url);
+      a.remove();
+      location.reload();
+    },
+      error => {
+        swal.fire(`Error al crear factura para imprimir.`, error.message, 'error');
+      });
   }
 
   calcularCambio(event): void {
@@ -391,16 +455,16 @@ export class CreateFacturaComponent implements OnInit {
   }
 
   cambioSegundoPrecio(event: any, itemCambiado: DetalleFactura): void {
-    
+
     if (event.target.checked) {
-      
+
       itemCambiado.producto.checked = event.target.checked;
       itemCambiado.subTotal = itemCambiado.calcularImporteSegundoPrecio();
       itemCambiado.precioUnitario = itemCambiado.producto.segundoPrecio;
 
       this.factura.total = this.factura.calcularTotal();
       console.log('Sub Total con segundo precio es: ' + itemCambiado.subTotal);
-    
+
     } else {
       itemCambiado.producto.checked = event.target.checked;
       itemCambiado.subTotal = itemCambiado.calcularImporteDescuento();

@@ -15,7 +15,7 @@
 
 <div class="card">
     <div class="card-header">
-        Listado de Pa&iacute;ses
+        Listado de Pa&iacute;ses Registrados
     </div>
 
     <div class="card-body table-responsive">
@@ -51,7 +51,7 @@
                         </button>
 
                         <button class="btn bg-gradient-danger margin" placement="top" ngbTooltip="Eliminar"
-                            *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_INVENTARIO')">
+                            *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_INVENTARIO')" (click)="delete(pais)">
                             <i class="fas fa-trash-alt"></i>
                         </button>
                     </td>

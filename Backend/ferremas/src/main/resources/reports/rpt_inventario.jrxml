@@ -67,11 +67,11 @@ ORDER BY pr.nombre ASC;]]>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="16" isBold="true"/>
 				</textElement>
-				<text><![CDATA[TECHOS DE ORIENTE]]></text>
+				<text><![CDATA[FERREMAS]]></text>
 			</staticText>
 			<image>
 				<reportElement x="50" y="0" width="69" height="62" uuid="a1fe4d73-389f-4c98-80e3-e2cb30257663"/>
-				<imageExpression><![CDATA[this.getClass().getResourceAsStream("/static/images/reports-image/techos-logo.jpeg")]]></imageExpression>
+				<imageExpression><![CDATA[this.getClass().getResourceAsStream("/static/images/reports-image/ferremas-log.png")]]></imageExpression>
 			</image>
 		</band>
 	</title>

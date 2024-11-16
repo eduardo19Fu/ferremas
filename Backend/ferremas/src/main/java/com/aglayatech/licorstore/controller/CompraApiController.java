@@ -6,6 +6,8 @@ import com.aglayatech.licorstore.service.ICompraService;
 import com.aglayatech.licorstore.service.IEstadoService;
 import com.aglayatech.licorstore.service.IMovimientoProductoService;
 import com.aglayatech.licorstore.service.IProductoService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api")
 public class CompraApiController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompraApiController.class);
 
     @Autowired
     private ICompraService compraService;
@@ -61,7 +65,10 @@ public class CompraApiController {
         if(compra == null)
         {
             response.put("mensaje", "¡La compra deseada no se encuentra registrada en la Base de Datos!");
-            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<
+
+
+                    Map<String, Object>>(response, HttpStatus.NOT_FOUND);
         }
 
 
@@ -99,7 +106,7 @@ public class CompraApiController {
         {
             response.put("mensaje", "¡Ha ocurrido un error en la Base de Datos!");
             response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -144,6 +151,32 @@ public class CompraApiController {
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
 
+    @Secured(value = {"ROLE_ADMIN", "ROLE_INVENTARIO"})
+    @DeleteMapping("/compras/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Integer id) {
+
+        Map<String, Object> response = new HashMap<>();
+        Compra compraToDelete = null;
+
+        try {
+            compraToDelete = compraService.getCompra(id);
+
+            for(DetalleCompra item : compraToDelete.getItems()) {
+                eliminarExistenciasCompra(item.getProducto(), item.getCantidad());
+            }
+
+            compraService.delete(id);
+
+        } catch(DataAccessException e) {
+            response.put("mensaje", "¡Ha ocurrido un error en la Base de Datos!");
+            response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        response.put("mensaje", "¡La compra ha sido eliminada con éxito!");
+        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+    }
+
     /**
      * Endpoint que devuelve los tipos de comprobante registrados en la base de datos.
      * */
@@ -161,6 +194,17 @@ public class CompraApiController {
     public void updateExistencias(Producto producto, int cantidad) {
         Producto productoUpdated = new Producto();
         producto.setStock(producto.getStock() + cantidad);
+        productoUpdated = productoService.save(producto);
+    }
+
+    /**
+     * Función encargado de la actualización de existencias cuando se elimina una compra
+     * @param producto producto a actualizar existencias
+     * @param cantidad cantidad a eliminar de las existencias del producto
+     * */
+    public void eliminarExistenciasCompra(Producto producto, int cantidad) {
+        Producto productoUpdated = new Producto();
+        producto.setStock(producto.getStock() - cantidad);
         productoUpdated = productoService.save(producto);
     }
 
@@ -209,7 +253,7 @@ public class CompraApiController {
                 producto = item.getProducto();
                 producto.setEstado(estadoProductoNuevo);
                 producto.setFechaIngreso(simpleDateFormat.parse(fechaIngreso.toString()));
-                producto.setStock(item.getCantidad());
+                //producto.stock() debe ir a cero para evitar que el movimiento del producto sume exitencias
             }
 
             this.productoService.save(producto);

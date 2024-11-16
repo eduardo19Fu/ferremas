@@ -16,7 +16,7 @@
 
 <div class="card">
     <div class="card-header">
-        Listado de Tipos de Identificación
+        Listado de Proveedores Registrados
     </div>
 
     <div class="card-body table-responsive">
@@ -68,7 +68,7 @@
                         </button>
 
                         <button class="btn bg-gradient-danger margin" placement="top" ngbTooltip="Eliminar"
-                            *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_INVENTARIO')">
+                            *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_INVENTARIO')" (click)="delete(proveedor)">
                             <i class="fas fa-trash-alt"></i>
                         </button>
                     </td>

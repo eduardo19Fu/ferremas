@@ -27,6 +27,7 @@ public class Cliente implements Serializable {
 	private Integer idCliente;
 	private String nombre;
 	private String nit;
+	private String identificacion;
 	private String direccion;
 	private String telefono;
 
@@ -70,6 +71,14 @@ public class Cliente implements Serializable {
 		this.nit = nit;
 	}
 
+	public String getIdentificacion() {
+		return identificacion;
+	}
+
+	public void setIdentificacion(String identificacion) {
+		this.identificacion = identificacion;
+	}
+
 	public String getDireccion() {
 		return direccion;
 	}
@@ -96,8 +105,17 @@ public class Cliente implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Cliente [idCliente=" + idCliente + ", nombre=" + nombre + ", nit=" + nit + ", direccion=" + direccion
-				+ ", fechaRegistro=" + fechaRegistro + "]";
+		final StringBuilder sb = new StringBuilder("Cliente{");
+		sb.append("idCliente=").append(idCliente);
+		sb.append(", nombre='").append(nombre).append('\'');
+		sb.append(", nit='").append(nit).append('\'');
+		sb.append(", identificacion='").append(identificacion).append('\'');
+		sb.append(", direccion='").append(direccion).append('\'');
+		sb.append(", telefono='").append(telefono).append('\'');
+		sb.append(", fechaRegistro=").append(fechaRegistro);
+		sb.append(", facturas=").append(facturas);
+		sb.append('}');
+		return sb.toString();
 	}
 
 	private static final long serialVersionUID = 1L;

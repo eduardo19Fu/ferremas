@@ -121,4 +121,24 @@ public class ProveedorApiController {
         response.put("proveedor", updated);
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
+
+    @Secured(value = {"ROLE_ADMIN"})
+    @DeleteMapping("/proveedores/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Integer id) {
+
+        Map<String, Object> response = new HashMap<>();
+        Proveedor proveedor = null;
+
+        try {
+            proveedor = proveedorService.getProveedor(id);
+            proveedorService.delete(proveedor);
+        } catch(DataAccessException e) {
+            response.put("mensaje", "¡Ha ocurrido un error en la Base de Datos!");
+            response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        response.put("mensaje", "¡El proveedor ha sido eliminado con éxito!");
+        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+    }
 }
