@@ -317,14 +317,14 @@ export class CreateFacturaComponent implements OnInit {
 
         this.facturaService.create(this.factura).subscribe(
           response => {
-            this.cliente = new Cliente();
-            this.factura = new Factura();
-            this.cargarCorrelativo();
-            this.myBuscarTexto.nativeElement.value = '';
+            // this.cliente = new Cliente();
+            // this.factura = new Factura();
+            // this.cargarCorrelativo();
+            // this.myBuscarTexto.nativeElement.value = '';
             swal.fire('Venta Realizada', `Factura No. ${response.factura.noFactura} creada con éxito!`, 'success');
-            this.myBuscarTexto.nativeElement.focus();
-            this.cambio = 0;
-            this.myEfectivoRef.nativeElement.value = '';
+            // this.myBuscarTexto.nativeElement.focus();
+            // this.cambio = 0;
+            // this.myEfectivoRef.nativeElement.value = '';
 
             this.generarComprobante(response.factura);
 
@@ -380,6 +380,7 @@ export class CreateFacturaComponent implements OnInit {
       window.open(a.toString(), '_blank');
       window.URL.revokeObjectURL(url);
       a.remove();
+      location.reload();
     },
       error => {
         swal.fire(`Error al crear factura para imprimir.`, error.message, 'error');
