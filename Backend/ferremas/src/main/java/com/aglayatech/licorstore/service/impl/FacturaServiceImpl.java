@@ -76,6 +76,11 @@ public class FacturaServiceImpl implements IFacturaService {
 		return this.repoFactura.getMaxVentas();
 	}
 
+	@Override
+	public int deleteByRangoFechas(Date fecha1, Date fecha2) {
+		return repoFactura.deleteByFechaBetween(fecha1, fecha2);
+	}
+
 	/****************** PDF REPORT SERVICES *******************/
 
 	// REPORTE DE VENTAS DIARIAS
