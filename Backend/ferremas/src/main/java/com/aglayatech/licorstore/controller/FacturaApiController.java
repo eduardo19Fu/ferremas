@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -253,6 +254,27 @@ public class FacturaApiController {
         }
 
         return new ResponseEntity<Integer>(maxVentas, HttpStatus.OK);
+    }
+
+    @Secured(value = "ROLE_ADMIN")
+    @DeleteMapping("/facturas/eliminar/fecha")
+    public ResponseEntity<?> eliminarFacturasPorFecha(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                                      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate)
+    {
+        Map<String, Object> response = new HashMap<>();
+        int cantidad = 0;
+
+        try {
+            cantidad = serviceFactura.deleteByRangoFechas(startDate, endDate);
+        } catch(DataAccessException e) {
+            response.put("mensaje", "¡Error en la base de datos!");
+            response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        response.put("mensaje", "Se eliminaron " + cantidad + " de facturas en el rango de fechas específicado");
+        response.put("cantidad", cantidad);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /*************** PDF REPORTS CONTROLLERS ********************/

@@ -64,6 +64,7 @@ import { CreateNotaComponent } from './components/notas-credito/create-nota/crea
 import { PagosParcialesComponent } from './components/pagos-parciales/pagos-parciales.component';
 import { CreatePagoParcialComponent } from './components/pagos-parciales/create-pago-parcial/create-pago-parcial.component';
 import { ModalNotasCreditoComponent } from './components/notas-credito/modal-notas-credito/modal-notas-credito.component';
+import { EliminarFacturasComponent } from './components/facturas/eliminar-facturas/eliminar-facturas.component';
 
 @NgModule({
   declarations: [
@@ -122,7 +123,8 @@ import { ModalNotasCreditoComponent } from './components/notas-credito/modal-not
     CreateNotaComponent,
     PagosParcialesComponent,
     CreatePagoParcialComponent,
-    ModalNotasCreditoComponent
+    ModalNotasCreditoComponent,
+    EliminarFacturasComponent
   ],
   imports: [
     BrowserModule,

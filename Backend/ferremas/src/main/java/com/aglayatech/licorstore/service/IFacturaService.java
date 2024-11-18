@@ -26,6 +26,8 @@ public interface IFacturaService {
 	public TipoFactura findTipoFactura(Integer idTipoFactura);
 
 	public Integer getMaxVentas();
+
+	public int deleteByRangoFechas(Date fecha1, Date fecha2);
 	
 	/********* PDF REPORTS SERVICES ***********/
 	
