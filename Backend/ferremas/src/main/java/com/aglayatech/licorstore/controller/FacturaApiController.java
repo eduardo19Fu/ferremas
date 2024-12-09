@@ -115,6 +115,30 @@ public class FacturaApiController {
     }
 
     @Secured(value = {"ROLE_ADMIN", "ROLE_COBRADOR"})
+    @GetMapping(value = "/facturas/fecha")
+    public ResponseEntity<?> consultarFacturasPorFecha(@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaIni,
+                                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin)
+    {
+        Map<String, Object> response = new HashMap<>();
+        List<Factura> facturas = new ArrayList<>();
+
+        try {
+             facturas = serviceFactura.findFacturasPorFechas(fechaIni, fechaFin);
+        } catch (DataAccessException e) {
+            response.put("mensaje", "¡Error en la base de datos!");
+            response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        if(facturas.isEmpty()) {
+            response.put("mensaje", "No existen facturas registradas en el rango de fechas especificado");
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(facturas, HttpStatus.OK);
+    }
+
+    @Secured(value = {"ROLE_ADMIN", "ROLE_COBRADOR"})
     @PostMapping(value = "/facturas")
     public ResponseEntity<?> create(@RequestBody Factura factura, BindingResult result) {
 

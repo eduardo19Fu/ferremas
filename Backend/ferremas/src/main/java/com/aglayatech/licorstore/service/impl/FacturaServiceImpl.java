@@ -62,6 +62,11 @@ public class FacturaServiceImpl implements IFacturaService {
 	}
 
 	@Override
+	public List<Factura> findFacturasPorFechas(Date fechaIni, Date fechaFin) {
+		return repoFactura.queryFacturasPorFecha(fechaIni, fechaFin);
+	}
+
+	@Override
 	public Factura save(Factura factura) {
 		return repoFactura.save(factura);
 	}

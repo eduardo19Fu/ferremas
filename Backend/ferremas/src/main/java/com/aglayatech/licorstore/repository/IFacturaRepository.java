@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 public interface IFacturaRepository extends JpaRepository<Factura, Long> {
 
@@ -19,4 +20,7 @@ public interface IFacturaRepository extends JpaRepository<Factura, Long> {
     @Modifying
     @Query(value = "Delete from facturas f where f.fecha between :fechaIni and :fechaFin", nativeQuery = true)
     int deleteByFechaBetween(@Param("fechaIni") Date fechaIni, @Param("fechaFin") Date fechaFin);
+
+    @Query(value = "{call PR_VENTAS_POR_FECHA(:date1, :date2)}", nativeQuery = true)
+    List<Factura> queryFacturasPorFecha(@Param("date1") Date date1, @Param("date2") Date date2);
 }
