@@ -20,6 +20,8 @@ public interface IFacturaService {
 	public Page<Factura> findAll(Pageable pageable);
 	
 	public Factura findFactura(Long idfactura);
+
+	public List<Factura> findFacturasPorFechas(Date fechaIni, Date fechaFin);
 	
 	public Factura save(Factura factura);
 

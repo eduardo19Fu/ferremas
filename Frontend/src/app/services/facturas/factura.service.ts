@@ -37,6 +37,19 @@ export class FacturaService {
     );
   }
 
+  getFacturasSP(fechaIni: Date, fechaFin: Date): Observable<any> {
+    const httpParams = new HttpParams()
+      .set('fechaIni', fechaIni.toString())
+      .set('fechaFin', fechaFin.toString());
+
+    return this.http.get<any>(`${this.url}/facturas/fecha?fechaIni=${fechaIni.toString()}&fechaFin=${fechaFin.toString()}`).pipe(
+      catchError(e => {
+        swal.fire(e.error.mensaje, e.error.error, 'error');
+        return throwError(e);
+      })
+    );
+  }
+
   getFactura(id: number): Observable<Factura>{
     return this.http.get<Factura>(`${this.url}/facturas/factura/${id}`).pipe(
       catchError(e => {
