@@ -177,6 +177,7 @@ export class CreateFacturaComponent implements OnInit {
               item.producto = this.producto;
 
               if (item.producto.checked) {
+                console.log("Sub-total" + item.subTotalDescuento);
                 item.subTotalDescuento = item.calcularImporteSegundoPrecio();
                 item.subTotal = item.calcularImporteSegundoPrecio();
                 item.precioUnitario = this.producto.segundoPrecio;
@@ -216,6 +217,7 @@ export class CreateFacturaComponent implements OnInit {
             item.subTotalDescuento = item.calcularImporteDescuento();
           } else {
             item.subTotal = item.calcularImporteSegundoPrecio();
+            item.subTotalDescuento = item.calcularImporteSegundoPrecio();
           }
         }
       }
@@ -255,7 +257,7 @@ export class CreateFacturaComponent implements OnInit {
 
         if (item.producto.checked) {
           item.subTotal = item.calcularImporteSegundoPrecio();
-          item.subTotalDescuento = item.calcularImporteDescuento();
+          item.subTotalDescuento = item.calcularImporteSegundoPrecio();
           item.precioUnitario = item.producto.segundoPrecio;
         } else {
           item.subTotal = item.calcularImporte();
@@ -460,6 +462,7 @@ export class CreateFacturaComponent implements OnInit {
 
       itemCambiado.producto.checked = event.target.checked;
       itemCambiado.subTotal = itemCambiado.calcularImporteSegundoPrecio();
+      itemCambiado.subTotalDescuento = itemCambiado.calcularImporteSegundoPrecio();
       itemCambiado.precioUnitario = itemCambiado.producto.segundoPrecio;
 
       this.factura.total = this.factura.calcularTotal();
@@ -468,6 +471,7 @@ export class CreateFacturaComponent implements OnInit {
     } else {
       itemCambiado.producto.checked = event.target.checked;
       itemCambiado.subTotal = itemCambiado.calcularImporteDescuento();
+      itemCambiado.subTotalDescuento = itemCambiado.calcularImporteDescuento();
       itemCambiado.precioUnitario = itemCambiado.producto.precioVenta;
       console.log('Sub Total normal es: ' + itemCambiado.subTotal);
     }
