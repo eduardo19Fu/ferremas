@@ -21,14 +21,8 @@
     </div>
     <div class="card-body table-responsive">
 
-        <div *ngIf="productos?.length == 0" class="alert alert-info alert-dismissible">
-            <h5>
-                <i class="icon fas fa-info"></i>
-                Atención!
-            </h5>
-
-            No existe ningún producto registrado en la base de datos!
-        </div>
+        <app-sin-registros *ngIf="productos?.length == 0" entidad="productos" [busqueda]="search"
+            (limpiar)="onBuscar('')"></app-sin-registros>
 
         <div class="row mb-2">
                         <div class="col-md-5 ml-md-auto tm-buscador">

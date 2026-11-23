@@ -24,14 +24,24 @@ public interface IFacturaRepository extends JpaRepository<Factura, Long> {
     @Query(value = "{call PR_VENTAS_POR_FECHA(:date1, :date2)}", nativeQuery = true)
     List<Factura> queryFacturasPorFecha(@Param("date1") Date date1, @Param("date2") Date date2);
 
-	// Busqueda paginada (sin distinguir mayusculas)
-	org.springframework.data.domain.Page<Factura> findByClienteNombreContainingIgnoreCaseOrSerieContainingIgnoreCase(String nombre, String otro, org.springframework.data.domain.Pageable pageable);
 
-	// Busqueda paginada dentro de un rango de fechas (misma semantica que PR_VENTAS_POR_FECHA)
-	@Query(value = "select f from Factura f where f.fecha between :fechaIni and :fechaFin and "
-			+ "(lower(f.cliente.nombre) like lower(concat('%', :termino, '%')) or lower(f.serie) like lower(concat('%', :termino, '%')))",
-			countQuery = "select count(f) from Factura f where f.fecha between :fechaIni and :fechaFin and "
-			+ "(lower(f.cliente.nombre) like lower(concat('%', :termino, '%')) or lower(f.serie) like lower(concat('%', :termino, '%')))")
+	// Busqueda paginada por cliente (nombre o NIT) o numero de factura.
+	// LEFT JOIN: las facturas sin cliente asociado tambien participan en el listado.
+	@Query(value = "select f from Factura f left join f.cliente c where "
+			+ "lower(c.nombre) like lower(concat('%', :termino, '%')) or lower(c.nit) like lower(concat('%', :termino, '%')) "
+			+ "or str(f.noFactura) like concat('%', :termino, '%')",
+			countQuery = "select count(f) from Factura f left join f.cliente c where "
+			+ "lower(c.nombre) like lower(concat('%', :termino, '%')) or lower(c.nit) like lower(concat('%', :termino, '%')) "
+			+ "or str(f.noFactura) like concat('%', :termino, '%')")
+	org.springframework.data.domain.Page<Factura> searchFacturas(@Param("termino") String termino, org.springframework.data.domain.Pageable pageable);
+
+	// Igual que la anterior, dentro de un rango de fechas (misma semantica que PR_VENTAS_POR_FECHA)
+	@Query(value = "select f from Factura f left join f.cliente c where f.fecha between :fechaIni and :fechaFin and ("
+			+ "lower(c.nombre) like lower(concat('%', :termino, '%')) or lower(c.nit) like lower(concat('%', :termino, '%')) "
+			+ "or str(f.noFactura) like concat('%', :termino, '%'))",
+			countQuery = "select count(f) from Factura f left join f.cliente c where f.fecha between :fechaIni and :fechaFin and ("
+			+ "lower(c.nombre) like lower(concat('%', :termino, '%')) or lower(c.nit) like lower(concat('%', :termino, '%')) "
+			+ "or str(f.noFactura) like concat('%', :termino, '%'))")
 	org.springframework.data.domain.Page<Factura> searchPorFechas(@Param("termino") String termino, @Param("fechaIni") Date fechaIni,
 			@Param("fechaFin") Date fechaFin, org.springframework.data.domain.Pageable pageable);
 }

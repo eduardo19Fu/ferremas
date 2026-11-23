@@ -78,30 +78,25 @@
         <div class="row mb-2">
             <div class="col-md-4 ml-md-auto tm-buscador">
                 <i class="fas fa-search"></i>
-                <input type="search" class="form-control form-control-sm" placeholder="Buscar por cliente o serie..."
+                <input type="search" class="form-control form-control-sm" placeholder="Buscar por cliente, NIT o No. factura..."
                     [ngModel]="search" (ngModelChange)="onBuscar($event)">
                 <span class="tm-spinner" *ngIf="cargando"></span>
             </div>
         </div>
 
-        <div *ngIf="facturas?.length == 0 && !cargando" class="alert alert-info alert-dismissible">
-            <h5>
-                <i class="icon fas fa-info"></i>
-                Atención!
-            </h5>
-
-            No existe ninguna factura registrada en la base de datos!
-        </div>
+        <app-sin-registros *ngIf="facturas?.length == 0 && !cargando" entidad="facturas" [busqueda]="search"
+            (limpiar)="onBuscar('')"></app-sin-registros>
 
         <div class="tabla-wrap">
             <div class="tabla-progreso" *ngIf="cargando && facturas?.length"></div>
-            <app-tabla-skeleton *ngIf="cargando && !facturas?.length" [columnas]="7"></app-tabla-skeleton>
+            <app-tabla-skeleton *ngIf="cargando && !facturas?.length" [columnas]="8"></app-tabla-skeleton>
             <table id="facturas" class="table table-modern" [class.cargando]="cargando" *ngIf="facturas?.length > 0">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>No. Factura</th>
                     <th>Fecha</th>
+                    <th>Cliente</th>
                     <th>Total</th>
                     <th>Estado</th>
                     <th>Emisor</th>
@@ -114,6 +109,7 @@
                     <td data-label="ID">{{factura.idFactura}}</td>
                     <td data-label="No. Factura">{{factura.noFactura}}</td>
                     <td data-label="Fecha">{{factura.fecha | date: 'dd/MM/yyyy - hh:mm'}}</td>
+                    <td data-label="Cliente">{{factura.cliente?.nombre || '—'}}</td>
                     <td data-label="Total">{{factura.total | currency: 'Q' : 'symbol'}}</td>
                     <td data-label="Estado">
                         <span class="badge"

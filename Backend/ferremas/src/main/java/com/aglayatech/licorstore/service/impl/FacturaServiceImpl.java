@@ -157,7 +157,7 @@ public class FacturaServiceImpl implements IFacturaService {
 			return repoFactura.findAll(pageable);
 		}
 		String t = termino.trim();
-		return repoFactura.findByClienteNombreContainingIgnoreCaseOrSerieContainingIgnoreCase(t, t, pageable);
+		return repoFactura.searchFacturas(t, pageable);
 	}
 
 	@Override

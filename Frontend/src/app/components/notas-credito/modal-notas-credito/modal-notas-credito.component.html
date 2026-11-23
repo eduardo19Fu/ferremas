@@ -61,7 +61,8 @@
                     </table>
         </div>
 
-                    <div class="alert alert-info" *ngIf="items.length === 0 && !cargando">No se encontraron registros.</div>
+                    <app-sin-registros *ngIf="items.length === 0 && !cargando" entidad="notas de crédito" [busqueda]="search"
+                        (limpiar)="onBuscar('')"></app-sin-registros>
 
                     <app-paginacion [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
                         (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>

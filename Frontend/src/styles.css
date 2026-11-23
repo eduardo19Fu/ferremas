@@ -188,56 +188,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 /* ==========================================================================
-   BOTONES DE ACCION (tablas) — iconos con fondo suave, alineados en una fila
-   ========================================================================== */
-.table.table-modern td.center-options,
-.table.table-modern td[data-label="Opciones"] {
-  white-space: nowrap;
-  text-align: right;
-  width: 1%;
-}
-
-.table.table-modern td .btn {
-  --b: 108, 117, 125;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: .4rem;
-  min-width: 34px;
-  height: 34px;
-  padding: 0 .6rem;
-  margin: 0 0 0 .3rem !important;
-  border: 0;
-  border-radius: 10px;
-  font-size: .85rem;
-  font-weight: 600;
-  line-height: 1;
-  background: rgba(var(--b), .12) !important;
-  background-image: none !important;
-  color: rgb(var(--b)) !important;
-  box-shadow: none;
-  transition: background-color .15s ease, color .15s ease, transform .1s ease;
-}
-
-.table.table-modern td .btn:first-child { margin-left: 0 !important; }
-.table.table-modern td .btn:hover { background: rgb(var(--b)) !important; color: #fff !important; }
-.table.table-modern td .btn:active { transform: scale(.94); }
-.table.table-modern td .btn:focus-visible { outline: 2px solid rgba(var(--b), .5); outline-offset: 2px; }
-.table.table-modern td .btn[disabled] { opacity: .4; pointer-events: none; }
-
-.table.table-modern td .btn.bg-gradient-success,
-.table.table-modern td .btn.btn-success { --b: 33, 150, 83; }
-.table.table-modern td .btn.bg-gradient-info,
-.table.table-modern td .btn.bg-gradient-primary,
-.table.table-modern td .btn.btn-info,
-.table.table-modern td .btn.btn-primary { --b: 37, 124, 189; }
-.table.table-modern td .btn.bg-gradient-cyan { --b: 23, 138, 160; }
-.table.table-modern td .btn.bg-gradient-danger,
-.table.table-modern td .btn.btn-danger { --b: 214, 51, 70; }
-.table.table-modern td .btn.bg-gradient-warning,
-.table.table-modern td .btn.btn-warning { --b: 196, 130, 6; }
-
-/* ==========================================================================
    PAGINACION — sin solapamientos, se reordena en pantallas pequenas
    ========================================================================== */
 .tm-paginacion {
@@ -315,12 +265,236 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   .table.table-modern td[data-label="Opciones"]::before,
   .table.table-modern td.center-options::before { display: none; }
 
-  .table.table-modern td .btn {
-    flex: 1 1 0;
-    height: 40px;
-    margin: 0 !important;
-  }
-
   .tm-paginacion { justify-content: center; }
   .tm-paginacion .tm-pag-info { order: 3; flex-basis: 100%; }
 }
+
+/* ==========================================================================
+   BOTONES — mismo carácter que las tablas: planos, líneas finas, tintes suaves
+   · Primario : sólido plano en el acento de marca (Nuevo, Buscar, confirmar)
+   · Peligro  : sólido plano rojo (btn-danger, confirmaciones destructivas)
+   · Resto    : tinte suave (igual que las acciones de fila)
+
+   Un único modelo de hover para todos:
+   · sólidos -> se oscurecen        · suaves -> el tinte y el borde se intensifican
+   Todo se controla con variables (--b, --bg, --bd, --fg, --bgh, --bdh). Los selectores
+   repiten .btn para ganar a los :hover/:active/:focus de Bootstrap y AdminLTE
+   (p. ej. button.bg-info:hover, .btn-success:not(:disabled):active) que usan !important.
+   ========================================================================== */
+:root {
+  --bt-accent: 34, 122, 153;       /* acento de marca, contraste AA sobre blanco */
+  --bt-accent-dark: 26, 98, 123;
+  --bt-danger: 200, 40, 62;
+  --bt-danger-dark: 168, 30, 50;
+}
+
+/* ---- base: tinte suave ---- */
+.btn.btn.btn {
+  --b: 90, 99, 112;
+  --bg: rgba(var(--b), .10);
+  --bd: rgba(var(--b), .22);
+  --fg: rgb(var(--b));
+  --bgh: rgba(var(--b), .18);
+  --bdh: rgba(var(--b), .40);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .55rem 1.1rem;
+  min-height: 40px;
+  border: 1px solid var(--bd) !important;
+  border-radius: 10px;
+  background: var(--bg) !important;
+  background-image: none !important;
+  color: var(--fg) !important;
+  font-size: .9rem;
+  font-weight: 600;
+  letter-spacing: .01em;
+  line-height: 1.2;
+  box-shadow: none;
+  filter: none;
+  vertical-align: middle;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+}
+
+.btn.btn.btn i, .btn.btn.btn .fas, .btn.btn.btn .far, .btn.btn.btn .fa { font-size: .9em; opacity: .9; }
+
+/* ---- hover / active: SIEMPRE las mismas variables, en todas las variantes ---- */
+.btn.btn.btn:hover,
+.btn.btn.btn:active,
+.btn.btn.btn:not(:disabled):not(.disabled):active {
+  background: var(--bgh) !important;
+  background-image: none !important;
+  border-color: var(--bdh) !important;
+  color: var(--fg) !important;
+  filter: none;
+  box-shadow: none;
+}
+
+.btn.btn.btn:focus-visible { outline: 0; box-shadow: 0 0 0 3px rgba(var(--b), .25); }
+
+/* ---- tonos de los tintes ---- */
+.btn.btn.bg-gradient-success, .btn.btn.btn-outline-success { --b: 28, 128, 74; }
+.btn.btn.bg-gradient-warning, .btn.btn.btn-warning, .btn.btn.btn-outline-warning { --b: 168, 108, 0; }
+.btn.btn.bg-gradient-danger, .btn.btn.btn-outline-danger { --b: var(--bt-danger); }
+.btn.btn.bg-gradient-info, .btn.btn.bg-gradient-primary, .btn.btn.bg-gradient-cyan,
+.btn.btn.btn-outline-info, .btn.btn.btn-outline-primary { --b: var(--bt-accent); }
+.btn.btn.bg-gradient-secondary, .btn.btn.btn-secondary, .btn.btn.btn-outline-secondary { --b: 90, 99, 112; }
+
+/* ---- PRIMARIO sólido plano (Nuevo, Buscar, confirmar) ---- */
+.btn.btn.bg-gradient-success, .btn.btn.bg-gradient-info, .btn.btn.bg-gradient-primary, .btn.btn.bg-gradient-cyan,
+.btn.btn.btn-success, .btn.btn.btn-info, .btn.btn.btn-primary {
+  --b: var(--bt-accent);
+  --bg: rgb(var(--bt-accent));
+  --bd: rgb(var(--bt-accent));
+  --fg: #fff;
+  --bgh: rgb(var(--bt-accent-dark));
+  --bdh: rgb(var(--bt-accent-dark));
+}
+
+/* ---- PELIGRO sólido plano ---- */
+.btn.btn.btn-danger {
+  --b: var(--bt-danger);
+  --bg: rgb(var(--bt-danger));
+  --bd: rgb(var(--bt-danger));
+  --fg: #fff;
+  --bgh: rgb(var(--bt-danger-dark));
+  --bdh: rgb(var(--bt-danger-dark));
+}
+
+/* ---- deshabilitado ---- */
+.btn.btn.btn:disabled, .btn.btn.btn.disabled, .btn.btn.btn[disabled] {
+  opacity: .45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ---- tamaños ---- */
+.btn.btn.btn-sm { padding: .3rem .75rem; min-height: 32px; font-size: .8rem; border-radius: 8px; gap: .4rem; }
+.btn.btn.btn-lg { padding: .7rem 1.4rem; min-height: 48px; font-size: 1rem; border-radius: 12px; }
+
+/* ---- acciones de fila: siempre tinte suave, compactas, sin borde ---- */
+.table.table-modern td .btn.btn.btn {
+  --bg: rgba(var(--b), .10);
+  --fg: rgb(var(--b));
+  --bd: transparent;
+  --bgh: rgba(var(--b), .20);
+  --bdh: transparent;
+  min-width: 34px;
+  min-height: 34px;
+  height: 34px;
+  padding: 0 .6rem;
+  margin: 0 0 0 .3rem;
+  border-radius: 10px;
+}
+.table.table-modern td .btn.btn.btn:first-child { margin-left: 0; }
+.table.table-modern td .btn.btn.bg-gradient-success { --b: 28, 128, 74; }
+.table.table-modern td .btn.btn.bg-gradient-info,
+.table.table-modern td .btn.btn.bg-gradient-primary,
+.table.table-modern td .btn.btn.bg-gradient-cyan { --b: var(--bt-accent); }
+.table.table-modern td .btn.btn.bg-gradient-warning { --b: 168, 108, 0; }
+.table.table-modern td .btn.btn.bg-gradient-danger { --b: var(--bt-danger); }
+
+.table.table-modern td.center-options,
+.table.table-modern td[data-label="Opciones"] { white-space: nowrap; text-align: right; width: 1%; }
+
+/* ---- agrupación ---- */
+.content-header .btn { margin: 0 .4rem .5rem 0; }
+.card-footer { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; background: transparent; border-top: 1px solid var(--tm-line); }
+.card-footer .btn { margin: 0; }
+
+/* encabezado de la tarjeta de filtros acorde al resto (antes gris oscuro) */
+.card.card-secondary > .card-header {
+  background: var(--tm-head);
+  color: var(--tm-muted);
+  border-bottom: 1px solid var(--tm-line);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.card.card-secondary { border-radius: 12px; overflow: hidden; }
+
+/* ---- móvil ---- */
+@media (max-width: 575.98px) {
+  .btn.btn.btn:not(.btn-sm) { min-height: 44px; }
+  .content-header .btn { flex: 1 1 auto; }
+  .card-footer .btn { flex: 1 1 calc(50% - .3rem); }
+}
+
+@media (max-width: 767.98px) {
+  .table.table-modern td .btn.btn.btn { flex: 1 1 0; height: 40px; margin: 0; }
+  .table.table-modern td[data-label="Opciones"],
+  .table.table-modern td.center-options { width: 100%; justify-content: stretch; gap: .5rem; padding-top: .75rem; }
+}
+
+@media (prefers-reduced-motion: reduce) { .btn.btn.btn { transition: none; } }
+
+/* ==========================================================================
+   ESTADO VACIO — sin registros / sin resultados de busqueda
+   ========================================================================== */
+.tm-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: .5rem;
+  margin: .5rem 0 1rem;
+  padding: 2.5rem 1.25rem 2.25rem;
+  border: 1.5px dashed #dfe4ea;
+  border-radius: 14px;
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(var(--bt-accent), .06), transparent 60%),
+    var(--tm-head);
+  animation: tm-empty-in .25s ease both;
+}
+
+.tm-empty-icon {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  margin-bottom: .35rem;
+  border-radius: 50%;
+  color: rgb(var(--bt-accent));
+  background: rgba(var(--bt-accent), .10);
+  box-shadow: 0 0 0 8px rgba(var(--bt-accent), .05);
+}
+
+/* la busqueda sin resultados usa un tono ambar suave para diferenciarla del "vacio" */
+.tm-empty-icon.is-search {
+  color: rgb(168, 108, 0);
+  background: rgba(168, 108, 0, .10);
+  box-shadow: 0 0 0 8px rgba(168, 108, 0, .05);
+}
+
+.tm-empty-title {
+  margin: 0;
+  color: var(--tm-ink);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+}
+
+.tm-empty-text {
+  max-width: 34rem;
+  margin: 0 0 .5rem;
+  color: var(--tm-muted);
+  font-size: .92rem;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.tm-empty-text strong { color: var(--tm-ink); font-weight: 600; }
+
+@keyframes tm-empty-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (max-width: 575.98px) {
+  .tm-empty { padding: 1.75rem 1rem; }
+  .tm-empty-icon { width: 60px; height: 60px; }
+}
+
+@media (prefers-reduced-motion: reduce) { .tm-empty { animation: none; } }

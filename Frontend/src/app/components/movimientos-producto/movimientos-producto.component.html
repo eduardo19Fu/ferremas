@@ -28,14 +28,8 @@
     </div>
     <div class="card-body table-responsive">
 
-        <div *ngIf="movimientosProducto?.length == 0 && !cargando" class="alert alert-info alert-dismissible">
-            <h5>
-                <i class="icon fas fa-info"></i>
-                Atención!
-            </h5>
-
-            No existe ningún movimiento registrado en la base de datos!
-        </div>
+        <app-sin-registros *ngIf="movimientosProducto?.length == 0 && !cargando" entidad="movimientos" [busqueda]="search"
+            (limpiar)="onBuscar('')"></app-sin-registros>
 
         <div class="row mb-2">
             <div class="col-md-4 ml-md-auto tm-buscador">

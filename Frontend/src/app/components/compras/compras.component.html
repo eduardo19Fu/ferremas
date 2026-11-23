@@ -37,14 +37,8 @@
             </div>
         </div>
 
-        <div *ngIf="compras?.length == 0 && !cargando" class="alert alert-info alert-dismissible">
-            <h5>
-                <i class="icon fas fa-info"></i>
-                ¡Atención!
-            </h5>
-
-            No existe ninguna compra registrada en la base de datos.
-        </div>
+        <app-sin-registros *ngIf="compras?.length == 0 && !cargando" entidad="compras" [busqueda]="search"
+            (limpiar)="onBuscar('')"></app-sin-registros>
 
         <div class="tabla-wrap">
             <div class="tabla-progreso" *ngIf="cargando && compras?.length"></div>

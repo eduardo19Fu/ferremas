@@ -30,14 +30,8 @@
             </div>
         </div>
 
-        <div *ngIf="productos?.length == 0 && !cargando" class="alert alert-info alert-dismissible">
-            <h5>
-                <i class="icon fas fa-info"></i>
-                Atención!
-            </h5>
-
-            {{search ? "No se encontraron productos con el criterio de búsqueda." : "No existe ningún producto registrado en la base de datos!"}}
-        </div>
+        <app-sin-registros *ngIf="productos?.length == 0 && !cargando" entidad="productos" [busqueda]="search"
+            (limpiar)="onBuscar('')"></app-sin-registros>
 
         <div class="tabla-wrap">
             <div class="tabla-progreso" *ngIf="cargando && productos?.length"></div>

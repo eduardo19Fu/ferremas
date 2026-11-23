@@ -28,14 +28,8 @@
             </div>
         </div>
 
-        <div *ngIf="paises?.length === 0 && !cargando" class="alert alert-info alert-dismissible">
-            <h5>
-                <i class="icon fas fa-info"></i>
-                ¡Atenci&oacute;n!
-            </h5>
-
-            No existe ning&uacute;n pa&iacute;s registrado en la base de datos!
-        </div>
+        <app-sin-registros *ngIf="paises?.length === 0 && !cargando" entidad="países" [busqueda]="search"
+            (limpiar)="onBuscar('')"></app-sin-registros>
 
         <div class="tabla-wrap">
             <div class="tabla-progreso" *ngIf="cargando && paises?.length"></div>

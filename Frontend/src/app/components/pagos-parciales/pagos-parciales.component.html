@@ -34,14 +34,8 @@
             </div>
         </div>
 
-        <div *ngIf="pagosParciales?.length == 0 && !cargando" class="alert alert-info alert-dismissible">
-            <h5>
-                <i class="icon fas fa-info"></i>
-                Atención!
-            </h5>
-
-            No existe ningún pago registrado en la base de datos!
-        </div>
+        <app-sin-registros *ngIf="pagosParciales?.length == 0 && !cargando" entidad="pagos parciales" [busqueda]="search"
+            (limpiar)="onBuscar('')"></app-sin-registros>
 
         <div class="tabla-wrap">
             <div class="tabla-progreso" *ngIf="cargando && pagosParciales?.length"></div>
