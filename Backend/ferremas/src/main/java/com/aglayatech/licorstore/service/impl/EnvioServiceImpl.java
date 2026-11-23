@@ -73,4 +73,13 @@ public class EnvioServiceImpl implements IEnvioService {
         JasperExportManager.exportReportToPdfStream(jasperPrint, byteArrayOutputStream);
         return byteArrayOutputStream;
     }
+
+	@Override
+	public org.springframework.data.domain.Page<Envio> search(String termino, org.springframework.data.domain.Pageable pageable) {
+		if (termino == null || termino.trim().isEmpty()) {
+			return envioRepository.findAll(pageable);
+		}
+		String t = termino.trim();
+		return envioRepository.findByReferenciaContainingIgnoreCaseOrClienteNombreContainingIgnoreCase(t, t, pageable);
+	}
 }

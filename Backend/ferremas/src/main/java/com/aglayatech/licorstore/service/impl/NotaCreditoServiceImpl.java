@@ -39,4 +39,18 @@ public class NotaCreditoServiceImpl implements INotaCreditoService {
     public void delete(Integer idNota) {
         notaCreditoRepository.deleteById(idNota);
     }
+
+	@Override
+	public org.springframework.data.domain.Page<NotaCredito> search(String termino, org.springframework.data.domain.Pageable pageable) {
+		if (termino == null || termino.trim().isEmpty()) {
+			return notaCreditoRepository.findAll(pageable);
+		}
+		String t = termino.trim();
+		return notaCreditoRepository.findByClienteNombreContainingIgnoreCase(t, pageable);
+	}
+
+	@Override
+	public org.springframework.data.domain.Page<NotaCredito> searchByEstado(String termino, Estado estado, org.springframework.data.domain.Pageable pageable) {
+		return notaCreditoRepository.searchByEstado(termino == null ? "" : termino.trim(), estado, pageable);
+	}
 }

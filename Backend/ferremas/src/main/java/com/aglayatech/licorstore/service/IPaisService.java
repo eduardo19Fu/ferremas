@@ -13,4 +13,6 @@ public interface IPaisService {
     public Pais save(Pais pais);
 
     public void delete(Integer idpais);
+
+	public org.springframework.data.domain.Page<Pais> search(String termino, org.springframework.data.domain.Pageable pageable);
 }

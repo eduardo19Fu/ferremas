@@ -7,6 +7,7 @@ import { global } from '../global';
 import { NotaCredito } from 'src/app/models/nota-credito';
 
 import Swal from 'sweetalert2';
+import { Page } from 'src/app/models/page';
 
 @Injectable({
   providedIn: 'root'
@@ -53,5 +54,17 @@ export class NotasCreditoService {
         return throwError(e);
       })
     );
+  }
+
+  /** Listado paginado desde el backend, con busqueda opcional. */
+  getPaginado(page: number, size: number, search: string = '', activas: boolean = false): Observable<Page<NotaCredito>> {
+    const params: any = { page: String(page), size: String(size) };
+    if (search && search.trim()) {
+      params.search = search.trim();
+    }
+    if (activas) {
+      params.activas = 'true';
+    }
+    return this.httpClient.get<Page<NotaCredito>>(`${this.url}/notas-credito/paginado`, { params });
   }
 }

@@ -25,7 +25,14 @@
     </div>
     <div class="card-body table-responsive">
 
-        <div *ngIf="notasCredito?.length == 0" class="alert alert-info alert-dismissible">
+        <div class="row mb-2">
+            <div class="col-md-4 ml-md-auto">
+                <input type="search" class="form-control form-control-sm" placeholder="Buscar..."
+                    [ngModel]="search" (ngModelChange)="onBuscar($event)">
+            </div>
+        </div>
+
+        <div *ngIf="notasCredito?.length == 0 && !cargando" class="alert alert-info alert-dismissible">
             <h5>
                 <i class="icon fas fa-info"></i>
                 Atención!
@@ -34,8 +41,7 @@
             No existe ninguna nota de cr&eacute;dito registrada en la base de datos!
         </div>
 
-        <table id="notas-credito" class="table table-hover table-striped table-bordered dataTable dtr-inline table-sm"
-            role="grid" *ngIf="notasCredito?.length > 0">
+        <table id="notas-credito" class="table table-hover table-striped table-bordered table-sm" *ngIf="notasCredito?.length > 0">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -86,20 +92,9 @@
                     </td>
                 </tr>
             </tbody>
-
-            <tfoot>
-                <tr>
-                    <th>ID</th>
-                    <th>Abono</th>
-                    <th>Total</th>
-                    <th>Restante</th>
-                    <th>Emisor</th>
-                    <th>Fecha Creaci&oacute;n</th>
-                    <th>Fecha L&iacute;mite de Pago</th>
-                    <th>Estado</th>
-                    <th *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">Opciones</th>
-                </tr>
-            </tfoot>
         </table>
+
+        <app-paginacion [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+            (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
 </div>

@@ -23,4 +23,5 @@ public interface ICorrelativoService {
 	
 	public void delete(Long id);
 
+	public org.springframework.data.domain.Page<Correlativo> search(String termino, org.springframework.data.domain.Pageable pageable);
 }

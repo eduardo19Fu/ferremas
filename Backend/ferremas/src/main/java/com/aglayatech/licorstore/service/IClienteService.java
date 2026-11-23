@@ -25,4 +25,6 @@ public interface IClienteService {
 
 	public Integer getMaxClientes();
 	
+
+	public org.springframework.data.domain.Page<Cliente> search(String termino, org.springframework.data.domain.Pageable pageable);
 }

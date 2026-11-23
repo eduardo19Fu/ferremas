@@ -25,7 +25,14 @@
     </div>
     <div class="card-body table-responsive">
 
-        <div *ngIf="pagosParciales?.length == 0" class="alert alert-info alert-dismissible">
+        <div class="row mb-2">
+            <div class="col-md-4 ml-md-auto">
+                <input type="search" class="form-control form-control-sm" placeholder="Buscar..."
+                    [ngModel]="search" (ngModelChange)="onBuscar($event)">
+            </div>
+        </div>
+
+        <div *ngIf="pagosParciales?.length == 0 && !cargando" class="alert alert-info alert-dismissible">
             <h5>
                 <i class="icon fas fa-info"></i>
                 Atención!
@@ -34,7 +41,7 @@
             No existe ningún pago registrado en la base de datos!
         </div>
 
-        <table id="pagos-parciales" class="table table-hover table-striped table-bordered dataTable dtr-inline table-sm" role="grid" 
+        <table id="pagos-parciales" class="table table-hover table-striped table-bordered table-sm" 
             *ngIf="pagosParciales?.length > 0">
 
             <thead>
@@ -69,19 +76,9 @@
                     </td>
                 </tr>
             </tbody>
-
-            <tfoot>
-                <tr>
-                    <th>ID</th>
-                    <th>Fecha de Pago</th>
-                    <th>Fecha Pr&oacute;ximo Pago</th>
-                    <th>Total del Pago</th>
-                    <th>Nota de Cr&eacute;dito</th>
-                    <th>Cliente</th>
-                    <th>Estado</th>
-                    <th *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">Opciones</th>
-                </tr>
-            </tfoot>
         </table>
+
+        <app-paginacion [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+            (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
 </div>

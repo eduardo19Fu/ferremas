@@ -6,6 +6,7 @@ import { TipoProducto } from '../models/tipo-producto';
 import { catchError, map } from 'rxjs/operators';
 
 import swal from 'sweetalert2';
+import { Page } from 'src/app/models/page';
 
 @Injectable({
   providedIn: 'root'
@@ -78,5 +79,14 @@ export class TipoProductoService {
         return throwError(e);
       })
     );
+  }
+
+  /** Listado paginado desde el backend, con busqueda opcional. */
+  getPaginado(page: number, size: number, search: string = ''): Observable<Page<TipoProducto>> {
+    const params: any = { page: String(page), size: String(size) };
+    if (search && search.trim()) {
+      params.search = search.trim();
+    }
+    return this.http.get<Page<TipoProducto>>(`${this.url}/tipos-producto/paginado`, { params });
   }
 }

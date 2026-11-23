@@ -16,4 +16,5 @@ public interface ICotizacionService {
 
     public Cotizacion save(Cotizacion proforma);
 
+	public org.springframework.data.domain.Page<Cotizacion> search(String termino, org.springframework.data.domain.Pageable pageable);
 }

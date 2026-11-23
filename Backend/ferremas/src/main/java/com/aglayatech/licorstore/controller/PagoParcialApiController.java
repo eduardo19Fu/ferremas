@@ -141,4 +141,12 @@ public class PagoParcialApiController {
         calendar.add(Calendar.MONTH, 1);
         return calendar.getTime();
     }
+
+	@GetMapping("/paginado")
+	public org.springframework.data.domain.Page<PagoParcial> paginado(@org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
+			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "10") int size,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String search) {
+		int pageSize = Math.min(Math.max(size, 1), 100);
+		return pagoParcialService.search(search, org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, org.springframework.data.domain.Sort.by("idPagoParcial").descending()));
+	}
 }

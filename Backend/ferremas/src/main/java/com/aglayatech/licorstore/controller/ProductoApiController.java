@@ -21,6 +21,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,6 +76,19 @@ public class ProductoApiController {
 		return serviceProducto.findAll(PageRequest.of(page, 5));
 	}
 	
+	@GetMapping(value = "/productos/paginado")
+	public Page<Producto> paginado(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size,
+			@RequestParam(required = false) String search,
+			@RequestParam(defaultValue = "false") boolean soloActivos) {
+		int pageSize = Math.min(Math.max(size, 1), 100);
+		if (soloActivos) {
+			return serviceProducto.searchByEstado(search, serviceEstado.findById(1),
+					PageRequest.of(Math.max(page, 0), pageSize, Sort.by("nombre").ascending()));
+		}
+		return serviceProducto.search(search, PageRequest.of(Math.max(page, 0), pageSize, Sort.by("nombre").ascending()));
+	}
+
 	@GetMapping(value = "/productos-activos")
 	public List<Producto> findAll(){
 		Estado estado = serviceEstado.findById(1);

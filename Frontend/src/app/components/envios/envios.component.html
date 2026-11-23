@@ -21,7 +21,14 @@
     </div>
     <div class="card-body table-responsive">
 
-        <div *ngIf="envios?.length == 0" class="alert alert-info alert-dismissible">
+        <div class="row mb-2">
+            <div class="col-md-4 ml-md-auto">
+                <input type="search" class="form-control form-control-sm" placeholder="Buscar..."
+                    [ngModel]="search" (ngModelChange)="onBuscar($event)">
+            </div>
+        </div>
+
+        <div *ngIf="envios?.length == 0 && !cargando" class="alert alert-info alert-dismissible">
             <h5>
                 <i class="icon fas fa-info"></i>
                 Atención!
@@ -30,8 +37,7 @@
             No existe ninguna factura registrada en la base de datos!
         </div>
 
-        <table id="envios" class="table table-hover table-striped table-bordered dataTable dtr-inline table-sm"
-            role="grid" *ngIf="envios?.length > 0">
+        <table id="envios" class="table table-hover table-striped table-bordered table-sm" *ngIf="envios?.length > 0">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -76,18 +82,9 @@
                     </td>
                 </tr>
             </tbody>
-
-            <tfoot>
-                <tr>
-                    <th>ID</th>
-                    <th>No. Factura</th>
-                    <th>Fecha</th>
-                    <th>Total</th>
-                    <th>Estado</th>
-                    <th>Emisor</th>
-                    <th *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">Opciones</th>
-                </tr>
-            </tfoot>
         </table>
+
+        <app-paginacion [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+            (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
 </div>

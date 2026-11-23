@@ -1,6 +1,8 @@
+import { Observable } from 'rxjs';
+import { Page } from 'src/app/models/page';
+import { ListaPaginada } from 'src/app/utils/lista-paginada';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { NotaCredito } from '../../../models/nota-credito';
-import { JqueryConfigs } from '../../../utils/jquery/jquery-utils';
 import { NotasCreditoService } from '../../../services/notas/notas-credito.service';
 
 @Component({
@@ -8,19 +10,25 @@ import { NotasCreditoService } from '../../../services/notas/notas-credito.servi
   templateUrl: './modal-notas-credito.component.html',
   styleUrls: ['./modal-notas-credito.component.css']
 })
-export class ModalNotasCreditoComponent implements OnInit {
+export class ModalNotasCreditoComponent extends ListaPaginada<NotaCredito> implements OnInit {
 
   @Output() notaCredito = new EventEmitter<NotaCredito>();
 
   title: string;
-  notasCredito: NotaCredito[];
-
-  jQueryConfigs: JqueryConfigs = new JqueryConfigs();
 
   constructor(
     private notasService: NotasCreditoService
   ) {
+    super();
     this.title = 'Notas de Credito';
+  }
+
+  protected fetch(page: number, size: number, search: string): Observable<Page<NotaCredito>> {
+    return this.notasService.getPaginado(page, size, search, true);
+  }
+
+  get notasCredito(): NotaCredito[] {
+    return this.items;
   }
 
   ngOnInit(): void {
@@ -28,12 +36,7 @@ export class ModalNotasCreditoComponent implements OnInit {
   }
 
   loadNotasCredito(): void {
-    this.notasService.getNotasCreditoActivas().subscribe(
-      response => {
-        this.notasCredito = response;
-        this.jQueryConfigs.configDataTable('notas-credito');
-      }
-    );
+    this.cargar();
   }
 
   chooseNotaCredito(notaCredito: NotaCredito): void {

@@ -187,4 +187,16 @@ public class NotaCreditoApiController {
         serviceMovimiento.save(movimiento);
     }
 
+	@GetMapping("/notas-credito/paginado")
+	public org.springframework.data.domain.Page<NotaCredito> paginado(@org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
+			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "10") int size,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String search,
+			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "false") boolean activas) {
+		int pageSize = Math.min(Math.max(size, 1), 100);
+		if (activas) {
+			return notaCreditoService.searchByEstado(search, estadoService.findById(1),
+					org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, org.springframework.data.domain.Sort.by("idNotaCredito").descending()));
+		}
+		return notaCreditoService.search(search, org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, org.springframework.data.domain.Sort.by("idNotaCredito").descending()));
+	}
 }

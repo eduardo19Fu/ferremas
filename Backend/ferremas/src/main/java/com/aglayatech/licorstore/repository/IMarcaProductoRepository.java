@@ -14,4 +14,6 @@ public interface IMarcaProductoRepository extends JpaRepository<MarcaProducto, I
 	@Query("Select m from MarcaProducto m where m.marca = :param1")
 	List<MarcaProducto> findByMarca(@Param("param1") String marca);
 
+	// Busqueda paginada (sin distinguir mayusculas)
+	org.springframework.data.domain.Page<MarcaProducto> findByMarcaContainingIgnoreCase(String nombre, org.springframework.data.domain.Pageable pageable);
 }

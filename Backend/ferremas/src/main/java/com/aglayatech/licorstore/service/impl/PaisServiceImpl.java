@@ -33,4 +33,13 @@ public class PaisServiceImpl implements IPaisService {
     public void delete(Integer idpais) {
         this.paisRepository.deleteById(idpais);
     }
+
+	@Override
+	public org.springframework.data.domain.Page<Pais> search(String termino, org.springframework.data.domain.Pageable pageable) {
+		if (termino == null || termino.trim().isEmpty()) {
+			return paisRepository.findAll(pageable);
+		}
+		String t = termino.trim();
+		return paisRepository.findByNombreContainingIgnoreCase(t, pageable);
+	}
 }

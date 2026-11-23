@@ -1,10 +1,12 @@
+import { Observable } from 'rxjs';
+import { Page } from 'src/app/models/page';
+import { ListaPaginada } from 'src/app/utils/lista-paginada';
 import { Component, OnInit } from '@angular/core';
 
 import { Pais } from 'src/app/models/pais';
 import { PaisService } from 'src/app/services/paises/pais.service';
 import { AuthService } from '../../services/auth.service';
 
-import { JqueryConfigs } from '../../utils/jquery/jquery-utils';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -13,12 +15,10 @@ import Swal from 'sweetalert2';
   styles: [
   ]
 })
-export class PaisesComponent implements OnInit {
+export class PaisesComponent extends ListaPaginada<Pais> implements OnInit {
 
   title: string;
-  jqueryConfigs: JqueryConfigs;
 
-  paises: Pais[];
 
   swalWithBootstrapButtons = Swal.mixin({
     customClass: {
@@ -32,8 +32,16 @@ export class PaisesComponent implements OnInit {
     public auth: AuthService,
     private paisService: PaisService
   ) {
+    super();
     this.title = 'Listado de Paises Disponibles';
-    this.jqueryConfigs = new JqueryConfigs();
+  }
+
+  protected fetch(page: number, size: number, search: string): Observable<Page<Pais>> {
+    return this.paisService.getPaginado(page, size, search);
+  }
+
+  get paises(): Pais[] {
+    return this.items;
   }
 
   ngOnInit(): void {
@@ -41,12 +49,7 @@ export class PaisesComponent implements OnInit {
   }
 
   getPaises(): void {
-    this.paisService.getPaises().subscribe(
-      paises => {
-        this.paises = paises;
-        this.jqueryConfigs.configDataTable('paises');
-      }
-    );
+    this.cargar();
   }
 
   delete(pais: Pais): void {
@@ -62,7 +65,7 @@ export class PaisesComponent implements OnInit {
       if(result.isConfirmed) {
         this.paisService.delete(pais.idPais).subscribe(
           response => {
-            this.paises = this.paises.filter(p => p !== pais);
+            this.recargarTrasEliminar();
             this.swalWithBootstrapButtons.fire(
               'País Eliminado',
               'El país fué eliminado exitosamente. Recuerde que el cambio no podrá ser revertido.',

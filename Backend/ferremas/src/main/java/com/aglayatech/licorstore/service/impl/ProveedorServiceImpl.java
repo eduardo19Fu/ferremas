@@ -35,4 +35,13 @@ public class ProveedorServiceImpl implements IProveedorService {
         this.proveedorRepository.deleteById(proveedor.getIdProveedor());
         return proveedor;
     }
+
+	@Override
+	public org.springframework.data.domain.Page<Proveedor> search(String termino, org.springframework.data.domain.Pageable pageable) {
+		if (termino == null || termino.trim().isEmpty()) {
+			return proveedorRepository.findAll(pageable);
+		}
+		String t = termino.trim();
+		return proveedorRepository.findByNombreContainingIgnoreCaseOrContactoContainingIgnoreCase(t, t, pageable);
+	}
 }

@@ -1,11 +1,12 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { Producto } from 'src/app/models/producto';
 
 import { AuthService } from 'src/app/services/auth.service';
 import { ProductoService } from 'src/app/services/producto.service';
 import { ModalService } from 'src/app/services/productos/modal.service';
-import { JqueryConfigs } from '../../utils/jquery/jquery-utils';
 
 import Swal from 'sweetalert2';
 
@@ -15,16 +16,23 @@ import Swal from 'sweetalert2';
   styles: [
   ]
 })
-export class ProductosComponent implements OnInit, AfterViewInit {
+export class ProductosComponent implements OnInit, OnDestroy {
 
   title: string;
   productos: Producto[];
 
   public productoSeleccionado: Producto;
 
-  paginador: any;
+  // Estado de paginacion (los datos llegan ya paginados desde el backend)
+  page = 0;
+  size = 10;
+  totalElements = 0;
+  totalPages = 0;
+  search = '';
+  cargando = false;
 
-  jQueryConfigs: JqueryConfigs;
+  private busqueda$ = new Subject<string>();
+  private busquedaSub: Subscription;
 
   swalWithBootstrapButtons = Swal.mixin({
     customClass: {
@@ -40,11 +48,14 @@ export class ProductosComponent implements OnInit, AfterViewInit {
     public auth: AuthService
   ) {
     this.title = 'Listado de Productos';
-    this.jQueryConfigs = new JqueryConfigs();
    }
 
   ngOnInit(): void {
     this.getProductos();
+    this.busquedaSub = this.busqueda$.pipe(debounceTime(350), distinctUntilChanged()).subscribe(() => {
+      this.page = 0;
+      this.getProductos();
+    });
     this.modalService.notificarUpload.subscribe(producto => {
       this.productos = this.productos.map(productoOriginal => {
         if (producto.idProducto === productoOriginal.idProducto){
@@ -55,18 +66,38 @@ export class ProductosComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit(): void{
+  ngOnDestroy(): void {
+    this.busquedaSub?.unsubscribe();
   }
 
-  getProductos(): void{
-    this.productoService.getProductos().subscribe(
-      productos => {
-        this.productos = productos;
-        this.jQueryConfigs.configDataTable('productos');
-        this.jQueryConfigs.configToolTip();
+  getProductos(): void {
+    this.cargando = true;
+    this.productoService.getProductosPaginado(this.page, this.size, this.search).subscribe(
+      response => {
+        this.productos = response.content;
+        this.totalElements = response.totalElements;
+        this.totalPages = response.totalPages;
+        this.page = response.number;
+        this.cargando = false;
       },
-      error => { }
+      error => { this.cargando = false; }
     );
+  }
+
+  onBuscar(valor: string): void {
+    this.search = valor;
+    this.busqueda$.next(valor);
+  }
+
+  onPageChange(page: number): void {
+    this.page = page;
+    this.getProductos();
+  }
+
+  onSizeChange(size: number): void {
+    this.size = size;
+    this.page = 0;
+    this.getProductos();
   }
 
   abrirModal(producto: Producto): void{
@@ -87,7 +118,11 @@ export class ProductosComponent implements OnInit, AfterViewInit {
       if(result.isConfirmed) {
         this.productoService.delete(producto.idProducto).subscribe(
           response => {
-            this.productos = this.productos.filter(pro => pro !== producto);
+            // si se elimino el ultimo registro de la pagina, retrocede una pagina
+            if (this.productos.length === 1 && this.page > 0) {
+              this.page--;
+            }
+            this.getProductos();
             this.swalWithBootstrapButtons.fire(
               'Producto Eliminado',
               'El producto fué eliminado exitosamente.  Recuerde que el cambio no podrá ser revertido.',

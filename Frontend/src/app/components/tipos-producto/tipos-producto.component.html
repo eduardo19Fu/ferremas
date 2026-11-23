@@ -20,7 +20,14 @@
     </div>
     <div class="card-body table-responsive">
 
-        <div *ngIf="tipos?.length == 0" class="alert alert-info alert-dismissible">
+        <div class="row mb-2">
+            <div class="col-md-4 ml-md-auto">
+                <input type="search" class="form-control form-control-sm" placeholder="Buscar..."
+                    [ngModel]="search" (ngModelChange)="onBuscar($event)">
+            </div>
+        </div>
+
+        <div *ngIf="tipos?.length == 0 && !cargando" class="alert alert-info alert-dismissible">
             <h5>
                 <i class="icon fas fa-info"></i>
                 Atención!
@@ -29,7 +36,7 @@
             No existe ninguna categoría registrada en la base de datos!
         </div>
 
-        <table id="tipos" class="table table-hover table-striped table-bordered dataTable dtr-inline table-sm" role="grid"
+        <table id="tipos" class="table table-hover table-striped table-bordered table-sm"
             *ngIf="tipos?.length > 0">
             <thead>
                 <tr>
@@ -63,17 +70,10 @@
                     </td>
                 </tr>
             </tbody>
-
-            <tfoot>
-                <tr>
-                    <th>ID</th>
-                    <th>Tipo Producto</th>
-                    <th>Fecha de Registro</th>
-                    <th>Creador</th>
-                    <th *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_INVENTARIO')">Opciones</th>
-                </tr>
-            </tfoot>
         </table>
+
+        <app-paginacion [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+            (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
 </div>
 

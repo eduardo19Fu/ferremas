@@ -1,9 +1,11 @@
+import { Observable } from 'rxjs';
+import { Page } from 'src/app/models/page';
+import { ListaPaginada } from 'src/app/utils/lista-paginada';
 import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 
 import { Cliente } from 'src/app/models/cliente';
 import { ClienteService } from '../../../../services/cliente.service';
 
-import { JqueryConfigs } from 'src/app/utils/jquery/jquery-utils';
 
 @Component({
   selector: 'app-modal-buscar-cliente',
@@ -11,19 +13,25 @@ import { JqueryConfigs } from 'src/app/utils/jquery/jquery-utils';
   styles: [
   ]
 })
-export class ModalBuscarClienteComponent implements OnInit {
+export class ModalBuscarClienteComponent extends ListaPaginada<Cliente> implements OnInit {
 
   @Output() cliente = new EventEmitter<Cliente>();
 
   title: string;
-  clientes: Cliente[];
-
-  jqueryConfigs: JqueryConfigs = new JqueryConfigs();
 
   constructor(
     private clienteService: ClienteService
   ) {
+    super();
     this.title = 'Búsqueda de Clientes';
+  }
+
+  protected fetch(page: number, size: number, search: string): Observable<Page<Cliente>> {
+    return this.clienteService.getPaginado(page, size, search);
+  }
+
+  get clientes(): Cliente[] {
+    return this.items;
   }
 
   ngOnInit(): void {
@@ -31,12 +39,7 @@ export class ModalBuscarClienteComponent implements OnInit {
   }
 
   loadClientes(): void{
-    this.clienteService.getClientes().subscribe(
-      clientes => {
-        this.clientes = clientes;
-        this.jqueryConfigs.configDataTableModal('clientes');
-      }
-    );
+    this.cargar();
   }
 
   chooseCliente(cliente: Cliente): void {

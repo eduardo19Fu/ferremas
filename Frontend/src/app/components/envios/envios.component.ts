@@ -1,10 +1,12 @@
+import { Observable } from 'rxjs';
+import { Page } from 'src/app/models/page';
+import { ListaPaginada } from 'src/app/utils/lista-paginada';
 import { Component, OnInit } from '@angular/core';
 
 import { Envio } from 'src/app/models/envio';
 import { AuthService } from 'src/app/services/auth.service';
 import { EnvioService } from 'src/app/services/envios/envio.service';
 import { DetailService } from 'src/app/services/facturas/detail.service';
-import { JqueryConfigs } from 'src/app/utils/jquery/jquery-utils';
 
 import Swal from 'sweetalert2';
 import { Estado } from '../../models/estado';
@@ -15,7 +17,7 @@ import { Estado } from '../../models/estado';
   styles: [
   ]
 })
-export class EnviosComponent implements OnInit {
+export class EnviosComponent extends ListaPaginada<Envio> implements OnInit {
 
   swalWithBootstrapButtons = Swal.mixin({
     customClass: {
@@ -28,17 +30,22 @@ export class EnviosComponent implements OnInit {
   title: string;
   envioSeleccionado: Envio;
 
-  envios: Envio[];
-
-  jqueryConfigs: JqueryConfigs;
 
   constructor(
     private envioService: EnvioService,
     public auth: AuthService,
     public detailService: DetailService
   ) {
+    super();
     this.title = 'Listado de Envios';
-    this.jqueryConfigs = new JqueryConfigs();
+  }
+
+  protected fetch(page: number, size: number, search: string): Observable<Page<Envio>> {
+    return this.envioService.getPaginado(page, size, search);
+  }
+
+  get envios(): Envio[] {
+    return this.items;
   }
 
   ngOnInit(): void {
@@ -46,12 +53,7 @@ export class EnviosComponent implements OnInit {
   }
 
   getEnvios(): void {
-    this.envioService.getEnvios().subscribe(
-      envios => {
-        this.envios = envios;
-        this.jqueryConfigs.configDataTable('envios');
-      }
-    );
+    this.cargar();
   }
 
   despachar(envio: Envio): void {

@@ -27,4 +27,5 @@ public interface IMarcaProductoService {
 	// Eliminar registro de la base de datos
 	public void deleteMarca(Integer idMarca);
 
+	public org.springframework.data.domain.Page<MarcaProducto> search(String termino, org.springframework.data.domain.Pageable pageable);
 }

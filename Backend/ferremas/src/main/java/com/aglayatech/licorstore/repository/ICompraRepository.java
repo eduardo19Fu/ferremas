@@ -11,4 +11,7 @@ public interface ICompraRepository extends JpaRepository<Compra, Integer> {
 
     @Query("Select t from TipoComprobante t")
     List<TipoComprobante> findtipos();
+
+	// Busqueda paginada (sin distinguir mayusculas)
+	org.springframework.data.domain.Page<Compra> findByNoComprobanteContainingIgnoreCaseOrProveedorNombreContainingIgnoreCase(String nombre, String otro, org.springframework.data.domain.Pageable pageable);
 }

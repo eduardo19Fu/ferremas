@@ -21,4 +21,6 @@ public interface IClienteRepository extends JpaRepository<Cliente, Integer> {
 	@Query(value = "Select get_cant_clientes()", nativeQuery = true)
 	Integer getMaxClientes();
 
+	// Busqueda paginada (sin distinguir mayusculas)
+	org.springframework.data.domain.Page<Cliente> findByNombreContainingIgnoreCaseOrNitContainingIgnoreCase(String nombre, String otro, org.springframework.data.domain.Pageable pageable);
 }

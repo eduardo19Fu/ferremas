@@ -7,6 +7,7 @@ import { Factura } from 'src/app/models/factura';
 
 import { global } from '../global';
 import swal from 'sweetalert2';
+import { Page } from 'src/app/models/page';
 
 @Injectable({
   providedIn: 'root'
@@ -128,5 +129,18 @@ export class FacturaService {
         };
       })
     );
+  }
+
+  /** Listado paginado desde el backend, con busqueda opcional. */
+  getPaginado(page: number, size: number, search: string = '', fechaIni?: Date, fechaFin?: Date): Observable<Page<Factura>> {
+    const params: any = { page: String(page), size: String(size) };
+    if (search && search.trim()) {
+      params.search = search.trim();
+    }
+    if (fechaIni && fechaFin) {
+      params.fechaIni = fechaIni.toString();
+      params.fechaFin = fechaFin.toString();
+    }
+    return this.http.get<Page<Factura>>(`${this.url}/facturas/paginado`, { params });
   }
 }

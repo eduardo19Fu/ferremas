@@ -16,4 +16,8 @@ public interface INotaCreditoService {
     public NotaCredito save(NotaCredito notaCredito);
 
     public void delete(Integer idNota);
+
+	public org.springframework.data.domain.Page<NotaCredito> search(String termino, org.springframework.data.domain.Pageable pageable);
+
+    public org.springframework.data.domain.Page<NotaCredito> searchByEstado(String termino, Estado estado, org.springframework.data.domain.Pageable pageable);
 }

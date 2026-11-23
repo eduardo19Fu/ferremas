@@ -13,4 +13,6 @@ public interface IProveedorService {
     public Proveedor save(Proveedor proveedor);
 
     public Proveedor delete(Proveedor proveedor);
+
+	public org.springframework.data.domain.Page<Proveedor> search(String termino, org.springframework.data.domain.Pageable pageable);
 }

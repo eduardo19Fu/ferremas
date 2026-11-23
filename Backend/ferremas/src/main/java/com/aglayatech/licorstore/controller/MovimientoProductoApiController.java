@@ -140,4 +140,12 @@ public class MovimientoProductoApiController {
 	        e.printStackTrace();
 	    }
 	}
+
+	@GetMapping("/movimientos/paginado")
+	public org.springframework.data.domain.Page<MovimientoProducto> paginado(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size,
+			@RequestParam(required = false) String search) {
+		int pageSize = Math.min(Math.max(size, 1), 100);
+		return serviceMove.search(search, org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, org.springframework.data.domain.Sort.by("idMovimiento").descending()));
+	}
 }

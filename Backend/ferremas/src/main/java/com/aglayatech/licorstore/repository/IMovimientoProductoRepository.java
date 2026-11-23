@@ -27,4 +27,5 @@ public interface IMovimientoProductoRepository extends JpaRepository<MovimientoP
 	@Query(value = "Select tm from TipoMovimiento tm")
 	List<TipoMovimiento> findTiposMovimiento();
 
+	org.springframework.data.domain.Page<MovimientoProducto> findByProductoNombreContainingIgnoreCase(String nombre, org.springframework.data.domain.Pageable pageable);
 }

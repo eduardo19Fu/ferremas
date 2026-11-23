@@ -21,4 +21,5 @@ public interface ITipoProductoService {
 	
 	public void delete(Integer idtipo);
 
+	public org.springframework.data.domain.Page<TipoProducto> search(String termino, org.springframework.data.domain.Pageable pageable);
 }

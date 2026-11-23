@@ -1,9 +1,11 @@
+import { Observable } from 'rxjs';
+import { Page } from 'src/app/models/page';
+import { ListaPaginada } from 'src/app/utils/lista-paginada';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { DetailService } from 'src/app/services/facturas/detail.service';
 import { NotaCredito } from '../../models/nota-credito';
 import { NotasCreditoService } from '../../services/notas/notas-credito.service';
-import { JqueryConfigs } from '../../utils/jquery/jquery-utils';
 
 @Component({
   selector: 'app-notas-credito',
@@ -11,20 +13,26 @@ import { JqueryConfigs } from '../../utils/jquery/jquery-utils';
   styles: [
   ]
 })
-export class NotasCreditoComponent implements OnInit {
+export class NotasCreditoComponent extends ListaPaginada<NotaCredito> implements OnInit {
 
   title: string;
-  jQueryConfigs: JqueryConfigs;
 
-  notasCredito: NotaCredito[];
 
   constructor(
     private notasService: NotasCreditoService,
     public auth: AuthService,
     public detailService: DetailService
   ) {
+    super();
     this.title = 'Notas de Crédito';
-    this.jQueryConfigs = new JqueryConfigs();
+  }
+
+  protected fetch(page: number, size: number, search: string): Observable<Page<NotaCredito>> {
+    return this.notasService.getPaginado(page, size, search);
+  }
+
+  get notasCredito(): NotaCredito[] {
+    return this.items;
   }
 
   ngOnInit(): void {
@@ -32,10 +40,7 @@ export class NotasCreditoComponent implements OnInit {
   }
 
   loadNotasCredito(): void {
-    this.notasService.getNotasCredito().subscribe(res => {
-      this.notasCredito = res;
-      this.jQueryConfigs.configDataTable('notas-credito');
-    });
+    this.cargar();
   }
 
 }

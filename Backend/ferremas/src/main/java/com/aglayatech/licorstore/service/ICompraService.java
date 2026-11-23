@@ -17,4 +17,6 @@ public interface ICompraService {
 
     /****** Buscar Tipos de Comprobante ******/
     public List<TipoComprobante> getTipos();
+
+	public org.springframework.data.domain.Page<Compra> search(String termino, org.springframework.data.domain.Pageable pageable);
 }

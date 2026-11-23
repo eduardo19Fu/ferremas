@@ -382,4 +382,18 @@ public class FacturaApiController {
 
         serviceMovimiento.save(movimiento);
     }
+
+	@GetMapping("/facturas/paginado")
+	public org.springframework.data.domain.Page<Factura> paginado(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size,
+			@RequestParam(required = false) String search,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaIni,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
+		int pageSize = Math.min(Math.max(size, 1), 100);
+		org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, org.springframework.data.domain.Sort.by("idFactura").descending());
+		if (fechaIni != null && fechaFin != null) {
+			return serviceFactura.searchPorFechas(search, fechaIni, fechaFin, pageable);
+		}
+		return serviceFactura.search(search, pageable);
+	}
 }

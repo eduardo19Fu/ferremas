@@ -65,10 +65,12 @@ import { PagosParcialesComponent } from './components/pagos-parciales/pagos-parc
 import { CreatePagoParcialComponent } from './components/pagos-parciales/create-pago-parcial/create-pago-parcial.component';
 import { ModalNotasCreditoComponent } from './components/notas-credito/modal-notas-credito/modal-notas-credito.component';
 import { EliminarFacturasComponent } from './components/facturas/eliminar-facturas/eliminar-facturas.component';
+import { PaginacionComponent } from './components/shared/paginacion/paginacion.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    PaginacionComponent,
     LoginComponent,
     SidebarComponent,
     HeaderComponent,

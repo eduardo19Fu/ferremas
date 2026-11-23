@@ -1,3 +1,6 @@
+import { Observable } from 'rxjs';
+import { Page } from 'src/app/models/page';
+import { ListaPaginada } from 'src/app/utils/lista-paginada';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
@@ -7,7 +10,6 @@ import { TipoProductoService } from 'src/app/services/tipo-producto.service';
 import { TipoProducto } from 'src/app/models/tipo-producto';
 
 import swal from 'sweetalert2';
-import { JqueryConfigs } from '../../utils/jquery/jquery-utils';
 
 @Component({
   selector: 'app-tipos-producto',
@@ -15,12 +17,9 @@ import { JqueryConfigs } from '../../utils/jquery/jquery-utils';
   styles: [
   ]
 })
-export class TiposProductoComponent implements OnInit {
+export class TiposProductoComponent extends ListaPaginada<TipoProducto> implements OnInit {
 
   title: string;
-  tipos: TipoProducto[];
-
-  jQueryConfigs: JqueryConfigs;
 
   swalWithBootstrapButtons = swal.mixin({
     customClass: {
@@ -34,8 +33,16 @@ export class TiposProductoComponent implements OnInit {
     private tipoService: TipoProductoService,
     public auth: AuthService
   ) {
+    super();
     this.title = 'Listado de Categorías';
-    this.jQueryConfigs = new JqueryConfigs();
+  }
+
+  protected fetch(page: number, size: number, search: string): Observable<Page<TipoProducto>> {
+    return this.tipoService.getPaginado(page, size, search);
+  }
+
+  get tipos(): TipoProducto[] {
+    return this.items;
   }
 
   ngOnInit(): void {
@@ -45,13 +52,7 @@ export class TiposProductoComponent implements OnInit {
   // listado de tipos normal
   getTipos(): void {
     // tslint:disable-next-line: deprecation
-    this.tipoService.getTiposProducto().subscribe(
-      tiposProducto => {
-        this.tipos = tiposProducto;
-        this.jQueryConfigs.configDataTable('tipos');
-        this.jQueryConfigs.configToolTip();
-      }
-    );
+    this.cargar();
   }
 
   delete(tipoProducto: TipoProducto): void {
@@ -69,7 +70,7 @@ export class TiposProductoComponent implements OnInit {
         // tslint:disable-next-line: deprecation
         this.tipoService.delete(tipoProducto.idTipoProducto).subscribe(
           response => {
-            this.tipos = this.tipos.filter(cli => cli !== tipoProducto);
+            this.recargarTrasEliminar();
             this.swalWithBootstrapButtons.fire(
               '¡Tipo Producto Eliminado!',
               'El registro ha sido eliminado con éxito!',

@@ -20,6 +20,8 @@ public interface IProductoService {
 	public List<Producto> findAllByEstado(Estado estado);
 	
 	public Page<Producto> findAll(Pageable pageable);
+
+	public Page<Producto> search(String termino, Pageable pageable);
 	
 	public Producto findById(Integer idproducto);
 	
@@ -42,4 +44,5 @@ public interface IProductoService {
 
 	public byte[] reportInventory(String fecha) throws JRException, FileNotFoundException, SQLException, ParseException;
 
+	public org.springframework.data.domain.Page<Producto> searchByEstado(String termino, Estado estado, org.springframework.data.domain.Pageable pageable);
 }

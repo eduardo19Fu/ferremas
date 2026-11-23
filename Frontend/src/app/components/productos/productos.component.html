@@ -21,17 +21,23 @@
     </div>
     <div class="card-body table-responsive">
 
-        <div *ngIf="productos?.length == 0" class="alert alert-info alert-dismissible">
+        <div class="row mb-2">
+            <div class="col-md-4 ml-md-auto">
+                <input type="search" class="form-control form-control-sm" placeholder="Buscar por nombre o código..."
+                    [ngModel]="search" (ngModelChange)="onBuscar($event)">
+            </div>
+        </div>
+
+        <div *ngIf="productos?.length == 0 && !cargando" class="alert alert-info alert-dismissible">
             <h5>
                 <i class="icon fas fa-info"></i>
                 Atención!
             </h5>
 
-            No existe ningún producto registrado en la base de datos!
+            {{search ? "No se encontraron productos con el criterio de búsqueda." : "No existe ningún producto registrado en la base de datos!"}}
         </div>
 
-        <table id="productos" class="table table-hover table-striped table-bordered dataTable dtr-inline table-sm"
-            role="grid" *ngIf="productos?.length > 0">
+        <table class="table table-hover table-striped table-bordered table-sm" *ngIf="productos?.length > 0">
             <thead>
                 <tr>
                     <th>#</th>
@@ -47,32 +53,8 @@
             </thead>
 
             <tbody>
-                <tr *ngFor="let producto of productos">
-                    <td>
-                        <!-- <img (click)="abrirModal(producto)" *ngIf="producto?.imagen"
-                            src="http://localhost:8282/api/uploads/img/{{producto.imagen}}" alt="{{producto.imagen}}"
-                            class="img-thumbnail rounded" style="width: 45px; height: 48px; cursor: pointer;"> -->
-
-                        <!-- <img (click)="abrirModal(producto)" *ngIf="producto?.imagen"
-                            src="https://dimsa-app2.herokuapp.com/api/uploads/img/{{producto.imagen}}" alt="{{producto.imagen}}"
-                            class="img-thumbnail rounded" style="width: 45px; height: 48px; cursor: pointer;"> -->
-
-                        <!-- <img (click)="abrirModal(producto)" *ngIf="producto?.imagen"
-                            src="https://dimsa-new.herokuapp.com/api/uploads/img/{{producto.imagen}}" alt="{{producto.imagen}}"
-                            class="img-thumbnail rounded" style="width: 45px; height: 48px; cursor: pointer;"> -->
-
-                        <!-- <img (click)="abrirModal(producto)" *ngIf="!producto?.imagen"
-                            src="http://31.220.56.29:8282/images/no-image.jpg" alt="{{producto.imagen}}"
-                            class="img-thumbnail rounded" style="width: 45px; height: 48px; cursor: pointer;"> -->
-
-                        <!-- <img (click)="abrirModal(producto)" *ngIf="!producto?.imagen"
-                            src="https://dimsa-app2.herokuapp.com/images/no-image.jpg" alt="{{producto.imagen}}"
-                            class="img-thumbnail rounded" style="width: 45px; height: 48px; cursor: pointer;"> -->
-
-                        <!-- <img (click)="abrirModal(producto)" *ngIf="!producto?.imagen"
-                            src="https://dimsa-new.herokuapp.com/images/no-image.jpg" alt="{{producto.imagen}}"
-                            class="img-thumbnail rounded" style="width: 45px; height: 48px; cursor: pointer;"> -->
-                    </td>
+                <tr *ngFor="let producto of productos; let i = index">
+                    <td>{{page * size + i + 1}}</td>
                     <td>{{producto.codProducto}}</td>
                     <td>{{producto.nombre}}</td>
                     <td>{{producto.precioVenta}}</td>
@@ -105,20 +87,9 @@
                     </td>
                 </tr>
             </tbody>
-
-            <tfoot>
-                <tr>
-                    <th>#</th>
-                    <th>Codigo</th>
-                    <th>Nombre</th>
-                    <th>Precio</th>
-                    <th>Stock</th>
-                    <th>Tipo</th>
-                    <th>Marca</th>
-                    <th>Estado</th>
-                    <th>Opciones</th>
-                </tr>
-            </tfoot>
         </table>
+
+        <app-paginacion [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+            (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
 </div>

@@ -151,4 +151,18 @@ public class FacturaServiceImpl implements IFacturaService {
 	    return byteArrayOutputStream;
 	}
 
+	@Override
+	public org.springframework.data.domain.Page<Factura> search(String termino, org.springframework.data.domain.Pageable pageable) {
+		if (termino == null || termino.trim().isEmpty()) {
+			return repoFactura.findAll(pageable);
+		}
+		String t = termino.trim();
+		return repoFactura.findByClienteNombreContainingIgnoreCaseOrSerieContainingIgnoreCase(t, t, pageable);
+	}
+
+	@Override
+	public org.springframework.data.domain.Page<Factura> searchPorFechas(String termino, java.util.Date fechaIni, java.util.Date fechaFin, org.springframework.data.domain.Pageable pageable) {
+		String t = termino == null ? "" : termino.trim();
+		return repoFactura.searchPorFechas(t, fechaIni, fechaFin, pageable);
+	}
 }

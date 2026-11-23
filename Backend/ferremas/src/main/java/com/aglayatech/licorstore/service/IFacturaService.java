@@ -39,4 +39,7 @@ public interface IFacturaService {
 
 	public byte[] showBill2(Long idfactura) throws JRException, FileNotFoundException, SQLException;
 
+	public org.springframework.data.domain.Page<Factura> search(String termino, org.springframework.data.domain.Pageable pageable);
+
+	public org.springframework.data.domain.Page<Factura> searchPorFechas(String termino, java.util.Date fechaIni, java.util.Date fechaFin, org.springframework.data.domain.Pageable pageable);
 }

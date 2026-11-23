@@ -40,4 +40,13 @@ public class CompraServiceImpl implements ICompraService {
     public List<TipoComprobante> getTipos() {
         return this.compraRepository.findtipos();
     }
+
+	@Override
+	public org.springframework.data.domain.Page<Compra> search(String termino, org.springframework.data.domain.Pageable pageable) {
+		if (termino == null || termino.trim().isEmpty()) {
+			return compraRepository.findAll(pageable);
+		}
+		String t = termino.trim();
+		return compraRepository.findByNoComprobanteContainingIgnoreCaseOrProveedorNombreContainingIgnoreCase(t, t, pageable);
+	}
 }

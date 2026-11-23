@@ -1,3 +1,6 @@
+import { Observable } from 'rxjs';
+import { Page } from 'src/app/models/page';
+import { ListaPaginada } from 'src/app/utils/lista-paginada';
 import { Component, OnInit } from '@angular/core';
 
 import { Compra } from '../../models/compra';
@@ -5,7 +8,6 @@ import { CompraService } from 'src/app/services/compras/compra.service';
 import { AuthService } from '../../services/auth.service';
 import { DetailService } from '../../services/facturas/detail.service';
 
-import { JqueryConfigs } from '../../utils/jquery/jquery-utils';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -14,15 +16,12 @@ import Swal from 'sweetalert2';
   styles: [
   ]
 })
-export class ComprasComponent implements OnInit {
+export class ComprasComponent extends ListaPaginada<Compra> implements OnInit {
 
   title: string;
 
   compraSeleccionada: Compra;
 
-  compras: Compra[];
-
-  jqueryConfigs: JqueryConfigs;
 
   swalWithBootstrapButtons = Swal.mixin({
     customClass: {
@@ -37,8 +36,16 @@ export class ComprasComponent implements OnInit {
     public authService: AuthService,
     public detailService: DetailService
   ) {
+    super();
     this.title = 'Compras Realizadas';
-    this.jqueryConfigs = new JqueryConfigs();
+  }
+
+  protected fetch(page: number, size: number, search: string): Observable<Page<Compra>> {
+    return this.compraService.getPaginado(page, size, search);
+  }
+
+  get compras(): Compra[] {
+    return this.items;
   }
 
   ngOnInit(): void {
@@ -50,10 +57,7 @@ export class ComprasComponent implements OnInit {
    * 
    */
   getCompras(): void {
-    this.compraService.getCompras().subscribe(compras => {
-      this.compras = compras;
-      this.jqueryConfigs.configDataTable('compras');
-    });
+    this.cargar();
   }
 
   anularCompra(): void { 
@@ -73,7 +77,7 @@ export class ComprasComponent implements OnInit {
       if(result.isConfirmed) {
         this.compraService.delete(compra.idCompra).subscribe(
           response => {
-            this.compras = this.compras.filter(c => c !== compra);
+            this.recargarTrasEliminar();
             this.swalWithBootstrapButtons.fire(
               'Compra Eliminada',
               'La compra fué eliminada exitosamente.  Recuerde que el cambio no podrá ser revertido.',

@@ -51,4 +51,12 @@ public class CorrelativoServiceImpl implements ICorrelativoService {
 		return repoCorrelativo.findByUsuarioAndEstado(usuario, estado).orElse(null);
 	}
 
+	@Override
+	public org.springframework.data.domain.Page<Correlativo> search(String termino, org.springframework.data.domain.Pageable pageable) {
+		if (termino == null || termino.trim().isEmpty()) {
+			return repoCorrelativo.findAll(pageable);
+		}
+		String t = termino.trim();
+		return repoCorrelativo.findBySerieContainingIgnoreCase(t, pageable);
+	}
 }

@@ -48,4 +48,12 @@ public class TipoProductoServiceImpl implements ITipoProductoService {
 		repoTipo.deleteById(idtipo);
 	}
 
+	@Override
+	public org.springframework.data.domain.Page<TipoProducto> search(String termino, org.springframework.data.domain.Pageable pageable) {
+		if (termino == null || termino.trim().isEmpty()) {
+			return repoTipo.findAll(pageable);
+		}
+		String t = termino.trim();
+		return repoTipo.findByTipoProductoContainingIgnoreCase(t, pageable);
+	}
 }
