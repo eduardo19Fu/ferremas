@@ -22,9 +22,11 @@
     <div class="card-body table-responsive">
 
         <div class="row mb-2">
-            <div class="col-md-4 ml-md-auto">
+            <div class="col-md-4 ml-md-auto tm-buscador">
+                <i class="fas fa-search"></i>
                 <input type="search" class="form-control form-control-sm" placeholder="Buscar..."
                     [ngModel]="search" (ngModelChange)="onBuscar($event)">
+                <span class="tm-spinner" *ngIf="cargando"></span>
             </div>
         </div>
 
@@ -37,7 +39,10 @@
             No existe ninguna factura registrada en la base de datos!
         </div>
 
-        <table id="envios" class="table table-hover table-striped table-bordered table-sm" *ngIf="envios?.length > 0">
+        <div class="tabla-wrap">
+            <div class="tabla-progreso" *ngIf="cargando && envios?.length"></div>
+            <app-tabla-skeleton *ngIf="cargando && !envios?.length" [columnas]="7"></app-tabla-skeleton>
+            <table id="envios" class="table table-modern" [class.cargando]="cargando" *ngIf="envios?.length > 0">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -52,13 +57,13 @@
 
             <tbody>
                 <tr *ngFor="let envio of envios">
-                    <td>{{envio.idEnvio}}</td>
-                    <td>{{envio.cliente.nombre}}</td>
-                    <td>{{envio.fechaPedido | date: 'dd/MM/yyyy'}}</td>
-                    <td>{{envio.totalEnvio | currency: 'Q' : 'symbol'}}</td>
-                    <td>{{envio.abono}}</td>
-                    <td>{{envio.saldoPendiente | currency: 'Q' : 'symbol'}}</td>
-                    <td class="center-options" *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">
+                    <td data-label="ID">{{envio.idEnvio}}</td>
+                    <td data-label="Cliente">{{envio.cliente.nombre}}</td>
+                    <td data-label="Fecha">{{envio.fechaPedido | date: 'dd/MM/yyyy'}}</td>
+                    <td data-label="Total">{{envio.totalEnvio | currency: 'Q' : 'symbol'}}</td>
+                    <td data-label="Abono">{{envio.abono}}</td>
+                    <td data-label="Saldo Pendiente">{{envio.saldoPendiente | currency: 'Q' : 'symbol'}}</td>
+                    <td data-label="Opciones" class="center-options" *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">
 
                         <button type="button" class="btn bg-gradient-success margin" name="detail" placement="top" ngbTooltip="Detalle de Envío"
                             (click)="abrirDetalle(envio)">
@@ -83,6 +88,7 @@
                 </tr>
             </tbody>
         </table>
+        </div>
 
         <app-paginacion [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
             (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>

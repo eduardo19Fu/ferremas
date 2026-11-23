@@ -26,9 +26,11 @@
     <div class="card-body table-responsive">
 
         <div class="row mb-2">
-            <div class="col-md-4 ml-md-auto">
+            <div class="col-md-4 ml-md-auto tm-buscador">
+                <i class="fas fa-search"></i>
                 <input type="search" class="form-control form-control-sm" placeholder="Buscar..."
                     [ngModel]="search" (ngModelChange)="onBuscar($event)">
+                <span class="tm-spinner" *ngIf="cargando"></span>
             </div>
         </div>
 
@@ -41,7 +43,10 @@
             No existe ningún pago registrado en la base de datos!
         </div>
 
-        <table id="pagos-parciales" class="table table-hover table-striped table-bordered table-sm" 
+        <div class="tabla-wrap">
+            <div class="tabla-progreso" *ngIf="cargando && pagosParciales?.length"></div>
+            <app-tabla-skeleton *ngIf="cargando && !pagosParciales?.length" [columnas]="8"></app-tabla-skeleton>
+            <table id="pagos-parciales" class="table table-modern" [class.cargando]="cargando" 
             *ngIf="pagosParciales?.length > 0">
 
             <thead>
@@ -59,14 +64,14 @@
 
             <tbody>
                 <tr *ngFor="let pago of pagosParciales">
-                    <td>{{pago.idPagoParcial}}</td>
-                    <td>{{pago.fechaPago}}</td>
-                    <td>{{pago.fechaProximoPago}}</td>
-                    <td>{{pago.pago}}</td>
-                    <td>{{pago.notaCredito.idNotaCredito}}</td>
-                    <td>{{pago.notaCredito.cliente.nombre}}</td>
-                    <td>{{pago.fechaRegistro | date: 'dd/MM/yyyy - hh:mm'}}</td>
-                    <td *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')" class="center-options">
+                    <td data-label="ID">{{pago.idPagoParcial}}</td>
+                    <td data-label="Fecha de Pago">{{pago.fechaPago}}</td>
+                    <td data-label="Fecha Pr&oacute;ximo Pago">{{pago.fechaProximoPago}}</td>
+                    <td data-label="Total del Pago">{{pago.pago}}</td>
+                    <td data-label="Nota de Cr&eacute;dito">{{pago.notaCredito.idNotaCredito}}</td>
+                    <td data-label="Cliente">{{pago.notaCredito.cliente.nombre}}</td>
+                    <td data-label="Estado">{{pago.fechaRegistro | date: 'dd/MM/yyyy - hh:mm'}}</td>
+                    <td data-label="Opciones" *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')" class="center-options">
 
                         <button class="btn bg-gradient-danger margin" type="button" name="delete" (click)="delete(pago)"
                         placement="top" ngbTooltip="Eliminar Cliente" title="Eliminar">
@@ -77,6 +82,7 @@
                 </tr>
             </tbody>
         </table>
+        </div>
 
         <app-paginacion [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
             (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>

@@ -76,9 +76,11 @@
     <div class="card-body table-responsive">
 
         <div class="row mb-2">
-            <div class="col-md-4 ml-md-auto">
+            <div class="col-md-4 ml-md-auto tm-buscador">
+                <i class="fas fa-search"></i>
                 <input type="search" class="form-control form-control-sm" placeholder="Buscar por cliente o serie..."
                     [ngModel]="search" (ngModelChange)="onBuscar($event)">
+                <span class="tm-spinner" *ngIf="cargando"></span>
             </div>
         </div>
 
@@ -91,7 +93,10 @@
             No existe ninguna factura registrada en la base de datos!
         </div>
 
-        <table id="facturas" class="table table-hover table-striped table-bordered table-sm" *ngIf="facturas?.length > 0">
+        <div class="tabla-wrap">
+            <div class="tabla-progreso" *ngIf="cargando && facturas?.length"></div>
+            <app-tabla-skeleton *ngIf="cargando && !facturas?.length" [columnas]="7"></app-tabla-skeleton>
+            <table id="facturas" class="table table-modern" [class.cargando]="cargando" *ngIf="facturas?.length > 0">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -106,18 +111,18 @@
 
             <tbody>
                 <tr *ngFor="let factura of facturas">
-                    <td>{{factura.idFactura}}</td>
-                    <td>{{factura.noFactura}}</td>
-                    <td>{{factura.fecha | date: 'dd/MM/yyyy - hh:mm'}}</td>
-                    <td>{{factura.total | currency: 'Q' : 'symbol'}}</td>
-                    <td>
+                    <td data-label="ID">{{factura.idFactura}}</td>
+                    <td data-label="No. Factura">{{factura.noFactura}}</td>
+                    <td data-label="Fecha">{{factura.fecha | date: 'dd/MM/yyyy - hh:mm'}}</td>
+                    <td data-label="Total">{{factura.total | currency: 'Q' : 'symbol'}}</td>
+                    <td data-label="Estado">
                         <span class="badge"
                             [ngClass]="{'badge-success': factura.estado.idEstado === 3, 'badge-danger': factura.estado.idEstado === 4}">
                             {{factura.estado.estado}}
                         </span>
                     </td>
-                    <td>{{factura.usuario.usuario}}</td>
-                    <td class="center-options" *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">
+                    <td data-label="Emisor">{{factura.usuario.usuario}}</td>
+                    <td data-label="Opciones" class="center-options" *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">
 
                         <button class="btn bg-gradient-success margin" name="detail" type="button" placement="top" ngbTooltip="Detalle"
                             (click)="abrirDetalle(factura)">
@@ -139,6 +144,7 @@
                 </tr>
             </tbody>
         </table>
+        </div>
 
         <app-paginacion [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
             (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>

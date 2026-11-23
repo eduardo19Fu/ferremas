@@ -28,9 +28,11 @@
     <div class="card-body table-responsive">
 
         <div class="row mb-2">
-            <div class="col-md-4 ml-md-auto">
+            <div class="col-md-4 ml-md-auto tm-buscador">
+                <i class="fas fa-search"></i>
                 <input type="search" class="form-control form-control-sm" placeholder="Buscar..."
                     [ngModel]="search" (ngModelChange)="onBuscar($event)">
+                <span class="tm-spinner" *ngIf="cargando"></span>
             </div>
         </div>
 
@@ -43,7 +45,10 @@
             No existe ningún correlativo registrado en la base de datos!
         </div>
 
-        <table id="correlativos" class="table table-hover table-striped table-bordered table-sm" 
+        <div class="tabla-wrap">
+            <div class="tabla-progreso" *ngIf="cargando && correlativos?.length"></div>
+            <app-tabla-skeleton *ngIf="cargando && !correlativos?.length" [columnas]="8"></app-tabla-skeleton>
+            <table id="correlativos" class="table table-modern" [class.cargando]="cargando" 
             *ngIf="correlativos?.length > 0">
             <thead>
                 <tr>
@@ -59,13 +64,13 @@
             </thead>
             <tbody>
                 <tr *ngFor="let correlativo of correlativos">
-                    <td>{{correlativo.idCorrelativo}}</td>
-                    <td>{{correlativo.correlativoInicial}}</td>
-                    <td>{{correlativo.correlativoFinal}}</td>
-                    <td>{{correlativo.correlativoActual}}</td>
-                    <td>{{correlativo.fechaCreacion | date: 'dd/MM/yyyy - hh:mm'}}</td>
-                    <td>{{correlativo.usuario.usuario}}</td>
-                    <td>
+                    <td data-label="ID">{{correlativo.idCorrelativo}}</td>
+                    <td data-label="Corr. Inicial">{{correlativo.correlativoInicial}}</td>
+                    <td data-label="Corr. Final">{{correlativo.correlativoFinal}}</td>
+                    <td data-label="Corr. Actual">{{correlativo.correlativoActual}}</td>
+                    <td data-label="Fecha Registro">{{correlativo.fechaCreacion | date: 'dd/MM/yyyy - hh:mm'}}</td>
+                    <td data-label="Usuario Asignado">{{correlativo.usuario.usuario}}</td>
+                    <td data-label="Estado">
                         <span class="badge" 
                             [ngClass]="{'badge-primary': correlativo.estado.estado === 'ACTIVO',
                                 'badge-danger' : correlativo.estado.estado === 'ANULADO',
@@ -73,7 +78,7 @@
                             {{correlativo.estado.estado}}
                         </span>
                     </td>
-                    <td *ngIf="authService.hasRole('ROLE_ADMIN')">
+                    <td data-label="Opciones" *ngIf="authService.hasRole('ROLE_ADMIN')">
 
                         <button class="btn bg-gradient-info margin" name="edit" type="button" placement="top" ngbTooltip="Editar"
                             [routerLink]="['/facturas/correlativos/create', correlativo.idCorrelativo]">
@@ -89,6 +94,7 @@
                 </tr>
             </tbody>
         </table>
+        </div>
 
         <app-paginacion [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
             (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>

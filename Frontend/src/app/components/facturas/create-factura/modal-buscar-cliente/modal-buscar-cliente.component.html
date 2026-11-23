@@ -11,14 +11,19 @@
             <div class="card-body">
                 <div class="modal-body table-responsive">
                     <div class="row mb-2">
-                        <div class="col-md-5 ml-md-auto">
-                            <input type="search" class="form-control form-control-sm" placeholder="Buscar por nombre o NIT..."
+                        <div class="col-md-5 ml-md-auto tm-buscador">
+                            <i class="fas fa-search"></i>
+                <input type="search" class="form-control form-control-sm" placeholder="Buscar por nombre o NIT..."
                                 [ngModel]="search" (ngModelChange)="onBuscar($event)">
+                <span class="tm-spinner" *ngIf="cargando"></span>
                         </div>
                     </div>
 
-                    <table id="clientes"
-                        class="table table-hover table-striped table-bordered table-sm"
+                    <div class="tabla-wrap">
+            <div class="tabla-progreso" *ngIf="cargando && clientes?.length"></div>
+            <app-tabla-skeleton *ngIf="cargando && !clientes?.length" [columnas]="5"></app-tabla-skeleton>
+            <table id="clientes"
+                        class="table table-modern" [class.cargando]="cargando"
                         *ngIf="clientes?.length > 0">
                         <thead>
                             <tr>
@@ -32,11 +37,11 @@
 
                         <tbody>
                             <tr *ngFor="let cliente of clientes">
-                                <td>{{cliente.idCliente}}</td>
-                                <td>{{cliente.nombre}}</td>
-                                <td>{{cliente.nit}}</td>
-                                <td>{{cliente.direccion}}</td>
-                                <td class="center-options">
+                                <td data-label="ID">{{cliente.idCliente}}</td>
+                                <td data-label="Nombre">{{cliente.nombre}}</td>
+                                <td data-label="NIT">{{cliente.nit}}</td>
+                                <td data-label="Dirección">{{cliente.direccion}}</td>
+                                <td data-label="Opciones" class="center-options">
                                     <button class="btn bg-gradient-cyan" (click)="chooseCliente(cliente)">
                                         Elegir
                                     </button>
@@ -45,6 +50,7 @@
                         </tbody>
 
                     </table>
+        </div>
 
                     <div class="alert alert-info" *ngIf="items.length === 0 && !cargando">No se encontraron registros.</div>
 
