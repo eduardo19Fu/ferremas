@@ -25,8 +25,8 @@ export class PagosParcialesComponent extends ListaPaginada<PagoParcial> implemen
     this.title = 'Pagos Parciales';
   }
 
-  protected fetch(page: number, size: number, search: string): Observable<Page<PagoParcial>> {
-    return this.pagosService.getPaginado(page, size, search);
+  protected fetch(page: number, size: number, search: string, sort: string): Observable<Page<PagoParcial>> {
+    return this.pagosService.getPaginado(page, size, search, sort);
   }
 
   get pagosParciales(): PagoParcial[] {

@@ -102,10 +102,13 @@ export class UsuarioService {
   }
 
   /** Listado paginado desde el backend, con busqueda opcional. */
-  getPaginado(page: number, size: number, search: string = ''): Observable<Page<Usuario>> {
+  getPaginado(page: number, size: number, search: string = '', sort: string = ''): Observable<Page<Usuario>> {
     const params: any = { page: String(page), size: String(size) };
     if (search && search.trim()) {
       params.search = search.trim();
+    }
+    if (sort) {
+      params.sort = sort;
     }
     return this.http.get<Page<Usuario>>(`${this.url}/usuarios/paginado`, { params });
   }

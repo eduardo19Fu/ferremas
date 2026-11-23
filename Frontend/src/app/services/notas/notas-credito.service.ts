@@ -57,13 +57,16 @@ export class NotasCreditoService {
   }
 
   /** Listado paginado desde el backend, con busqueda opcional. */
-  getPaginado(page: number, size: number, search: string = '', activas: boolean = false): Observable<Page<NotaCredito>> {
+  getPaginado(page: number, size: number, search: string = '', activas: boolean = false, sort: string = ''): Observable<Page<NotaCredito>> {
     const params: any = { page: String(page), size: String(size) };
     if (search && search.trim()) {
       params.search = search.trim();
     }
     if (activas) {
       params.activas = 'true';
+    }
+    if (sort) {
+      params.sort = sort;
     }
     return this.httpClient.get<Page<NotaCredito>>(`${this.url}/notas-credito/paginado`, { params });
   }

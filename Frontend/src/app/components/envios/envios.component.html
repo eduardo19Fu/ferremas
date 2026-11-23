@@ -16,12 +16,12 @@
 </section>
 
 <div class="card">
-    <div class="card-header">
-        Listado de Tipos de Identificación
-    </div>
-    <div class="card-body table-responsive">
+<div class="card-body table-responsive">
 
         <div class="row mb-2">
+            <div class="col-md-auto tm-toolbar-size">
+                <app-tamanio-pagina [size]="size" (sizeChange)="onSizeChange($event)"></app-tamanio-pagina>
+            </div>
             <div class="col-md-4 ml-md-auto tm-buscador">
                 <i class="fas fa-search"></i>
                 <input type="search" class="form-control form-control-sm" placeholder="Buscar..."
@@ -39,12 +39,12 @@
             <table id="envios" class="table table-modern" [class.cargando]="cargando" *ngIf="envios?.length > 0">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Cliente</th>
-                    <th>Fecha</th>
-                    <th>Total</th>
-                    <th>Abono</th>
-                    <th>Saldo Pendiente</th>
+                    <th tmSortable="idEnvio" [sort]="sort" (tmSort)="onSort($event)">ID</th>
+                    <th tmSortable="cliente.nombre" [sort]="sort" (tmSort)="onSort($event)">Cliente</th>
+                    <th tmSortable="fechaPedido" [sort]="sort" (tmSort)="onSort($event)">Fecha</th>
+                    <th tmSortable="totalEnvio" [sort]="sort" (tmSort)="onSort($event)">Total</th>
+                    <th tmSortable="abono" [sort]="sort" (tmSort)="onSort($event)">Abono</th>
+                    <th tmSortable="saldoPendiente" [sort]="sort" (tmSort)="onSort($event)">Saldo Pendiente</th>
                     <th *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">Opciones</th>
                 </tr>
             </thead>
@@ -84,7 +84,7 @@
         </table>
         </div>
 
-        <app-paginacion [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+        <app-paginacion [mostrarTamanio]="false" [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
             (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
 </div>

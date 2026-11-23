@@ -1,5 +1,5 @@
 <div class="tm-paginacion">
-    <label class="tm-pag-size mb-0">
+    <label class="tm-pag-size mb-0" *ngIf="mostrarTamanio">
         <span>Mostrar</span>
         <select class="custom-select custom-select-sm" [ngModel]="size" (ngModelChange)="cambiarTamanio($event)">
             <option *ngFor="let s of sizes" [value]="s">{{s}}</option>

@@ -3,6 +3,7 @@ import { Observable, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { Page } from '../models/page';
+import { TablaOrden } from '../components/shared/th-sortable/th-sortable.directive';
 
 /**
  * Base para pantallas de listado cuyos datos se sirven paginados desde el backend.
@@ -17,6 +18,7 @@ export abstract class ListaPaginada<T> implements OnDestroy {
   totalElements = 0;
   totalPages = 0;
   search = '';
+  sort: TablaOrden | null = null;
   cargando = false;
 
   private busqueda$ = new Subject<string>();
@@ -27,11 +29,11 @@ export abstract class ListaPaginada<T> implements OnDestroy {
       this.cargar();
     });
 
-  protected abstract fetch(page: number, size: number, search: string): Observable<Page<T>>;
+  protected abstract fetch(page: number, size: number, search: string, sort: string): Observable<Page<T>>;
 
   cargar(): void {
     this.cargando = true;
-    this.fetch(this.page, this.size, this.search).subscribe(
+    this.fetch(this.page, this.size, this.search, this.sortParam).subscribe(
       response => {
         this.items = response.content;
         this.totalElements = response.totalElements;
@@ -41,6 +43,24 @@ export abstract class ListaPaginada<T> implements OnDestroy {
       },
       () => { this.cargando = false; }
     );
+  }
+
+  /** Valor del parametro `sort` para el backend ("campo,dir"), o vacio si no hay orden elegido. */
+  get sortParam(): string {
+    return this.sort ? `${this.sort.key},${this.sort.dir}` : '';
+  }
+
+  /** Ciclo por columna: ascendente -> descendente -> sin orden (vuelve al orden por defecto). */
+  onSort(key: string): void {
+    if (!this.sort || this.sort.key !== key) {
+      this.sort = { key, dir: 'asc' };
+    } else if (this.sort.dir === 'asc') {
+      this.sort = { key, dir: 'desc' };
+    } else {
+      this.sort = null;
+    }
+    this.page = 0;
+    this.cargar();
   }
 
   onBuscar(valor: string): void {

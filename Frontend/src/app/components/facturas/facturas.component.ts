@@ -49,8 +49,8 @@ export class FacturasComponent extends ListaPaginada<Factura> implements OnInit 
     this.usuario = auth.usuario;
   }
 
-  protected fetch(page: number, size: number, search: string): Observable<Page<Factura>> {
-    return this.facturaService.getPaginado(page, size, search, this.fechaAplicadaIni, this.fechaAplicadaFin);
+  protected fetch(page: number, size: number, search: string, sort: string): Observable<Page<Factura>> {
+    return this.facturaService.getPaginado(page, size, search, this.fechaAplicadaIni, this.fechaAplicadaFin, sort);
   }
 
   get facturas(): Factura[] {

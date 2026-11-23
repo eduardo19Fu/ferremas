@@ -39,8 +39,8 @@ export class CorrelativosComponent extends ListaPaginada<Correlativo> implements
     this.title = 'Listado de Correlativos';
   }
 
-  protected fetch(page: number, size: number, search: string): Observable<Page<Correlativo>> {
-    return this.correlativoService.getPaginado(page, size, search);
+  protected fetch(page: number, size: number, search: string, sort: string): Observable<Page<Correlativo>> {
+    return this.correlativoService.getPaginado(page, size, search, sort);
   }
 
   get correlativos(): Correlativo[] {

@@ -30,10 +30,13 @@ export class MovimientosProductoService {
   }
 
   /** Movimientos paginados desde el backend, con busqueda opcional por nombre de producto. */
-  getPaginado(page: number, size: number, search: string = ''): Observable<Page<MovimientoProducto>> {
+  getPaginado(page: number, size: number, search: string = '', sort: string = ''): Observable<Page<MovimientoProducto>> {
     const params: any = { page: String(page), size: String(size) };
     if (search && search.trim()) {
       params.search = search.trim();
+    }
+    if (sort) {
+      params.sort = sort;
     }
     return this.http.get<Page<MovimientoProducto>>(`${this.url}/movimientos/paginado`, { params });
   }

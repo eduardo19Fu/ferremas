@@ -39,8 +39,8 @@ export class ProveedoresComponent extends ListaPaginada<Proveedor> implements On
     this.title = 'Listado de Proveedores';
   }
 
-  protected fetch(page: number, size: number, search: string): Observable<Page<Proveedor>> {
-    return this.proveedorService.getPaginado(page, size, search);
+  protected fetch(page: number, size: number, search: string, sort: string): Observable<Page<Proveedor>> {
+    return this.proveedorService.getPaginado(page, size, search, sort);
   }
 
   get proveedores(): Proveedor[] {

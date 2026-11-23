@@ -203,11 +203,15 @@ public class CorrelativoApiController {
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 	}
 
+	private static final java.util.Map<String, String> SORT_CORRELATIVO = com.aglayatech.licorstore.generics.SortParam.keys("idCorrelativo", "correlativoInicial", "correlativoFinal", "correlativoActual", "fechaCreacion", "usuario.usuario", "estado.estado");
+
 	@GetMapping("/correlativos/paginado")
 	public org.springframework.data.domain.Page<Correlativo> paginado(@org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
 			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "10") int size,
-			@org.springframework.web.bind.annotation.RequestParam(required = false) String search) {
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String search,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String sort) {
 		int pageSize = Math.min(Math.max(size, 1), 100);
-		return serviceCorrelativo.search(search, org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, org.springframework.data.domain.Sort.by("idCorrelativo").descending()));
+		org.springframework.data.domain.Sort order = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_CORRELATIVO, org.springframework.data.domain.Sort.by("idCorrelativo").descending(), "idCorrelativo");
+		return serviceCorrelativo.search(search, org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, order));
 	}
 }

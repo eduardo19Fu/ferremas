@@ -20,12 +20,12 @@
 </section>
 
 <div class="card">
-    <div class="card-header">
-        Listado de Notas de Cr&eacute;dito Creadas
-    </div>
-    <div class="card-body table-responsive">
+<div class="card-body table-responsive">
 
         <div class="row mb-2">
+            <div class="col-md-auto tm-toolbar-size">
+                <app-tamanio-pagina [size]="size" (sizeChange)="onSizeChange($event)"></app-tamanio-pagina>
+            </div>
             <div class="col-md-4 ml-md-auto tm-buscador">
                 <i class="fas fa-search"></i>
                 <input type="search" class="form-control form-control-sm" placeholder="Buscar por cliente..."
@@ -43,15 +43,15 @@
             <table id="notas-credito" class="table table-modern" [class.cargando]="cargando" *ngIf="notasCredito?.length > 0">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Cliente</th>
-                    <th>Abono</th>
-                    <th>Total</th>
-                    <th>Restante</th>
-                    <th>Emisor</th>
-                    <th>Fecha Creaci&oacute;n</th>
-                    <th>Fecha L&iacute;mite de Pago</th>
-                    <th>Estado</th>
+                    <th tmSortable="idNotaCredito" [sort]="sort" (tmSort)="onSort($event)">ID</th>
+                    <th tmSortable="cliente.nombre" [sort]="sort" (tmSort)="onSort($event)">Cliente</th>
+                    <th tmSortable="abono" [sort]="sort" (tmSort)="onSort($event)">Abono</th>
+                    <th tmSortable="total" [sort]="sort" (tmSort)="onSort($event)">Total</th>
+                    <th tmSortable="restante" [sort]="sort" (tmSort)="onSort($event)">Restante</th>
+                    <th tmSortable="usuario.usuario" [sort]="sort" (tmSort)="onSort($event)">Emisor</th>
+                    <th tmSortable="fechaCreacion" [sort]="sort" (tmSort)="onSort($event)">Fecha Creaci&oacute;n</th>
+                    <th tmSortable="fechaPagoLimite" [sort]="sort" (tmSort)="onSort($event)">Fecha L&iacute;mite de Pago</th>
+                    <th tmSortable="estado.estado" [sort]="sort" (tmSort)="onSort($event)">Estado</th>
                     <th *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">Opciones</th>
                 </tr>
             </thead>
@@ -96,7 +96,7 @@
         </table>
         </div>
 
-        <app-paginacion [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+        <app-paginacion [mostrarTamanio]="false" [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
             (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
 </div>

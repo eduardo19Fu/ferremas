@@ -3,6 +3,7 @@ import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { Producto } from 'src/app/models/producto';
+import { TablaOrden } from '../shared/th-sortable/th-sortable.directive';
 
 import { AuthService } from 'src/app/services/auth.service';
 import { ProductoService } from 'src/app/services/producto.service';
@@ -29,6 +30,7 @@ export class ProductosComponent implements OnInit, OnDestroy {
   totalElements = 0;
   totalPages = 0;
   search = '';
+  sort: TablaOrden | null = null;
   cargando = false;
 
   private busqueda$ = new Subject<string>();
@@ -72,7 +74,7 @@ export class ProductosComponent implements OnInit, OnDestroy {
 
   getProductos(): void {
     this.cargando = true;
-    this.productoService.getProductosPaginado(this.page, this.size, this.search).subscribe(
+    this.productoService.getProductosPaginado(this.page, this.size, this.search, false, this.sort ? `${this.sort.key},${this.sort.dir}` : '').subscribe(
       response => {
         this.productos = response.content;
         this.totalElements = response.totalElements;
@@ -82,6 +84,19 @@ export class ProductosComponent implements OnInit, OnDestroy {
       },
       error => { this.cargando = false; }
     );
+  }
+
+  /** Ciclo por columna: ascendente -> descendente -> sin orden (orden por defecto). */
+  onSort(key: string): void {
+    if (!this.sort || this.sort.key !== key) {
+      this.sort = { key, dir: 'asc' };
+    } else if (this.sort.dir === 'asc') {
+      this.sort = { key, dir: 'desc' };
+    } else {
+      this.sort = null;
+    }
+    this.page = 0;
+    this.getProductos();
   }
 
   onBuscar(valor: string): void {

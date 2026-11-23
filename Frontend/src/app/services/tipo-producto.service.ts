@@ -82,10 +82,13 @@ export class TipoProductoService {
   }
 
   /** Listado paginado desde el backend, con busqueda opcional. */
-  getPaginado(page: number, size: number, search: string = ''): Observable<Page<TipoProducto>> {
+  getPaginado(page: number, size: number, search: string = '', sort: string = ''): Observable<Page<TipoProducto>> {
     const params: any = { page: String(page), size: String(size) };
     if (search && search.trim()) {
       params.search = search.trim();
+    }
+    if (sort) {
+      params.sort = sort;
     }
     return this.http.get<Page<TipoProducto>>(`${this.url}/tipos-producto/paginado`, { params });
   }

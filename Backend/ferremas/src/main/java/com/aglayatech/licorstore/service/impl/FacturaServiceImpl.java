@@ -153,10 +153,8 @@ public class FacturaServiceImpl implements IFacturaService {
 
 	@Override
 	public org.springframework.data.domain.Page<Factura> search(String termino, org.springframework.data.domain.Pageable pageable) {
-		if (termino == null || termino.trim().isEmpty()) {
-			return repoFactura.findAll(pageable);
-		}
-		String t = termino.trim();
+		// Con termino vacio la consulta devuelve todas las facturas (LEFT JOIN) y permite ordenar por cliente
+		String t = termino == null ? "" : termino.trim();
 		return repoFactura.searchFacturas(t, pageable);
 	}
 

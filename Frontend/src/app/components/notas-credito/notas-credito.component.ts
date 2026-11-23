@@ -27,8 +27,8 @@ export class NotasCreditoComponent extends ListaPaginada<NotaCredito> implements
     this.title = 'Notas de Crédito';
   }
 
-  protected fetch(page: number, size: number, search: string): Observable<Page<NotaCredito>> {
-    return this.notasService.getPaginado(page, size, search);
+  protected fetch(page: number, size: number, search: string, sort: string): Observable<Page<NotaCredito>> {
+    return this.notasService.getPaginado(page, size, search, false, sort);
   }
 
   get notasCredito(): NotaCredito[] {

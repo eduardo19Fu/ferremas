@@ -76,17 +76,21 @@ public class ProductoApiController {
 		return serviceProducto.findAll(PageRequest.of(page, 5));
 	}
 	
+	private static final java.util.Map<String, String> SORT_PRODUCTO = com.aglayatech.licorstore.generics.SortParam.keys("idProducto", "codProducto", "nombre", "precioVenta", "stock", "tipoProducto.tipoProducto", "marcaProducto.marca", "estado.estado");
+
 	@GetMapping(value = "/productos/paginado")
-	public Page<Producto> paginado(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size,
-			@RequestParam(required = false) String search,
-			@RequestParam(defaultValue = "false") boolean soloActivos) {
+	public org.springframework.data.domain.Page<Producto> paginado(@org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
+			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "10") int size,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String search,
+			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "false") boolean soloActivos,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String sort) {
 		int pageSize = Math.min(Math.max(size, 1), 100);
+		org.springframework.data.domain.Sort order = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_PRODUCTO, org.springframework.data.domain.Sort.by("nombre").ascending(), "idProducto");
+		org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, order);
 		if (soloActivos) {
-			return serviceProducto.searchByEstado(search, serviceEstado.findById(1),
-					PageRequest.of(Math.max(page, 0), pageSize, Sort.by("nombre").ascending()));
+			return serviceProducto.searchByEstado(search, serviceEstado.findById(1), pageable);
 		}
-		return serviceProducto.search(search, PageRequest.of(Math.max(page, 0), pageSize, Sort.by("nombre").ascending()));
+		return serviceProducto.search(search, pageable);
 	}
 
 	@GetMapping(value = "/productos-activos")

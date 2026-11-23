@@ -68,6 +68,8 @@ import { EliminarFacturasComponent } from './components/facturas/eliminar-factur
 import { PaginacionComponent } from './components/shared/paginacion/paginacion.component';
 import { TablaSkeletonComponent } from './components/shared/tabla-skeleton/tabla-skeleton.component';
 import { SinRegistrosComponent } from './components/shared/sin-registros/sin-registros.component';
+import { ThSortableDirective } from './components/shared/th-sortable/th-sortable.directive';
+import { TamanioPaginaComponent } from './components/shared/tamanio-pagina/tamanio-pagina.component';
 
 @NgModule({
   declarations: [
@@ -75,6 +77,8 @@ import { SinRegistrosComponent } from './components/shared/sin-registros/sin-reg
     PaginacionComponent,
     TablaSkeletonComponent,
     SinRegistrosComponent,
+    ThSortableDirective,
+    TamanioPaginaComponent,
     LoginComponent,
     SidebarComponent,
     HeaderComponent,

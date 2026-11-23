@@ -29,13 +29,16 @@ export class ProductoService {
   }
 
   /** Productos paginados desde el backend, con busqueda opcional por nombre o codigo. */
-  getProductosPaginado(page: number, size: number, search: string = '', soloActivos: boolean = false): Observable<Page<Producto>> {
+  getProductosPaginado(page: number, size: number, search: string = '', soloActivos: boolean = false, sort: string = ''): Observable<Page<Producto>> {
     const params: any = { page: String(page), size: String(size) };
     if (search && search.trim()) {
       params.search = search.trim();
     }
     if (soloActivos) {
       params.soloActivos = 'true';
+    }
+    if (sort) {
+      params.sort = sort;
     }
     return this.http.get<Page<Producto>>(`${this.url}/productos/paginado`, { params });
   }

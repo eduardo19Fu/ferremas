@@ -40,8 +40,8 @@ export class ComprasComponent extends ListaPaginada<Compra> implements OnInit {
     this.title = 'Compras Realizadas';
   }
 
-  protected fetch(page: number, size: number, search: string): Observable<Page<Compra>> {
-    return this.compraService.getPaginado(page, size, search);
+  protected fetch(page: number, size: number, search: string, sort: string): Observable<Page<Compra>> {
+    return this.compraService.getPaginado(page, size, search, sort);
   }
 
   get compras(): Compra[] {

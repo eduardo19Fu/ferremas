@@ -36,8 +36,8 @@ export class PaisesComponent extends ListaPaginada<Pais> implements OnInit {
     this.title = 'Listado de Paises Disponibles';
   }
 
-  protected fetch(page: number, size: number, search: string): Observable<Page<Pais>> {
-    return this.paisService.getPaginado(page, size, search);
+  protected fetch(page: number, size: number, search: string, sort: string): Observable<Page<Pais>> {
+    return this.paisService.getPaginado(page, size, search, sort);
   }
 
   get paises(): Pais[] {

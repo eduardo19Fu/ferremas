@@ -14,12 +14,11 @@
 </section>
 
 <div class="card">
-    <div class="card-header">
-        Listado de Pa&iacute;ses Registrados
-    </div>
-
-    <div class="card-body table-responsive">
+<div class="card-body table-responsive">
         <div class="row mb-2">
+            <div class="col-md-auto tm-toolbar-size">
+                <app-tamanio-pagina [size]="size" (sizeChange)="onSizeChange($event)"></app-tamanio-pagina>
+            </div>
             <div class="col-md-4 ml-md-auto tm-buscador">
                 <i class="fas fa-search"></i>
                 <input type="search" class="form-control form-control-sm" placeholder="Buscar..."
@@ -38,8 +37,8 @@
             *ngIf="paises?.length > 0">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Pais</th>
+                    <th tmSortable="idPais" [sort]="sort" (tmSort)="onSort($event)">#</th>
+                    <th tmSortable="nombre" [sort]="sort" (tmSort)="onSort($event)">Pais</th>
                     <th>Opciones</th>
                 </tr>
             </thead>
@@ -66,7 +65,7 @@
         </table>
         </div>
 
-        <app-paginacion [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+        <app-paginacion [mostrarTamanio]="false" [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
             (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
 </div>

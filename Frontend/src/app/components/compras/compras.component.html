@@ -22,13 +22,12 @@
 <!-- /.content-header -->
 
 <div class="card">
-    <div class="card-header">
-        Listado de Compras Realizadas
-    </div>
-    <!-- /.card-header -->
-    <div class="card-body table-responsive">
+<div class="card-body table-responsive">
 
         <div class="row mb-2">
+            <div class="col-md-auto tm-toolbar-size">
+                <app-tamanio-pagina [size]="size" (sizeChange)="onSizeChange($event)"></app-tamanio-pagina>
+            </div>
             <div class="col-md-4 ml-md-auto tm-buscador">
                 <i class="fas fa-search"></i>
                 <input type="search" class="form-control form-control-sm" placeholder="Buscar..."
@@ -47,15 +46,15 @@
             *ngIf="compras?.length > 0">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Proveedor</th>
-                    <th>Fecha de Compra</th>
-                    <th>Tipo Comprobante</th>
-                    <th>No. Comprobante</th>
-                    <th>IVA</th>
-                    <th>Total</th>
-                    <th>Estado</th>
-                    <th>Fecha Registro</th>
+                    <th tmSortable="idCompra" [sort]="sort" (tmSort)="onSort($event)">#</th>
+                    <th tmSortable="proveedor.nombre" [sort]="sort" (tmSort)="onSort($event)">Proveedor</th>
+                    <th tmSortable="fechaCompra" [sort]="sort" (tmSort)="onSort($event)">Fecha de Compra</th>
+                    <th tmSortable="tipoComprobante.tipoComprobante" [sort]="sort" (tmSort)="onSort($event)">Tipo Comprobante</th>
+                    <th tmSortable="noComprobante" [sort]="sort" (tmSort)="onSort($event)">No. Comprobante</th>
+                    <th tmSortable="iva" [sort]="sort" (tmSort)="onSort($event)">IVA</th>
+                    <th tmSortable="totalCompra" [sort]="sort" (tmSort)="onSort($event)">Total</th>
+                    <th tmSortable="estado.estado" [sort]="sort" (tmSort)="onSort($event)">Estado</th>
+                    <th tmSortable="fechaRegistro" [sort]="sort" (tmSort)="onSort($event)">Fecha Registro</th>
                     <th *ngIf="authService.hasRole('ROLE_ADMIN')">Opciones</th>
                 </tr>
             </thead>
@@ -94,7 +93,7 @@
         </table>
         </div>
 
-        <app-paginacion [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+        <app-paginacion [mostrarTamanio]="false" [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
             (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
     <!-- /.card-body -->

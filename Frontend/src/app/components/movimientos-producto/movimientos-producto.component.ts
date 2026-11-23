@@ -28,8 +28,8 @@ export class MovimientosProductoComponent extends ListaPaginada<MovimientoProduc
     this.title = 'Movimientos de Productos Creados';
   }
 
-  protected fetch(page: number, size: number, search: string): Observable<Page<MovimientoProducto>> {
-    return this.movimientosProductoService.getPaginado(page, size, search);
+  protected fetch(page: number, size: number, search: string, sort: string): Observable<Page<MovimientoProducto>> {
+    return this.movimientosProductoService.getPaginado(page, size, search, sort);
   }
 
   get movimientosProducto(): MovimientoProducto[] {

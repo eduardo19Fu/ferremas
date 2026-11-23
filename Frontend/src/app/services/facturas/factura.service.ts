@@ -132,7 +132,7 @@ export class FacturaService {
   }
 
   /** Listado paginado desde el backend, con busqueda opcional. */
-  getPaginado(page: number, size: number, search: string = '', fechaIni?: Date, fechaFin?: Date): Observable<Page<Factura>> {
+  getPaginado(page: number, size: number, search: string = '', fechaIni?: Date, fechaFin?: Date, sort: string = ''): Observable<Page<Factura>> {
     const params: any = { page: String(page), size: String(size) };
     if (search && search.trim()) {
       params.search = search.trim();
@@ -140,6 +140,9 @@ export class FacturaService {
     if (fechaIni && fechaFin) {
       params.fechaIni = fechaIni.toString();
       params.fechaFin = fechaFin.toString();
+    }
+    if (sort) {
+      params.sort = sort;
     }
     return this.http.get<Page<Factura>>(`${this.url}/facturas/paginado`, { params });
   }

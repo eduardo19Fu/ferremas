@@ -36,8 +36,8 @@ export class ClientesComponent extends ListaPaginada<Cliente> implements OnInit 
     this.title = 'Listado de clientes';
   }
 
-  protected fetch(page: number, size: number, search: string): Observable<Page<Cliente>> {
-    return this.clienteService.getPaginado(page, size, search);
+  protected fetch(page: number, size: number, search: string, sort: string): Observable<Page<Cliente>> {
+    return this.clienteService.getPaginado(page, size, search, sort);
   }
 
   get clientes(): Cliente[] {

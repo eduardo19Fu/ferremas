@@ -36,8 +36,8 @@ export class MarcasProductoComponent extends ListaPaginada<MarcaProducto> implem
     this.title = 'Listado de Marcas de Productos';
   }
 
-  protected fetch(page: number, size: number, search: string): Observable<Page<MarcaProducto>> {
-    return this.marcaService.getPaginado(page, size, search);
+  protected fetch(page: number, size: number, search: string, sort: string): Observable<Page<MarcaProducto>> {
+    return this.marcaService.getPaginado(page, size, search, sort);
   }
 
   get marcas(): MarcaProducto[] {

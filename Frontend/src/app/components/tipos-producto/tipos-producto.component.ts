@@ -37,8 +37,8 @@ export class TiposProductoComponent extends ListaPaginada<TipoProducto> implemen
     this.title = 'Listado de Categorías';
   }
 
-  protected fetch(page: number, size: number, search: string): Observable<Page<TipoProducto>> {
-    return this.tipoService.getPaginado(page, size, search);
+  protected fetch(page: number, size: number, search: string, sort: string): Observable<Page<TipoProducto>> {
+    return this.tipoService.getPaginado(page, size, search, sort);
   }
 
   get tipos(): TipoProducto[] {

@@ -264,11 +264,15 @@ public class CompraApiController {
         }
     }
 
+	private static final java.util.Map<String, String> SORT_COMPRA = com.aglayatech.licorstore.generics.SortParam.keys("idCompra", "proveedor.nombre", "fechaCompra", "tipoComprobante.tipoComprobante", "noComprobante", "iva", "totalCompra", "estado.estado", "fechaRegistro");
+
 	@GetMapping("/compras/paginado")
 	public org.springframework.data.domain.Page<Compra> paginado(@org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
 			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "10") int size,
-			@org.springframework.web.bind.annotation.RequestParam(required = false) String search) {
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String search,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String sort) {
 		int pageSize = Math.min(Math.max(size, 1), 100);
-		return compraService.search(search, org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, org.springframework.data.domain.Sort.by("idCompra").descending()));
+		org.springframework.data.domain.Sort order = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_COMPRA, org.springframework.data.domain.Sort.by("idCompra").descending(), "idCompra");
+		return compraService.search(search, org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, order));
 	}
 }

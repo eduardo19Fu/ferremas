@@ -203,11 +203,15 @@ public class EnvioApiController {
         }
     }
 
+	private static final java.util.Map<String, String> SORT_ENVIO = com.aglayatech.licorstore.generics.SortParam.keys("idEnvio", "cliente.nombre", "fechaPedido", "totalEnvio", "abono", "saldoPendiente");
+
 	@GetMapping("/envios/paginado")
 	public org.springframework.data.domain.Page<Envio> paginado(@org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
 			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "10") int size,
-			@org.springframework.web.bind.annotation.RequestParam(required = false) String search) {
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String search,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String sort) {
 		int pageSize = Math.min(Math.max(size, 1), 100);
-		return envioService.search(search, org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, org.springframework.data.domain.Sort.by("idEnvio").descending()));
+		org.springframework.data.domain.Sort order = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_ENVIO, org.springframework.data.domain.Sort.by("idEnvio").descending(), "idEnvio");
+		return envioService.search(search, org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, order));
 	}
 }

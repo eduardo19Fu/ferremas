@@ -187,16 +187,20 @@ public class NotaCreditoApiController {
         serviceMovimiento.save(movimiento);
     }
 
+	private static final java.util.Map<String, String> SORT_NOTA = com.aglayatech.licorstore.generics.SortParam.keys("idNotaCredito", "cliente.nombre", "abono", "total", "restante", "usuario.usuario", "fechaCreacion", "fechaPagoLimite", "estado.estado");
+
 	@GetMapping("/notas-credito/paginado")
 	public org.springframework.data.domain.Page<NotaCredito> paginado(@org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
 			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "10") int size,
 			@org.springframework.web.bind.annotation.RequestParam(required = false) String search,
-			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "false") boolean activas) {
+			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "false") boolean activas,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String sort) {
 		int pageSize = Math.min(Math.max(size, 1), 100);
+		org.springframework.data.domain.Sort order = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_NOTA, org.springframework.data.domain.Sort.by("idNotaCredito").descending(), "idNotaCredito");
+		org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, order);
 		if (activas) {
-			return notaCreditoService.searchByEstado(search, estadoService.findById(1),
-					org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, org.springframework.data.domain.Sort.by("idNotaCredito").descending()));
+			return notaCreditoService.searchByEstado(search, estadoService.findById(1), pageable);
 		}
-		return notaCreditoService.search(search, org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, org.springframework.data.domain.Sort.by("idNotaCredito").descending()));
+		return notaCreditoService.search(search, pageable);
 	}
 }

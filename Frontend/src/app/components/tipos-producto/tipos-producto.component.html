@@ -15,12 +15,12 @@
 </section>
 
 <div class="card">
-    <div class="card-header">
-        Listado de Tipos de Identificación
-    </div>
-    <div class="card-body table-responsive">
+<div class="card-body table-responsive">
 
         <div class="row mb-2">
+            <div class="col-md-auto tm-toolbar-size">
+                <app-tamanio-pagina [size]="size" (sizeChange)="onSizeChange($event)"></app-tamanio-pagina>
+            </div>
             <div class="col-md-4 ml-md-auto tm-buscador">
                 <i class="fas fa-search"></i>
                 <input type="search" class="form-control form-control-sm" placeholder="Buscar..."
@@ -39,10 +39,10 @@
             *ngIf="tipos?.length > 0">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Tipo Producto</th>
-                    <th>Fecha de Registro</th>
-                    <th>Creador</th>
+                    <th tmSortable="idTipoProducto" [sort]="sort" (tmSort)="onSort($event)">ID</th>
+                    <th tmSortable="tipoProducto" [sort]="sort" (tmSort)="onSort($event)">Tipo Producto</th>
+                    <th tmSortable="fechaRegistro" [sort]="sort" (tmSort)="onSort($event)">Fecha de Registro</th>
+                    <th tmSortable="usuario.usuario" [sort]="sort" (tmSort)="onSort($event)">Creador</th>
                     <th *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_INVENTARIO')">Opciones</th>
                 </tr>
             </thead>
@@ -72,7 +72,7 @@
         </table>
         </div>
 
-        <app-paginacion [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+        <app-paginacion [mostrarTamanio]="false" [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
             (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
 </div>

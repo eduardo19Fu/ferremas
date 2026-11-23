@@ -40,8 +40,8 @@ export class EnviosComponent extends ListaPaginada<Envio> implements OnInit {
     this.title = 'Listado de Envios';
   }
 
-  protected fetch(page: number, size: number, search: string): Observable<Page<Envio>> {
-    return this.envioService.getPaginado(page, size, search);
+  protected fetch(page: number, size: number, search: string, sort: string): Observable<Page<Envio>> {
+    return this.envioService.getPaginado(page, size, search, sort);
   }
 
   get envios(): Envio[] {

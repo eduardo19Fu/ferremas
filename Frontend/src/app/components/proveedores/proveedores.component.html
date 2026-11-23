@@ -15,12 +15,11 @@
 </section>
 
 <div class="card">
-    <div class="card-header">
-        Listado de Proveedores Registrados
-    </div>
-
-    <div class="card-body table-responsive">
+<div class="card-body table-responsive">
         <div class="row mb-2">
+            <div class="col-md-auto tm-toolbar-size">
+                <app-tamanio-pagina [size]="size" (sizeChange)="onSizeChange($event)"></app-tamanio-pagina>
+            </div>
             <div class="col-md-4 ml-md-auto tm-buscador">
                 <i class="fas fa-search"></i>
                 <input type="search" class="form-control form-control-sm" placeholder="Buscar..."
@@ -39,14 +38,14 @@
             *ngIf="proveedores?.length > 0">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Contacto</th>
-                    <th>Pais</th>
-                    <th>Web</th>
-                    <th>E-mail</th>
-                    <th>Teléfono</th>
-                    <th>Dirección</th>
-                    <th>Estado</th>
+                    <th tmSortable="idProveedor" [sort]="sort" (tmSort)="onSort($event)">#</th>
+                    <th tmSortable="contacto" [sort]="sort" (tmSort)="onSort($event)">Contacto</th>
+                    <th tmSortable="pais.nombre" [sort]="sort" (tmSort)="onSort($event)">Pais</th>
+                    <th tmSortable="web" [sort]="sort" (tmSort)="onSort($event)">Web</th>
+                    <th tmSortable="email" [sort]="sort" (tmSort)="onSort($event)">E-mail</th>
+                    <th tmSortable="telefono" [sort]="sort" (tmSort)="onSort($event)">Teléfono</th>
+                    <th tmSortable="direccion" [sort]="sort" (tmSort)="onSort($event)">Dirección</th>
+                    <th tmSortable="estado.estado" [sort]="sort" (tmSort)="onSort($event)">Estado</th>
                     <th>Opciones</th>
                 </tr>
             </thead>
@@ -83,7 +82,7 @@
         </table>
         </div>
 
-        <app-paginacion [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+        <app-paginacion [mostrarTamanio]="false" [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
             (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
 </div>

@@ -14,6 +14,8 @@ export class PaginacionComponent {
   @Input() page = 0; // base 0
   @Input() size = 10;
   @Input() sizes: number[] = [10, 25, 50, 100];
+  /** false cuando el selector "Mostrar" va en la barra superior de la tabla. */
+  @Input() mostrarTamanio = true;
 
   @Output() pageChange = new EventEmitter<number>();
   @Output() sizeChange = new EventEmitter<number>();

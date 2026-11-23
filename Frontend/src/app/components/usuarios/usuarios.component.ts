@@ -39,8 +39,8 @@ export class UsuariosComponent extends ListaPaginada<Usuario> implements OnInit 
     this.title = 'Listado de Usuarios';
   }
 
-  protected fetch(page: number, size: number, search: string): Observable<Page<Usuario>> {
-    return this.usuarioService.getPaginado(page, size, search);
+  protected fetch(page: number, size: number, search: string, sort: string): Observable<Page<Usuario>> {
+    return this.usuarioService.getPaginado(page, size, search, sort);
   }
 
   get usuarios(): Usuario[] {

@@ -16,12 +16,12 @@
 </section>
 
 <div class="card">
-    <div class="card-header">
-        Listado de Productos Registrados
-    </div>
-    <div class="card-body table-responsive">
+<div class="card-body table-responsive">
 
         <div class="row mb-2">
+            <div class="col-md-auto tm-toolbar-size">
+                <app-tamanio-pagina [size]="size" (sizeChange)="onSizeChange($event)"></app-tamanio-pagina>
+            </div>
             <div class="col-md-4 ml-md-auto tm-buscador">
                 <i class="fas fa-search"></i>
                 <input type="search" class="form-control form-control-sm" placeholder="Buscar por nombre o código..."
@@ -40,13 +40,13 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Codigo</th>
-                    <th>Nombre</th>
-                    <th>Precio</th>
-                    <th>Stock</th>
-                    <th>Tipo</th>
-                    <th>Marca</th>
-                    <th>Estado</th>
+                    <th tmSortable="codProducto" [sort]="sort" (tmSort)="onSort($event)">Codigo</th>
+                    <th tmSortable="nombre" [sort]="sort" (tmSort)="onSort($event)">Nombre</th>
+                    <th tmSortable="precioVenta" [sort]="sort" (tmSort)="onSort($event)">Precio</th>
+                    <th tmSortable="stock" [sort]="sort" (tmSort)="onSort($event)">Stock</th>
+                    <th tmSortable="tipoProducto.tipoProducto" [sort]="sort" (tmSort)="onSort($event)">Tipo</th>
+                    <th tmSortable="marcaProducto.marca" [sort]="sort" (tmSort)="onSort($event)">Marca</th>
+                    <th tmSortable="estado.estado" [sort]="sort" (tmSort)="onSort($event)">Estado</th>
                     <th>Opciones</th>
                 </tr>
             </thead>
@@ -89,7 +89,7 @@
         </table>
         </div>
 
-        <app-paginacion [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+        <app-paginacion [mostrarTamanio]="false" [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
             (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
 </div>

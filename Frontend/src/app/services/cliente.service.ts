@@ -92,10 +92,13 @@ export class ClienteService {
   }
 
   /** Listado paginado desde el backend, con busqueda opcional. */
-  getPaginado(page: number, size: number, search: string = ''): Observable<Page<Cliente>> {
+  getPaginado(page: number, size: number, search: string = '', sort: string = ''): Observable<Page<Cliente>> {
     const params: any = { page: String(page), size: String(size) };
     if (search && search.trim()) {
       params.search = search.trim();
+    }
+    if (sort) {
+      params.sort = sort;
     }
     return this.http.get<Page<Cliente>>(`${this.url}/clientes/paginado`, { params });
   }
