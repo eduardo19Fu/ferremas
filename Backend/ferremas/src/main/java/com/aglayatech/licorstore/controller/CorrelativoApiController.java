@@ -78,7 +78,7 @@ public class CorrelativoApiController {
 		return new ResponseEntity<Correlativo>(correlativo, HttpStatus.OK);
 	}
 	
-	@Secured(value = {"ROLE_COBRADOR", "ROLE_COBRADOR"})
+	@Secured(value = {"ROLE_COBRADOR"})
 	@GetMapping(value = "/correlativos/usuario/{id}")
 	public ResponseEntity<?> findByUsuario(@PathVariable("id") Integer idusuario){
 		

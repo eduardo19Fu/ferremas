@@ -12,15 +12,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.aglayatech.licorstore.generics.ErroresHandler;
 import com.aglayatech.licorstore.generics.Excepcion;
 import com.aglayatech.licorstore.model.*;
 import com.aglayatech.licorstore.service.*;
-import com.fel.firma.emisor.FirmaEmisor;
-import com.fel.firma.emisor.RespuestaServicioFirma;
-import com.fel.validaciones.documento.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;

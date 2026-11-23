@@ -48,7 +48,7 @@ import com.aglayatech.licorstore.service.IUploadFileService;
 
 import net.sf.jasperreports.engine.JRException;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 @CrossOrigin(origins = { "${ferremas.origins}" })
 @RestController
