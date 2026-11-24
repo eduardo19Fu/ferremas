@@ -61,18 +61,18 @@
             <tbody>
                 <tr *ngFor="let compra of compras">
                     <td data-label="#">{{compra.idCompra}}</td>
-                    <td data-label="Proveedor">{{compra.proveedor.nombre}}</td>
+                    <td data-label="Proveedor">{{compra.proveedor?.nombre}}</td>
                     <td data-label="Fecha de Compra">{{compra.fechaCompra | date: 'dd/MM/yyyy'}}</td>
-                    <td data-label="Tipo Comprobante">{{compra.tipoComprobante.tipoComprobante}}</td>
+                    <td data-label="Tipo Comprobante">{{compra.tipoComprobante?.tipoComprobante}}</td>
                     <td data-label="No. Comprobante">{{compra.noComprobante}}</td>
                     <td data-label="IVA">{{compra.iva}}</td>
                     <td data-label="Total">{{compra.totalCompra}}</td>
                     <td data-label="Estado">
                         <span class="badge" 
-                            [ngClass]="{'badge-primary': compra.estado.estado === 'ACTIVO',
-                                'badge-danger' : compra.estado.estado === 'ANULADO',
-                                'badge-secondary' : compra.estado.estado === 'INACTIVO'}">
-                            {{compra.estado.estado}}
+                            [ngClass]="{'badge-primary': compra.estado?.estado === 'ACTIVO',
+                                'badge-danger' : compra.estado?.estado === 'ANULADO',
+                                'badge-secondary' : compra.estado?.estado === 'INACTIVO'}">
+                            {{compra.estado?.estado}}
                         </span>
                     </td>
                     <td data-label="Fecha Registro">{{compra.fechaRegistro | date: 'dd/MM/yyyy - hh:mm:ss'}}</td>
