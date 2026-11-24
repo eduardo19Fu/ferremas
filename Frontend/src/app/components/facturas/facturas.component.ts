@@ -29,6 +29,9 @@ export class FacturasComponent extends ListaPaginada<Factura> implements OnInit 
   usuario: Usuario;
   facturaSeleccionada: Factura;
 
+  /** Ids de las facturas cuyo comprobante se esta generando (muestra el loading del boton). */
+  imprimiendo = new Set<number>();
+
   private notificarAnulacion: EventEmitter<any>;
 
   swalWithBootstrapButtons = swal.mixin({
@@ -128,7 +131,13 @@ export class FacturasComponent extends ListaPaginada<Factura> implements OnInit 
 
     /************* FACTURA PDF ***************/
 
+    if (this.imprimiendo.has(id)) {
+      return;                                   // ya se esta generando este comprobante
+    }
+    this.imprimiendo.add(id);
+
     this.facturaService.getBillPDF(id).subscribe(res => {
+      this.imprimiendo.delete(id);
       const url = window.URL.createObjectURL(res.data);
       const a = document.createElement('a');
       document.body.appendChild(a);
@@ -144,7 +153,9 @@ export class FacturasComponent extends ListaPaginada<Factura> implements OnInit 
       a.remove();
     },
       error => {
+        this.imprimiendo.delete(id);
         console.log(error);
+        swal.fire('No se pudo generar el comprobante', 'Intente de nuevo en unos segundos.', 'error');
       });
   }
 }

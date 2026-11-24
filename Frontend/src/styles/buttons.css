@@ -92,6 +92,19 @@
   pointer-events: none;
 }
 
+/* ---- cargando (p. ej. generando un reporte): conserva el tamano y bloquea nuevos clics ---- */
+.btn.btn.btn.is-loading {
+  cursor: progress;
+  pointer-events: none;
+}
+.btn .tm-spinner.tm-spinner--btn {
+  border-color: currentColor;
+  border-right-color: transparent;
+  flex: 0 0 auto;
+  height: 14px;
+  width: 14px;
+}
+
 /* ---- tamaños ---- */
 .btn.btn.btn-sm { padding: .3rem .75rem; min-height: 32px; font-size: .8rem; border-radius: 8px; gap: .4rem; }
 .btn.btn.btn-lg { padding: .7rem 1.4rem; min-height: 48px; font-size: 1rem; border-radius: 12px; }

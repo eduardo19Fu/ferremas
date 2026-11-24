@@ -235,8 +235,10 @@
 
             <div class="card-footer">
                 <button type="submit" role="button" class="btn btn-primary btn-lg"
-                    [disabled]="!cliente.idCliente && (factura.itemsFactura.length <= 0)" (click)="createFactura()">
-                    Pagar
+                    [disabled]="!cliente.idCliente && (factura.itemsFactura.length <= 0)" (click)="createFactura()"
+                    [class.is-loading]="generando" [attr.aria-busy]="generando">
+                    <span class="tm-spinner tm-spinner--btn" *ngIf="generando" role="status"></span>
+                    {{ generando ? 'Generando comprobante…' : 'Pagar' }}
                 </button>
             </div>
         </div>
