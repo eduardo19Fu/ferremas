@@ -8,6 +8,7 @@ import { TablaOrden } from '../shared/th-sortable/th-sortable.directive';
 import { AuthService } from 'src/app/services/auth.service';
 import { ProductoService } from 'src/app/services/producto.service';
 import { ModalService } from 'src/app/services/productos/modal.service';
+import { ExportarService } from 'src/app/services/exportar.service';
 
 import Swal from 'sweetalert2';
 
@@ -47,6 +48,7 @@ export class ProductosComponent implements OnInit, OnDestroy {
   constructor(
     public modalService: ModalService,
     private productoService: ProductoService,
+    private exportador: ExportarService,
     public auth: AuthService
   ) {
     this.title = 'Listado de Productos';
@@ -70,6 +72,25 @@ export class ProductosComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.busquedaSub?.unsubscribe();
+  }
+
+  /** Verdadero mientras se genera el Excel (loading del boton Exportar). */
+  exportando = false;
+
+  /** Exporta a Excel todos los productos que coinciden con la busqueda y el orden actuales (no solo la pagina visible). */
+  exportarExcel(): void {
+    if (this.exportando) {
+      return;
+    }
+    this.exportando = true;
+    const params = { search: (this.search || '').trim(), sort: this.sort ? `${this.sort.key},${this.sort.dir}` : '' };
+    this.exportador.descargarExcel('productos/exportar', params, 'productos').subscribe(
+      () => { this.exportando = false; },
+      () => {
+        this.exportando = false;
+        Swal.fire('No se pudo exportar', 'Ocurrió un error al generar el archivo de Excel. Intente de nuevo.', 'error');
+      }
+    );
   }
 
   getProductos(): void {

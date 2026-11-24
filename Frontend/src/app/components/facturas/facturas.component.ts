@@ -64,6 +64,16 @@ export class FacturasComponent extends ListaPaginada<Factura> implements OnInit 
     this.cargar();
   }
 
+  /** Exporta a Excel todas las facturas que coinciden con la busqueda, el rango de fechas aplicado y el orden actuales. */
+  exportar(): void {
+    const extra: { [clave: string]: string } = {};
+    if (this.fechaAplicadaIni && this.fechaAplicadaFin) {
+      extra.fechaIni = this.fechaAplicadaIni.toString();
+      extra.fechaFin = this.fechaAplicadaFin.toString();
+    }
+    this.exportarExcel('facturas/exportar', 'facturas', extra);
+  }
+
   getFacturasSP(): void {
     if (!this.fechaIni || !this.fechaFin) {
       swal.fire('Advertencia', 'Porfavor ingrese un rango de fechas valido.', 'warning');

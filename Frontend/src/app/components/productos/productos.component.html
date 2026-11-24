@@ -9,7 +9,14 @@
                 <a [routerLink]="['/productos/create']" class="btn bg-gradient-success">
                     <i class="fas fa-plus-circle"></i>
                     Nuevo
-                </a>
+                </a>&nbsp;
+                <button type="button" class="btn btn-outline-success" (click)="exportarExcel()"
+                    [class.is-loading]="exportando" [attr.aria-busy]="exportando" [disabled]="!totalElements"
+                    ngbTooltip="Exportar a Excel todo el listado filtrado" placement="bottom">
+                    <span class="tm-spinner tm-spinner--btn" *ngIf="exportando; else iconoExcel" role="status"></span>
+                    <ng-template #iconoExcel><i class="fas fa-file-excel"></i></ng-template>
+                    {{ exportando ? 'Generando…' : 'Excel' }}
+                </button>
             </div>
         </div>
     </div><!-- /.container-fluid -->

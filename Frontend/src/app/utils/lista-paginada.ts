@@ -1,6 +1,9 @@
-import { Directive, OnDestroy } from '@angular/core';
+import { Directive, OnDestroy, inject } from '@angular/core';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import swal from 'sweetalert2';
+
+import { ExportarService } from '../services/exportar.service';
 
 import { Page } from '../models/page';
 import { TablaOrden } from '../components/shared/th-sortable/th-sortable.directive';
@@ -77,6 +80,34 @@ export abstract class ListaPaginada<T> implements OnDestroy {
     this.size = size;
     this.page = 0;
     this.cargar();
+  }
+
+  /** Verdadero mientras se genera el Excel (loading del boton Exportar). */
+  exportando = false;
+
+  private exportador = inject(ExportarService);
+
+  /**
+   * Exporta a Excel TODO el listado que coincide con la busqueda y el orden actuales (no solo la pagina visible).
+   *
+   * @param ruta    p. ej. 'productos/exportar'
+   * @param prefijo prefijo del nombre del archivo
+   * @param extra   filtros propios de cada pantalla (fechas, solo activos...)
+   */
+  protected exportarExcel(ruta: string, prefijo: string, extra: { [clave: string]: string } = {}): void {
+    if (this.exportando) {
+      return;
+    }
+    this.exportando = true;
+
+    const params = { search: (this.search || '').trim(), sort: this.sortParam, ...extra };
+    this.exportador.descargarExcel(ruta, params, prefijo).subscribe(
+      () => { this.exportando = false; },
+      () => {
+        this.exportando = false;
+        swal.fire('No se pudo exportar', 'Ocurrió un error al generar el archivo de Excel. Intente de nuevo.', 'error');
+      }
+    );
   }
 
   /** Recarga la pagina actual tras eliminar un registro (retrocede si quedo vacia). */

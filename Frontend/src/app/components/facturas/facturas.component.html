@@ -27,6 +27,14 @@
                 <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#modal-eliminar-facturas">
                     <i class="fas fa-trash-alt"></i>
                     Eliminar
+                </button>&nbsp;
+
+                <button type="button" class="btn btn-outline-success" (click)="exportar()"
+                    [class.is-loading]="exportando" [attr.aria-busy]="exportando" [disabled]="!totalElements"
+                    ngbTooltip="Exportar a Excel todo el listado filtrado" placement="bottom">
+                    <span class="tm-spinner tm-spinner--btn" *ngIf="exportando; else iconoExcel" role="status"></span>
+                    <ng-template #iconoExcel><i class="fas fa-file-excel"></i></ng-template>
+                    {{ exportando ? 'Generando…' : 'Excel' }}
                 </button>
             </div>
         </div>

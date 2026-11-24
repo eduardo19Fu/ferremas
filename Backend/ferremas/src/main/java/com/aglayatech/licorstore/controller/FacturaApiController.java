@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import com.aglayatech.licorstore.generics.ErroresHandler;
 import com.aglayatech.licorstore.generics.Excepcion;
+import com.aglayatech.licorstore.generics.ExcelExporter;
 import com.aglayatech.licorstore.model.*;
 import com.aglayatech.licorstore.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -399,5 +400,32 @@ public class FacturaApiController {
 			return serviceFactura.searchPorFechas(search, fechaIni, fechaFin, pageable);
 		}
 		return serviceFactura.search(search, pageable);
+	}
+
+	/** Exporta a Excel todas las facturas que coinciden con la busqueda y el rango de fechas del listado. */
+	@Secured(value = {"ROLE_ADMIN", "ROLE_COBRADOR"})
+	@GetMapping("/facturas/exportar")
+	public ResponseEntity<byte[]> exportar(@RequestParam(required = false) String search,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaIni,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin,
+			@RequestParam(required = false) String sort) throws java.io.IOException {
+		org.springframework.data.domain.Sort orden = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_FACTURA, org.springframework.data.domain.Sort.by("idFactura").descending(), "idFactura");
+
+		java.util.List<ExcelExporter.Columna<Factura>> columnas = java.util.List.of(
+				ExcelExporter.columna("ID", 9, ExcelExporter.Tipo.ENTERO, Factura::getIdFactura),
+				ExcelExporter.columna("No. factura", 13, ExcelExporter.Tipo.ENTERO, Factura::getNoFactura),
+				ExcelExporter.columna("Serie", 10, ExcelExporter.Tipo.TEXTO, Factura::getSerie),
+				ExcelExporter.columna("Fecha", 13, ExcelExporter.Tipo.FECHA, Factura::getFecha),
+				ExcelExporter.columna("Cliente", 36, ExcelExporter.Tipo.TEXTO, f -> f.getCliente() == null ? null : f.getCliente().getNombre()),
+				ExcelExporter.columna("NIT", 14, ExcelExporter.Tipo.TEXTO, f -> f.getCliente() == null ? null : f.getCliente().getNit()),
+				ExcelExporter.columna("Total", 14, ExcelExporter.Tipo.MONEDA, Factura::getTotal),
+				ExcelExporter.columna("Estado", 12, ExcelExporter.Tipo.TEXTO, f -> f.getEstado() == null ? null : f.getEstado().getEstado()),
+				ExcelExporter.columna("Emisor", 16, ExcelExporter.Tipo.TEXTO, f -> f.getUsuario() == null ? null : f.getUsuario().getUsuario()));
+
+		byte[] archivo = ExcelExporter.exportar("Facturas", columnas, orden, pageable ->
+				(fechaIni != null && fechaFin != null)
+						? serviceFactura.searchPorFechas(search, fechaIni, fechaFin, pageable)
+						: serviceFactura.search(search, pageable));
+		return ExcelExporter.respuesta("facturas", archivo);
 	}
 }

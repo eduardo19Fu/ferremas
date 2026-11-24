@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.aglayatech.licorstore.generics.Excepcion;
+import com.aglayatech.licorstore.generics.ExcelExporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +92,38 @@ public class ProductoApiController {
 			return serviceProducto.searchByEstado(search, serviceEstado.findById(1), pageable);
 		}
 		return serviceProducto.search(search, pageable);
+	}
+
+	/** Exporta a Excel todos los productos que coinciden con la busqueda (mismo filtro y orden del listado). */
+	@Secured({ "ROLE_ADMIN", "ROLE_COBRADOR", "ROLE_INVENTARIO" })
+	@GetMapping(value = "/productos/exportar")
+	public ResponseEntity<byte[]> exportar(@RequestParam(required = false) String search,
+			@RequestParam(defaultValue = "false") boolean soloActivos,
+			@RequestParam(required = false) String sort,
+			org.springframework.security.core.Authentication autenticacion) throws IOException {
+		Sort orden = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_PRODUCTO, Sort.by("nombre").ascending(), "idProducto");
+		Estado activo = soloActivos ? serviceEstado.findById(1) : null;
+
+		// los costos y la ganancia solo los ven quienes administran inventario (los cobradores no)
+		boolean veCostos = autenticacion != null && autenticacion.getAuthorities().stream()
+				.anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_INVENTARIO"));
+
+		List<ExcelExporter.Columna<Producto>> columnas = new java.util.ArrayList<>();
+		columnas.add(ExcelExporter.columna("Código", 16, ExcelExporter.Tipo.TEXTO, Producto::getCodProducto));
+		columnas.add(ExcelExporter.columna("Nombre", 46, ExcelExporter.Tipo.TEXTO, Producto::getNombre));
+		if (veCostos) {
+			columnas.add(ExcelExporter.columna("Precio de costo", 16, ExcelExporter.Tipo.MONEDA, Producto::getPrecioCompra));
+			columnas.add(ExcelExporter.columna("% de ganancia", 15, ExcelExporter.Tipo.DECIMAL, Producto::getPorcentajeGanancia));
+		}
+		columnas.add(ExcelExporter.columna("Precio de venta", 16, ExcelExporter.Tipo.MONEDA, Producto::getPrecioVenta));
+		columnas.add(ExcelExporter.columna("Stock", 10, ExcelExporter.Tipo.ENTERO, Producto::getStock));
+		columnas.add(ExcelExporter.columna("Tipo", 24, ExcelExporter.Tipo.TEXTO, p -> p.getTipoProducto() == null ? null : p.getTipoProducto().getTipoProducto()));
+		columnas.add(ExcelExporter.columna("Marca", 24, ExcelExporter.Tipo.TEXTO, p -> p.getMarcaProducto() == null ? null : p.getMarcaProducto().getMarca()));
+		columnas.add(ExcelExporter.columna("Estado", 12, ExcelExporter.Tipo.TEXTO, p -> p.getEstado() == null ? null : p.getEstado().getEstado()));
+
+		byte[] archivo = ExcelExporter.exportar("Productos", columnas, orden,
+				pageable -> soloActivos ? serviceProducto.searchByEstado(search, activo, pageable) : serviceProducto.search(search, pageable));
+		return ExcelExporter.respuesta("productos", archivo);
 	}
 
 	@GetMapping(value = "/productos-activos")

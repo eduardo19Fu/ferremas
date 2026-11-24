@@ -40,6 +40,11 @@ export class ComprasComponent extends ListaPaginada<Compra> implements OnInit {
     this.title = 'Compras Realizadas';
   }
 
+  /** Exporta a Excel todas las compras que coinciden con la busqueda y el orden actuales. */
+  exportar(): void {
+    this.exportarExcel('compras/exportar', 'compras');
+  }
+
   protected fetch(page: number, size: number, search: string, sort: string): Observable<Page<Compra>> {
     return this.compraService.getPaginado(page, size, search, sort);
   }
