@@ -13,6 +13,7 @@
  *   table-sorting  cabeceras ordenables
  *   forms          formularios (opt-in con la clase .tm-form)
  *   modals         marco de los modales
+ *   dashboard      inicio (home): portada, indicadores, accesos y actividad
  */
 @import 'styles/tokens.css';
 @import 'styles/base.css';
@@ -28,3 +29,4 @@
 @import 'styles/table-sorting.css';
 @import 'styles/forms.css';
 @import 'styles/modals.css';
+@import 'styles/dashboard.css';
