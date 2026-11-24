@@ -98,6 +98,19 @@
 .tm-grid--narrow { --tm-col: 150px; }
 .tm-grid--wide { --tm-col: 300px; }
 .tm-span-all { grid-column: 1 / -1; }
+
+/* celda de la rejilla que envuelve a un campo (sustituye al antiguo .col de Bootstrap) */
+.tm-cell { min-width: 0; }
+
+/* filas consecutivas: separacion vertical (los formularios antiguos usan varias .tm-grid seguidas) */
+.tm-grid + .tm-grid { margin-top: 1rem; }
+
+/* separador <hr> heredado dentro de un formulario */
+.tm-form form hr { margin: 1.35rem 0; border: 0; border-top: 1px solid var(--tm-line); }
+
+/* anchos maximos para formularios cortos (evita campos de 1100px de ancho) */
+.tm-form--narrow { max-width: 620px; }
+.tm-form--medium { max-width: 880px; }
 .tm-span-2 { grid-column: span 2; }
 
 /* ---- 5. Campo: etiqueta + control + mensaje ---- */

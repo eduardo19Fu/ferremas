@@ -1,6 +1,6 @@
 <div class="modal fade" id="modal-ventas-mensuales">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content tm-form">
             <div class="modal-header">
                 <h4 class="modal-title">{{title}}</h4>
                 <button id="button-x" type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -8,27 +8,26 @@
                 </button>
             </div>
             <div class="modal-body">
-                <h4>Ingrese datos requeridos</h4>
-                <br>
+                <p class="tm-lead">Ingrese datos requeridos</p>
                 <form #formBusqueda="ngForm" id="form-busqueda">
 
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
+                    <div class="tm-grid">
+                        <div class="tm-cell">
+                            <div class="tm-field">
                                 <label for="fecha-ini">Fecha Inicial</label>
                                 <input type="date" class="form-control" name="fecha-ini" id="fecha-ini" [(ngModel)]="fechaIni">
                             </div>
                         </div>
 
-                        <div class="col">
-                            <div class="form-group">
+                        <div class="tm-cell">
+                            <div class="tm-field">
                                 <label for="fecha-fin">Fecha Final</label>
                                 <input type="date" class="form-control" name="fecha-fin" id="fecha-fin" [(ngModel)]="fechaFin">
                             </div>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn bg-gradient-warning" style="width: 100%;"
+                    <button type="submit" class="btn btn-block bg-gradient-warning"
                         [disabled]="!formBusqueda.form.valid" (click)="onSubmit()">
                         <i class="fas fa-print"></i>
                         Imprimir
@@ -37,8 +36,7 @@
                 </form>
             </div>
             <div class="modal-footer justify-content-between">
-                <button type="button" class="btn btn-default" id="cerrar-modal" data-dismiss="modal"
-                    style="display: right;">Cerrar</button>
+                <button type="button" class="btn btn-default" id="cerrar-modal" data-dismiss="modal">Cerrar</button>
             </div>
         </div>
         <!-- /.modal-content -->

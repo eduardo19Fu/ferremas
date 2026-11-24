@@ -12,6 +12,7 @@
  *   list-card      tarjeta de listado y bordes
  *   table-sorting  cabeceras ordenables
  *   forms          formularios (opt-in con la clase .tm-form)
+ *   modals         marco de los modales
  */
 @import 'styles/tokens.css';
 @import 'styles/base.css';
@@ -26,3 +27,4 @@
 @import 'styles/card-edges.css';
 @import 'styles/table-sorting.css';
 @import 'styles/forms.css';
+@import 'styles/modals.css';

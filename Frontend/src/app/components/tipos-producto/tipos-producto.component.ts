@@ -3,11 +3,13 @@ import { Page } from 'src/app/models/page';
 import { ListaPaginada } from 'src/app/utils/lista-paginada';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { AuthService } from 'src/app/services/auth.service';
 import { TipoProductoService } from 'src/app/services/tipo-producto.service';
 
 import { TipoProducto } from 'src/app/models/tipo-producto';
+import { ModalTipoComponent, ResultadoTipo } from './modal-tipo/modal-tipo.component';
 
 import swal from 'sweetalert2';
 
@@ -31,6 +33,7 @@ export class TiposProductoComponent extends ListaPaginada<TipoProducto> implemen
 
   constructor(
     private tipoService: TipoProductoService,
+    private modalService: NgbModal,
     public auth: AuthService
   ) {
     super();
@@ -47,6 +50,21 @@ export class TiposProductoComponent extends ListaPaginada<TipoProducto> implemen
 
   ngOnInit(): void {
     this.getTipos();
+  }
+
+  /** Abre el modal para registrar una categoria nueva o, si se recibe una, editarla. */
+  abrirModal(tipo?: TipoProducto): void {
+    const modalRef = this.modalService.open(ModalTipoComponent, { centered: true, backdrop: 'static' });
+    modalRef.componentInstance.id = tipo ? tipo.idTipoProducto : null;
+
+    modalRef.result.then(
+      (resultado: ResultadoTipo) => {
+        this.cargar();
+        const detalle = `${resultado.response.mensaje}: ${resultado.response.tipoProducto.tipoProducto}`;
+        swal.fire(resultado.edicion ? 'Tipo Actualizado' : 'Tipo Creado', detalle, 'success');
+      },
+      () => { /* modal cerrado sin guardar */ }
+    );
   }
 
   // listado de tipos normal

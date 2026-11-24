@@ -3,9 +3,11 @@ import { Page } from 'src/app/models/page';
 import { ListaPaginada } from 'src/app/utils/lista-paginada';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MarcaProducto } from 'src/app/models/marca-producto';
 import { AuthService } from 'src/app/services/auth.service';
 import { MarcaProductoService } from 'src/app/services/marca-producto.service';
+import { ModalMarcaComponent, ResultadoMarca } from './modal-marca/modal-marca.component';
 
 import swal from 'sweetalert2';
 
@@ -30,6 +32,7 @@ export class MarcasProductoComponent extends ListaPaginada<MarcaProducto> implem
   constructor(
     private marcaService: MarcaProductoService,
     private activatedRoute: ActivatedRoute,
+    private modalService: NgbModal,
     public auth: AuthService
   ) {
     super();
@@ -50,6 +53,25 @@ export class MarcasProductoComponent extends ListaPaginada<MarcaProducto> implem
 
   getMarcas(): void{
     this.cargar();
+  }
+
+  /** Abre el modal para registrar una marca nueva o, si se recibe una, editarla. */
+  abrirModal(marca?: MarcaProducto): void {
+    const modalRef = this.modalService.open(ModalMarcaComponent, { centered: true, backdrop: 'static' });
+    modalRef.componentInstance.id = marca ? marca.idMarcaProducto : null;
+
+    modalRef.result.then(
+      (resultado: ResultadoMarca) => {
+        this.cargar();
+        const nombre = resultado.response.marca.marca;
+        if (resultado.edicion) {
+          swal.fire('Marca Actualizada', `${resultado.response.mensaje}: ${nombre} fué actualizada con éxito!`, 'success');
+        } else {
+          swal.fire('Marca Guardada', `${resultado.response.mensaje}: ${nombre}`, 'success');
+        }
+      },
+      () => { /* modal cerrado sin guardar */ }
+    );
   }
 
   delete(marcaProducto: MarcaProducto): void{

@@ -13,81 +13,82 @@
 </div>
 <!-- /.content-header -->
 
-<div class="row">
+<div class="card tm-form tm-form--medium">
+    <div class="card-header">
+        <h3 class="card-title">Datos del pago</h3>
+    </div>
 
-    <div class="col-md-9">
-        <div class="card card-red">
-            <div class="card-header">
-                <h3 class="card-title">Ingrese los datos</h3>
-            </div>
-            <!-- /.card-header -->
-            <!-- form start -->
-            <form>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="cliente">Cliente</label>
-                                <input class="form-control" type="text" name="usuario"
-                                    value="{{cliente.nombre}}" [disabled]="cliente">
-                            </div>
-                        </div>
+    <form>
+        <div class="card-body">
 
-                        <div class="col">
-                            <label for="buscar" style="display: block;">Buscar</label>
-                            <input #mybuscar type="text" id="buscar" name="buscar" class="form-control"
-                                style="width: 70%; display: inline; margin-right: 10px;">
+            <!-- CLIENTE Y BUSQUEDA DE LA NOTA DE CREDITO -->
+            <section class="tm-section">
+                <h4 class="tm-section-title">Cliente</h4>
 
-                            <button type="button" role="button" class="btn bg-fuchsia" data-toggle="modal"
-                                data-target="#modal-notas-credito">
+                <div class="tm-grid">
+                    <div class="tm-field">
+                        <label for="cliente">Cliente</label>
+                        <input class="form-control" type="text" name="usuario" id="cliente"
+                            value="{{cliente.nombre}}" [disabled]="cliente">
+                    </div>
+
+                    <div class="tm-field">
+                        <label for="buscar">Buscar nota de crédito</label>
+                        <div class="tm-input-action">
+                            <input #mybuscar type="text" id="buscar" name="buscar" class="form-control">
+
+                            <button type="button" role="button" class="btn btn-outline-primary" data-toggle="modal"
+                                data-target="#modal-notas-credito" aria-label="Buscar nota de crédito">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
                     </div>
-                    <hr>
+                </div>
+            </section>
 
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="id-nota-credito">Nota Cr&eacute;dito</label>
-                                <input type="text" class="form-control" name="id-nota-credito" id="id-nota-credito"
-                                    [(ngModel)]="notaCredito.idNotaCredito" disabled>
-                            </div>
-                        </div>
+            <!-- NOTA DE CREDITO SELECCIONADA -->
+            <section class="tm-section">
+                <h4 class="tm-section-title">Nota de crédito</h4>
 
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="fecha-creacion">Fecha Creaci&oacute;n</label>
-                                <input type="text" class="form-control" name="fecha-creacion" id="fecha-creacion"
-                                    value="{{notaCredito.fechaCreacion | date: 'dd-MM-yyyy HH:mm'}}" disabled>
-                            </div>
-                        </div>
-
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="restante">Saldo Restante</label>
-                                <input type="text" class="form-control" name="restante" id="restante"
-                                    value="{{notaCredito.restante | currency: 'Q' : 'symbol'}}">
-                            </div>
-                        </div>
+                <div class="tm-grid">
+                    <div class="tm-field">
+                        <label for="id-nota-credito">Nota de crédito</label>
+                        <input type="text" class="form-control" name="id-nota-credito" id="id-nota-credito"
+                            [(ngModel)]="notaCredito.idNotaCredito" disabled>
                     </div>
-                    <hr>
 
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="nombre">Monto</label>
-                                <input type="number" class="form-control" name="nombre" [(ngModel)]="pagoParcial.pago">
+                    <div class="tm-field">
+                        <label for="fecha-creacion">Fecha de creación</label>
+                        <input type="text" class="form-control" name="fecha-creacion" id="fecha-creacion"
+                            value="{{notaCredito.fechaCreacion | date: 'dd-MM-yyyy HH:mm'}}" disabled>
+                    </div>
 
-                            </div>
-                        </div>
+                    <div class="tm-field">
+                        <label for="restante">Saldo restante</label>
+                        <input type="text" class="form-control" name="restante" id="restante"
+                            value="{{notaCredito.restante | currency: 'Q' : 'symbol'}}">
                     </div>
                 </div>
-                <div class="card-footer">
-                    <input type="submit" value="Guardar" class="btn bg-gradient-info" (click)="createPagoParcial()">
+            </section>
+
+            <!-- PAGO -->
+            <section class="tm-section">
+                <h4 class="tm-section-title">Pago</h4>
+
+                <div class="tm-grid">
+                    <div class="tm-field">
+                        <label for="monto">Monto</label>
+                        <input type="number" class="form-control" name="nombre" id="monto"
+                            [(ngModel)]="pagoParcial.pago">
+                    </div>
                 </div>
-            </form>
+            </section>
         </div>
-    </div>
 
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary btn-lg" (click)="createPagoParcial()">
+                Guardar pago
+            </button>
+        </div>
+    </form>
 </div>

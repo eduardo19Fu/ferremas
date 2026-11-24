@@ -1,0 +1,30 @@
+<form #paisForm="ngForm" (ngSubmit)="guardar()" class="tm-form" autocomplete="off">
+    <div class="modal-header">
+        <h4 class="modal-title">{{ title }}</h4>
+        <button type="button" class="close" aria-label="Cerrar" (click)="activeModal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div class="modal-body">
+        <div class="tm-field">
+            <label for="nombre">Nombre del país</label>
+            <input #campo type="text" class="form-control" id="nombre" name="nombre"
+                [(ngModel)]="pais.nombre" placeholder="Ingrese el nombre del país" required
+                #nombre="ngModel">
+
+            <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
+                <span class="requerido" *ngIf="nombre.errors.required">
+                    El nombre del país no puede estar vacío.
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="!paisForm.form.valid || guardando">
+            {{ esEdicion ? 'Actualizar' : 'Guardar' }}
+        </button>
+    </div>
+</form>

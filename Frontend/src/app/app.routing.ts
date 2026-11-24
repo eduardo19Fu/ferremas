@@ -7,9 +7,7 @@ import { ProductosComponent } from './components/productos/productos.component';
 import { HomeComponent } from './components/home/home.component';
 import { MarcasProductoComponent } from './components/marcas-producto/marcas-producto.component';
 import { CreateProductoComponent } from './components/productos/create-producto/create-producto.component';
-import { CreateMarcaComponent } from './components/marcas-producto/create-marca/create-marca.component';
 import { TiposProductoComponent } from './components/tipos-producto/tipos-producto.component';
-import { CreateTipoComponent } from './components/tipos-producto/create-producto/create-tipo.component';
 import { FacturasComponent } from './components/facturas/facturas.component';
 import { CreateFacturaComponent } from './components/facturas/create-factura/create-factura.component';
 import { CorrelativosComponent } from './components/correlativos/correlativos.component';
@@ -26,7 +24,6 @@ import { CreateProveedorComponent } from './components/proveedores/create-provee
 import { AuthGuard } from './components/usuarios/guards/auth.guard';
 import { RoleGuard } from './components/usuarios/guards/role.guard';
 import { PaisesComponent } from './components/paises/paises.component';
-import { CreatePaisComponent } from './components/paises/create-pais/create-pais.component';
 import { ComprasComponent } from './components/compras/compras.component';
 import { CreateCompraComponent } from './components/compras/create-compra/create-compra.component';
 import { EnviosComponent } from './components/envios/envios.component';
@@ -47,11 +44,7 @@ const appRoutes: Routes = [
     {path: 'productos/create', component: CreateProductoComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_INVENTARIO']}},
     {path: 'productos/create/:id', component: CreateProductoComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_INVENTARIO']}},
     {path: 'productos/marcas/index', component: MarcasProductoComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_INVENTARIO']}},
-    {path: 'productos/marcas/create', component: CreateMarcaComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_INVENTARIO']}},
-    {path: 'productos/marcas/create/:id', component: CreateMarcaComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_INVENTARIO']}},
     {path: 'productos/categorias/index', component: TiposProductoComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_INVENTARIO']}},
-    {path: 'productos/categorias/create', component: CreateTipoComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_INVENTARIO']}},
-    {path: 'productos/categorias/create/:id', component: CreateTipoComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_INVENTARIO']}},
     {path: 'productos/inventario/index', component: MovimientosProductoComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_INVENTARIO']}},
     {path: 'productos/inventario/create', component: CreateMovimientoComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_INVENTARIO']}},
 
@@ -93,8 +86,6 @@ const appRoutes: Routes = [
 
     /****** MENUS DE CLIENTES ******/
     {path: 'paises/index', component: PaisesComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_INVENTARIO']}},
-    {path: 'paises/create', component: CreatePaisComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_INVENTARIO']}},
-    {path: 'paises/create/:id', component: CreatePaisComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN', 'ROLE_INVENTARIO']}},
 
     /****** MENUS DE USUARIOS ******/
     {path: 'usuarios/index', component: UsuariosComponent, canActivate: [AuthGuard, RoleGuard], data: {role: ['ROLE_ADMIN']}},

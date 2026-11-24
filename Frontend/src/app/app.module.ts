@@ -22,12 +22,12 @@ import { FacturasComponent } from './components/facturas/facturas.component';
 import { CreateFacturaComponent } from './components/facturas/create-factura/create-factura.component';
 import { DetailFacturaComponent } from './components/facturas/detail/detail-factura.component';
 import { MarcasProductoComponent } from './components/marcas-producto/marcas-producto.component';
-import { CreateMarcaComponent } from './components/marcas-producto/create-marca/create-marca.component';
+import { ModalMarcaComponent } from './components/marcas-producto/modal-marca/modal-marca.component';
 import { ProductosComponent } from './components/productos/productos.component';
 import { CreateProductoComponent } from './components/productos/create-producto/create-producto.component';
 import { DetailProductoComponent } from './components/productos/detail-producto/detail-producto.component';
 import { TiposProductoComponent } from './components/tipos-producto/tipos-producto.component';
-import { CreateTipoComponent } from './components/tipos-producto/create-producto/create-tipo.component';
+import { ModalTipoComponent } from './components/tipos-producto/modal-tipo/modal-tipo.component';
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
 import { CreateUsuarioComponent } from './components/usuarios/create-usuario/create-usuario.component';
 import { DetailUsuarioComponent } from './components/usuarios/detail-usuario/detail-usuario.component';
@@ -45,7 +45,7 @@ import { ModalBuscarProductoMovimientoComponent } from './components/movimientos
 import { ProveedoresComponent } from './components/proveedores/proveedores.component';
 import { PaisesComponent } from './components/paises/paises.component';
 import { CreateProveedorComponent } from './components/proveedores/create-proveedor/create-proveedor.component';
-import { CreatePaisComponent } from './components/paises/create-pais/create-pais.component';
+import { ModalPaisComponent } from './components/paises/modal-pais/modal-pais.component';
 import { ComprasComponent } from './components/compras/compras.component';
 import { CreateCompraComponent } from './components/compras/create-compra/create-compra.component';
 import { ModalDetalleCompraComponent } from './components/compras/modal-detalle-compra/modal-detalle-compra.component';
@@ -93,12 +93,12 @@ import { TamanioPaginaComponent } from './components/shared/tamanio-pagina/taman
     CreateFacturaComponent,
     DetailFacturaComponent,
     MarcasProductoComponent,
-    CreateMarcaComponent,
+    ModalMarcaComponent,
     ProductosComponent,
     CreateProductoComponent,
     DetailProductoComponent,
     TiposProductoComponent,
-    CreateTipoComponent,
+    ModalTipoComponent,
     UsuariosComponent,
     CreateUsuarioComponent,
     DetailUsuarioComponent,
@@ -116,7 +116,7 @@ import { TamanioPaginaComponent } from './components/shared/tamanio-pagina/taman
     ProveedoresComponent,
     PaisesComponent,
     CreateProveedorComponent,
-    CreatePaisComponent,
+    ModalPaisComponent,
     ComprasComponent,
     CreateCompraComponent,
     ModalDetalleCompraComponent,

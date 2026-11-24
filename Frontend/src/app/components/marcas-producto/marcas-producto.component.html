@@ -5,10 +5,10 @@
             <div class="col-sm-6">
                 <h1>{{title}}</h1>
                 <br>
-                <a [routerLink]="['/productos/marcas/create']" class="btn bg-gradient-success">
+                <button type="button" class="btn bg-gradient-success" (click)="abrirModal()">
                     <i class="fas fa-plus-circle"></i>
                     Nuevo
-                </a>
+                </button>
             </div>
         </div>
     </div><!-- /.container-fluid -->
@@ -56,7 +56,7 @@
                     <td data-label="Opciones" class="center-options" *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_INVENTARIO')">
 
                         <button class="btn bg-gradient-info margin" type="button" name="edit" placement="top" ngbTooltip="Editar Marca"
-                            [routerLink]="['/productos/marcas/create', marca.idMarcaProducto]">
+                            (click)="abrirModal(marca)">
 
                             <i class="fas fa-edit"></i>
                         </button>&nbsp;
