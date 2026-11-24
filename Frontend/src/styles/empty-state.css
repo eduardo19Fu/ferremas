@@ -1,0 +1,68 @@
+/* ==========================================================================
+   ESTADO VACIO — sin registros / sin resultados de busqueda
+   ========================================================================== */
+.tm-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: .5rem;
+  margin: .5rem 0 1rem;
+  padding: 2.5rem 1.25rem 2.25rem;
+  border: 1.5px dashed #dfe4ea;
+  border-radius: 14px;
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(var(--bt-accent), .06), transparent 60%),
+    var(--tm-head);
+  animation: tm-empty-in .25s ease both;
+}
+
+.tm-empty-icon {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  margin-bottom: .35rem;
+  border-radius: 50%;
+  color: rgb(var(--bt-accent));
+  background: rgba(var(--bt-accent), .10);
+  box-shadow: 0 0 0 8px rgba(var(--bt-accent), .05);
+}
+
+/* la busqueda sin resultados usa un tono ambar suave para diferenciarla del "vacio" */
+.tm-empty-icon.is-search {
+  color: rgb(168, 108, 0);
+  background: rgba(168, 108, 0, .10);
+  box-shadow: 0 0 0 8px rgba(168, 108, 0, .05);
+}
+
+.tm-empty-title {
+  margin: 0;
+  color: var(--tm-ink);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+}
+
+.tm-empty-text {
+  max-width: 34rem;
+  margin: 0 0 .5rem;
+  color: var(--tm-muted);
+  font-size: .92rem;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.tm-empty-text strong { color: var(--tm-ink); font-weight: 600; }
+
+@keyframes tm-empty-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (max-width: 575.98px) {
+  .tm-empty { padding: 1.75rem 1rem; }
+  .tm-empty-icon { width: 60px; height: 60px; }
+}
+
+@media (prefers-reduced-motion: reduce) { .tm-empty { animation: none; } }

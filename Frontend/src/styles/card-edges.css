@@ -1,0 +1,14 @@
+/* ==========================================================================
+   BORDES: la tarjeta tiene un borde definido y la franja de cabecera de la
+   tabla queda delimitada por lineas del mismo tono (no se funde con el borde)
+   ========================================================================== */
+
+.card {
+  border: 1px solid var(--tm-edge);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, .05);
+}
+
+.table.table-modern thead th {
+  border-top: 1px solid var(--tm-edge);
+  border-bottom: 1px solid var(--tm-edge);
+}

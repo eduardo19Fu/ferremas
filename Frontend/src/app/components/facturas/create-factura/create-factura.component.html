@@ -22,230 +22,222 @@
 </div>
 <!-- /.content-header -->
 
-<div class="row">
+<div class="tm-layout tm-layout--main-aside">
 
-    <div class="col-md-9">
-        <div class="card card-red">
-            <div class="card-header">
-                <h3 class="card-title">Ingrese los datos</h3>
-            </div>
-            <!-- /.card-header -->
-            <!-- form start -->
-            <form>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="usuario">Vendedor</label>
-                                <input class="form-control" type="text" name="usuario"
-                                    value="{{usuario.primerNombre + ' ' + usuario.apellido}}" [disabled]="usuario">
-                            </div>
+    <!-- DATOS DE LA VENTA -->
+    <div class="card tm-form">
+        <div class="card-header">
+            <h3 class="card-title">Datos de la venta</h3>
+        </div>
+
+        <form>
+            <div class="card-body">
+
+                <!-- VENDEDOR Y CORRELATIVO -->
+                <section class="tm-section">
+                    <h4 class="tm-section-title">Venta</h4>
+
+                    <div class="tm-grid tm-grid--narrow">
+                        <div class="tm-field">
+                            <label for="usuario">Vendedor</label>
+                            <input class="form-control" type="text" name="usuario" id="usuario"
+                                value="{{usuario.primerNombre + ' ' + usuario.apellido}}" [disabled]="usuario">
                         </div>
 
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="correlativo">Correlativo</label>
-                                <input type="text" class="form-control" name="correlativo"
-                                    [disabled]="correlativo.correlativoActual" [value]="correlativo.correlativoActual">
-                            </div>
+                        <div class="tm-field">
+                            <label for="correlativo">Correlativo</label>
+                            <input type="text" class="form-control" name="correlativo" id="correlativo"
+                                [disabled]="correlativo.correlativoActual" [value]="correlativo.correlativoActual">
                         </div>
 
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="serie">Serie</label>
-                                <input class="form-control" type="text" name="serie" [value]="correlativo.serie"
-                                    [disabled]="correlativo.serie">
-                            </div>
+                        <div class="tm-field">
+                            <label for="serie">Serie</label>
+                            <input class="form-control" type="text" name="serie" id="serie" [value]="correlativo.serie"
+                                [disabled]="correlativo.serie">
                         </div>
 
-                        <div class="col">
-                            <label for="buscar" style="display: block;">Buscar</label>
-                            <input #mybuscar type="text" id="buscar" name="buscar" class="form-control"
-                                style="width: 70%; display: inline; margin-right: 10px;" (keyup.enter)="buscarCliente()"
-                                autofocus>
+                        <div class="tm-field">
+                            <label for="buscar">Buscar cliente (NIT)</label>
+                            <div class="tm-input-action">
+                                <input #mybuscar type="text" id="buscar" name="buscar" class="form-control"
+                                    (keyup.enter)="buscarCliente()" autofocus>
 
-                            <button type="button" role="button" class="btn bg-fuchsia" data-toggle="modal"
-                                data-target="#modal-buscar-cliente">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="nit">NIT:</label>
-                                <input type="text" class="form-control" name="nit" #myNit
-                                    [(ngModel)]="cliente.nit">
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="nit">Identificaci&oacute;n:</label>
-                                <input type="text" class="form-control" name="identificacion" #myIdentificacion
-                                    [(ngModel)]="cliente.identificacion">
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="nombre">Nombre:</label>
-                                <input type="text" class="form-control" name="nombre" #myNombre
-                                    [(ngModel)]="cliente.nombre">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="direccion">Dirección:</label>
-                                <input type="text" class="form-control" name="direccion" #myDireccion
-                                    [(ngModel)]="cliente.direccion">
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-
-                    <div class="row">
-                        <div class="col-md-auto">
-                            <div class="form-group">
-                                <label for="codigo" style="display: block;">Codigo</label>
-                                <input type="text" class="form-control" name="codigo" id="codigo"
-                                    value="{{producto ? producto.codProducto : ''}}"
-                                    style="width: 70%; display: inline; margin-right: 10px;"
-                                    (keyup.enter)="buscarProducto()">
-
-                                <button type="button" class="btn bg-gradient-fuchsia" data-toggle="modal"
-                                    data-target="#modal-buscar-producto">
+                                <button type="button" role="button" class="btn btn-outline-primary" data-toggle="modal"
+                                    data-target="#modal-buscar-cliente" aria-label="Buscar cliente">
                                     <i class="fas fa-search"></i>
                                 </button>
-
                             </div>
                         </div>
+                    </div>
+                </section>
 
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="nombre">Producto</label>
-                                <input type="text" class="form-control" name="nombre"
-                                    value="{{producto ? producto.nombre : ''}}" [disabled]="producto.nombre">
+                <!-- CLIENTE -->
+                <section class="tm-section">
+                    <h4 class="tm-section-title">Cliente</h4>
 
-                            </div>
+                    <div class="tm-grid">
+                        <div class="tm-field">
+                            <label for="cliente-nit">NIT</label>
+                            <input type="text" class="form-control" name="nit" id="cliente-nit" #myNit
+                                [(ngModel)]="cliente.nit">
                         </div>
 
-                        <div class="col-sm-2">
-                            <div class="form-group">
-                                <label for="cantidad" style="display: block;">Cantidad</label>
-                                <input type="number" name="cantidad" id="cantidad" class="form-control"
-                                    style="width: 65%; display: inline; margin-right: 10px;" value="0"
-                                    (keyup.enter)="agregarLinea()" autofocus>
+                        <div class="tm-field">
+                            <label for="cliente-identificacion">Identificaci&oacute;n</label>
+                            <input type="text" class="form-control" name="identificacion" id="cliente-identificacion"
+                                #myIdentificacion [(ngModel)]="cliente.identificacion">
+                        </div>
 
-                                <button type="button" class="btn bg-gradient-cyan" (click)="agregarLinea()">
-                                    <i class="fas fa-plus-square"></i>
+                        <div class="tm-field">
+                            <label for="cliente-nombre">Nombre</label>
+                            <input type="text" class="form-control" name="nombre" id="cliente-nombre" #myNombre
+                                [(ngModel)]="cliente.nombre">
+                        </div>
+
+                        <div class="tm-field tm-span-all">
+                            <label for="cliente-direccion">Dirección</label>
+                            <input type="text" class="form-control" name="direccion" id="cliente-direccion" #myDireccion
+                                [(ngModel)]="cliente.direccion">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PRODUCTO A AGREGAR -->
+                <section class="tm-section">
+                    <h4 class="tm-section-title">Agregar producto</h4>
+
+                    <div class="tm-grid">
+                        <div class="tm-field">
+                            <label for="codigo">Código</label>
+                            <div class="tm-input-action">
+                                <input type="text" class="form-control" name="codigo" id="codigo"
+                                    value="{{producto ? producto.codProducto : ''}}"
+                                    (keyup.enter)="buscarProducto()">
+
+                                <button type="button" class="btn btn-outline-primary" data-toggle="modal"
+                                    data-target="#modal-buscar-producto" aria-label="Buscar producto">
+                                    <i class="fas fa-search"></i>
                                 </button>
                             </div>
                         </div>
+
+                        <div class="tm-field">
+                            <label for="producto-nombre">Producto</label>
+                            <input type="text" class="form-control" name="producto-nombre" id="producto-nombre"
+                                value="{{producto ? producto.nombre : ''}}" [disabled]="producto.nombre">
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="cantidad">Cantidad</label>
+                            <div class="tm-input-action">
+                                <input type="number" name="cantidad" id="cantidad" class="form-control" value="0"
+                                    (keyup.enter)="agregarLinea()" autofocus>
+
+                                <button type="button" class="btn btn-primary" (click)="agregarLinea()"
+                                    aria-label="Agregar producto a la venta">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- LISTADO DE PRODUCTOS AGREGADOS -->
+            <div class="card-body table-responsive">
+                <h4 class="tm-section-title">Productos de la venta</h4>
+
+                <p class="tm-hint" *ngIf="factura.itemsFactura.length === 0">
+                    Aún no se han agregado productos a esta venta.
+                </p>
+
+                <table class="table table-modern" *ngIf="factura.itemsFactura.length > 0">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Precio</th>
+                            <th>Segundo precio</th>
+                            <th>Cantidad</th>
+                            <th>Usar 2.º precio</th>
+                            <th>Total</th>
+                            <th>Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of factura.itemsFactura; let i = index">
+                            <td data-label="Producto">{{item.producto.nombre}}</td>
+                            <td data-label="Precio">{{item.producto.checked ? item.producto.segundoPrecio : item.producto.precioVenta | currency: "Q" : "symbol"}}</td>
+                            <td data-label="Segundo precio">{{item.producto.segundoPrecio ? item.producto.segundoPrecio : 0.0}}</td>
+                            <td data-label="Cantidad">
+                                <input type="number" id="cant" value="{{item.cantidad}}"
+                                    class="form-control tm-qty"
+                                    (change)="actualizarCantidad(item.producto.idProducto, $event)"
+                                    (keyup)="actualizarCantidad(item.producto.idProducto, $event)">
+                            </td>
+                            <td data-label="Usar 2.º precio">
+                                <input type="checkbox" class="tm-check" name="is-segundo-precio"
+                                    (change)="cambioSegundoPrecio($event, item)">
+                            </td>
+                            <td data-label="Total">{{item.producto.checked ? (item.calcularImporteSegundoPrecio() | currency: "Q" : "symbol") : (item.subTotalDescuento | currency: "Q" : "symbol")}}</td>
+                            <td data-label="Opciones" class="center-options">
+                                <button type="button" class="btn bg-gradient-danger" (click)="eliminarItem(i)"
+                                    aria-label="Quitar producto">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+
+    <!-- TOTAL Y CALCULO DE CAMBIO POR EFECTIVO PAGADO -->
+    <div class="tm-aside">
+        <div class="card tm-form">
+            <div class="card-header">
+                <h3 class="card-title">Total y cambio</h3>
+            </div>
+
+            <div class="card-body tm-stack">
+                <div class="tm-total">
+                    <span class="tm-total-label">Total</span>
+                    <span class="tm-total-amount">
+                        {{envio ? (envio.totalEnvio | currency: "Q" : "symbol")
+                                : (factura.calcularTotal() | currency: "Q": "symbol")}}
+                    </span>
+                </div>
+
+                <div *ngIf="envio">
+                    <div class="tm-stat">
+                        <span>Abonado</span>
+                        <strong>{{envio ? (envio.abono | currency: "Q" : "symbol") : ''}}</strong>
+                    </div>
+                    <div class="tm-stat">
+                        <span>Saldo pendiente</span>
+                        <strong>{{envio ? (envio.saldoPendiente | currency: "Q" : "symbol") : ''}}</strong>
                     </div>
                 </div>
 
-                <!-- LISTADO DE PRODUCTOS AGREGADOS -->
-                <div class="card-body table-responsive">
-                    <table class="table table-hover table-sm">
-                        <thead>
-                            <tr>
-                                <!-- <th>Codigo</th> -->
-                                <th>Producto</th>
-                                <th>Precio</th>
-                                <th>Segundo Precio</th>
-                                <th>Cantidad</th>
-                                <th>Segundo Precio</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let item of factura.itemsFactura; let i = index">
-                                <!-- <td>{{item.producto.codProducto}}</td> -->
-                                <td>{{item.producto.nombre}}</td>
-                                <td>{{item.producto.checked ? item.producto.segundoPrecio : item.producto.precioVenta | currency: "Q" : "symbol"}}</td>
-                                <td>{{item.producto.segundoPrecio ? item.producto.segundoPrecio : 0.0}}</td>
-                                <td>
-                                    <input type="number" id="cant" value="{{item.cantidad}}"
-                                        class="form-control col-sm-6"
-                                        (change)="actualizarCantidad(item.producto.idProducto, $event)"
-                                        (keyup)="actualizarCantidad(item.producto.idProducto, $event)">
-                                </td>
-                                <td>
-                                    <input type="checkbox" class="form-input-check" name="is-segundo-precio" id="is-segundo-precio"
-                                        (change)="cambioSegundoPrecio($event, item)">
-                                </td>
-
-                                <td>{{item.producto.checked ? (item.calcularImporteSegundoPrecio() | currency: "Q" : "symbol") : (item.subTotalDescuento | currency: "Q" : "symbol")}}</td>
-                                <td>
-                                    <button type="button" class="btn bg-gradient-danger" (click)="eliminarItem(i)">
-                                        X
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <br>
-                </div>  
-            </form>
-        </div>
-    </div>
-
-    <!-- VENTANA DE CALCULO DE CAMBIO POR EFECTIVO PAGADO -->
-    <div class="col-md-3">
-        <div class="card card-fuchsia">
-            <div class="card-header">
-                <h3 class="card-title">Calculo de Cambio y Total</h3>
-            </div>
-            <div class="card-body">
-                <h4>
-                    Total: 
-                    <span>
-                        <strong>
-                            {{envio ? (envio.totalEnvio | currency: "Q" : "symbol") 
-                                    : (factura.calcularTotal() | currency: "Q": "symbol")}}
-                        </strong>
-                    </span>
-                </h4>
-                <hr>
-                <h5 *ngIf="envio">
-                    Abonado:
-                    <span>
-                        <strong>
-                            {{envio ? (envio.abono | currency: "Q" : "symbol") : ''}}
-                        </strong>
-                    </span>
-                </h5>
-                <h5 *ngIf="envio">
-                    Saldo Pendiente:
-                    <span>
-                        <strong>
-                            {{envio ? (envio.saldoPendiente | currency: "Q" : "symbol") : ''}}
-                        </strong>
-                    </span>
-                </h5>
-                <hr *ngIf="envio">
-                <form action="">
-                    <div class="form-group">
-                        <label for="efectivo">Efectivo:</label>
+                <form action="" class="tm-stack">
+                    <div class="tm-field">
+                        <label for="efectivo">Efectivo</label>
                         <input #myEfectivo type="number" name="efectivo" id="efectivo" class="form-control"
                             (keyup)="calcularCambio($event)" [(ngModel)]="efectivo">
                     </div>
 
-                    <div class="form-group">
-                        <label for="">Cambio:</label>
-                        <h3>
-                            <span><strong>{{cambio | currency: "Q":"symbol"}}</strong></span>
-                        </h3>
+                    <div class="tm-total tm-total--neutral">
+                        <span class="tm-total-label">Cambio</span>
+                        <span class="tm-total-amount">{{cambio | currency: "Q":"symbol"}}</span>
                     </div>
                 </form>
             </div>
 
             <div class="card-footer">
-                <input type="submit" role="button" class="btn btn-primary" value="Pagar"
+                <button type="submit" role="button" class="btn btn-primary btn-lg"
                     [disabled]="!cliente.idCliente && (factura.itemsFactura.length <= 0)" (click)="createFactura()">
+                    Pagar
+                </button>
             </div>
         </div>
     </div>

@@ -1,0 +1,318 @@
+/* ==========================================================================
+   FORMULARIOS — sistema opt-in (clase .tm-form en la tarjeta)
+
+   Estructura:
+     <div class="card tm-form">
+       <div class="card-header"><h3 class="card-title">Titulo</h3></div>
+       <form>
+         <div class="card-body">
+           <section class="tm-section">
+             <h4 class="tm-section-title">Seccion</h4>
+             <div class="tm-grid">
+               <div class="tm-field"><label>..</label><input class="form-control"></div>
+               <div class="tm-field tm-span-all">..</div>
+             </div>
+           </section>
+         </div>
+         <div class="card-footer tm-form-actions"> botones </div>
+       </form>
+     </div>
+
+   Piezas:  .tm-layout (+ --main-aside / --halves)   .tm-grid   .tm-field   .tm-section
+            .tm-input-action   .tm-check   .tm-total / .tm-stat   .tm-form-actions
+   Todo se adapta a movil sin puntos de corte propios (la rejilla usa auto-fit).
+   ========================================================================== */
+
+/* ---- 1. Layout de pagina: tarjetas en columnas que apilan en movil ---- */
+.tm-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.tm-layout > .card { margin-bottom: 0; }
+
+@media (min-width: 992px) {
+  .tm-layout--main-aside { grid-template-columns: minmax(0, 1fr) 320px; }
+  .tm-layout--halves { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tm-aside { position: sticky; top: 1rem; }
+}
+
+/* ---- 2. Tarjeta del formulario: cabecera neutra (sin bloques de color) ---- */
+.card.tm-form { overflow: visible; }
+
+.card.tm-form > .card-header {
+  padding: 1rem 1.25rem;
+  background: transparent;
+  color: var(--tm-ink);
+  border-bottom: 1px solid var(--tm-line);
+}
+
+.card.tm-form > .card-header .card-title {
+  float: none;
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--tm-ink);
+}
+
+/* marca de acento antes del titulo */
+.card.tm-form > .card-header .card-title::before {
+  content: "";
+  flex: 0 0 4px;
+  height: 1.15em;
+  border-radius: 2px;
+  background: rgb(var(--bt-accent));
+}
+
+.tm-form .card-body { padding: 1.25rem; }
+
+/* ---- 3. Secciones ---- */
+.tm-section + .tm-section {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--tm-line);
+}
+
+.tm-section-title {
+  margin: 0 0 1rem;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--tm-muted);
+}
+
+/* ---- 4. Rejilla: columnas que se acomodan solas (1 columna en movil) ---- */
+.tm-grid {
+  --tm-col: 220px;                                   /* ancho minimo de cada campo */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--tm-col)), 1fr));
+  gap: 1rem 1.1rem;
+}
+
+.tm-grid--narrow { --tm-col: 150px; }
+.tm-grid--wide { --tm-col: 300px; }
+.tm-span-all { grid-column: 1 / -1; }
+.tm-span-2 { grid-column: span 2; }
+
+/* ---- 5. Campo: etiqueta + control + mensaje ---- */
+.tm-field {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  min-width: 0;
+  margin: 0;
+}
+
+.tm-field > label {
+  margin: 0;
+  font-size: .82rem;
+  font-weight: 600;
+  color: #475467;
+}
+
+/* asterisco en los campos obligatorios (usa el atributo required de Angular) */
+.tm-field:has(.form-control[required]) > label::after {
+  content: " *";
+  color: rgb(var(--bt-danger));
+}
+
+/* ---- 6. Controles ---- */
+.tm-form .form-control,
+.tm-form .custom-select {
+  height: 42px;
+  padding: .5rem .85rem;
+  border: 1px solid var(--tm-edge);
+  border-radius: 10px;
+  background-color: #fff;
+  color: var(--tm-ink);
+  font-size: 1rem;                                   /* 16px: evita el zoom automatico en iOS */
+  box-shadow: none;
+  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+
+.tm-form textarea.form-control { height: auto; min-height: 96px; resize: vertical; }
+
+.tm-form .form-control::placeholder { color: #9aa3b2; }
+.tm-form .form-control:hover:not(:disabled):not([readonly]) { border-color: #cfd6df; }
+
+.tm-form .form-control:focus,
+.tm-form .custom-select:focus {
+  border-color: rgb(var(--bt-accent));
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(var(--bt-accent), .18);
+}
+
+/* deshabilitado / solo lectura */
+.tm-form .form-control:disabled,
+.tm-form .form-control[readonly] {
+  background-color: #f4f6f9;
+  border-color: var(--tm-line);
+  color: var(--tm-muted);
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+/* select con flecha propia */
+.tm-form select.form-control,
+.tm-form .custom-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 2.4rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .85rem center;
+}
+
+/* ---- 7. Validacion: el borde se pone rojo solo cuando ya se mostro el mensaje ---- */
+.tm-form .form-control.ng-invalid:is(.ng-touched, .ng-dirty) {
+  border-color: rgb(var(--bt-danger));
+  box-shadow: 0 0 0 3px rgba(var(--bt-danger), .12);
+}
+
+.tm-form .requerido {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  margin-top: .1rem;
+  font-size: .78rem;
+  font-weight: 600;
+  color: rgb(var(--bt-danger));
+}
+
+.tm-form .requerido::before {
+  content: "\f06a";                                  /* fa-exclamation-circle */
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  font-size: .85em;
+}
+
+/* ---- 8. Campo + boton de accion (buscar, agregar) en una sola fila ---- */
+.tm-input-action { display: flex; align-items: stretch; gap: .5rem; }
+.tm-input-action .form-control { flex: 1 1 auto; min-width: 0; }
+.tm-input-action .btn { flex: 0 0 auto; min-width: 42px; height: 42px; padding: 0 .85rem; }
+
+/* ---- 9. Casilla ---- */
+.tm-check { width: 1.15rem; height: 1.15rem; margin: 0; accent-color: rgb(var(--bt-accent)); cursor: pointer; }
+
+/* ---- 10. Tabla de lineas dentro del formulario (mismo estilo que los listados) ---- */
+/* la tabla de lineas continua al cuerpo del formulario: sin doble espacio entre ambos */
+.tm-form .card-body + .card-body.table-responsive { padding-top: 0; }
+.tm-form .table.table-modern { margin-bottom: 0; }
+
+/* las cabeceras pueden ocupar dos lineas: evita el scroll horizontal en tarjetas estrechas */
+.tm-form .table.table-modern thead th { white-space: normal; vertical-align: middle; }
+
+/* tableta/escritorio: cabecera como franja cerrada y celdas con margen lateral.
+   (en movil las filas son tarjetas y usan el espaciado de tables-mobile.css) */
+@media (min-width: 768px) {
+  .tm-form .table.table-modern thead th,
+  .tm-form .table.table-modern tbody td { padding-left: .6rem; padding-right: .6rem; }
+
+  .tm-form .table.table-modern thead th:first-child {
+    border-left: 1px solid var(--tm-edge);
+    border-radius: 10px 0 0 10px;
+    padding-left: 1rem;
+  }
+  .tm-form .table.table-modern thead th:last-child {
+    border-right: 1px solid var(--tm-edge);
+    border-radius: 0 10px 10px 0;
+    padding-right: 1rem;
+  }
+  .tm-form .table.table-modern tbody td:first-child { padding-left: 1rem; }
+  .tm-form .table.table-modern tbody td:last-child { padding-right: 1rem; }
+}
+
+/* campos dentro de la tabla: mas compactos */
+.tm-form .table .form-control { height: 38px; padding: .3rem .6rem; }
+.tm-form .table .tm-qty { width: 84px; }
+
+.tm-hint {
+  margin: 0;
+  padding: 1.25rem;
+  border: 1.5px dashed #dfe4ea;
+  border-radius: 12px;
+  background: var(--tm-head);
+  color: var(--tm-muted);
+  font-size: .92rem;
+  text-align: center;
+}
+
+/* ---- 11. Resumen: total, cambio y datos de apoyo ---- */
+.tm-total {
+  display: flex;
+  flex-direction: column;
+  gap: .15rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(var(--bt-accent), .18);
+  border-radius: 12px;
+  background: rgba(var(--bt-accent), .07);
+}
+
+.tm-total--neutral { border-color: var(--tm-line); background: var(--tm-head); }
+
+.tm-total-label {
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--tm-muted);
+}
+
+.tm-total-amount {
+  font-size: 1.9rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: rgb(var(--bt-accent));
+  font-variant-numeric: tabular-nums;
+  word-break: break-word;
+}
+
+.tm-total--neutral .tm-total-amount { color: var(--tm-ink); }
+
+.tm-stat {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .55rem 0;
+  border-bottom: 1px dashed var(--tm-line);
+  font-size: .92rem;
+  color: var(--tm-muted);
+}
+.tm-stat strong { color: var(--tm-ink); font-variant-numeric: tabular-nums; }
+
+.tm-stack { display: flex; flex-direction: column; gap: 1rem; }
+
+/* ---- 12. Barra de acciones ---- */
+.card.tm-form > .card-footer,
+.tm-form form > .card-footer,
+.tm-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: .6rem;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--tm-line);
+  background: var(--tm-head);
+  border-radius: 0 0 12px 12px;
+}
+
+/* ---- 13. Movil ---- */
+@media (max-width: 575.98px) {
+  .tm-span-2 { grid-column: 1 / -1; }
+
+  .tm-form .card-body { padding: 1rem; }
+  .card.tm-form > .card-header { padding: .85rem 1rem; }
+
+  .tm-total-amount { font-size: 1.6rem; }
+
+  /* acciones a todo el ancho, la principal primero */
+  .card.tm-form > .card-footer .btn,
+  .tm-form form > .card-footer .btn,
+  .tm-form-actions .btn { flex: 1 1 100%; }
+}
