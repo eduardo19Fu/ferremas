@@ -72,8 +72,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       ruta: '/compras/create', roles: [ADMIN, INVENTARIO] },
     { etiqueta: 'Movimiento', descripcion: 'Ajustar existencias', icono: 'fa-exchange-alt',
       ruta: '/productos/inventario/create', roles: [ADMIN, INVENTARIO] },
-    { etiqueta: 'Nuevo envío', descripcion: 'Pedido a domicilio', icono: 'fa-truck',
-      ruta: '/envios/create', roles: [ADMIN, INVENTARIO] },
     { etiqueta: 'Reportes', descripcion: 'Informes y pólizas', icono: 'fa-chart-line',
       ruta: '/reportes/main', roles: [ADMIN] }
   ];
