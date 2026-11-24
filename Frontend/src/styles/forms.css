@@ -210,6 +210,43 @@
 .tm-input-action .form-control { flex: 1 1 auto; min-width: 0; }
 .tm-input-action .btn { flex: 0 0 auto; min-width: 42px; height: 42px; padding: 0 .85rem; }
 
+/* ---- 8b. Campo con icono a la izquierda (y, opcional, un boton a la derecha) ---- */
+.tm-input-icon { position: relative; }
+
+.tm-input-icon > i.fas:first-child {
+  position: absolute;
+  top: 50%;
+  left: .95rem;
+  transform: translateY(-50%);
+  font-size: .9rem;
+  color: #98a2b3;
+  pointer-events: none;
+  transition: color .15s ease;
+}
+
+.tm-input-icon .form-control { padding-left: 2.6rem; }
+.tm-input-icon:focus-within > i.fas:first-child { color: rgb(var(--bt-accent)); }
+
+.tm-input-icon--action .form-control { padding-right: 2.9rem; }
+
+.tm-input-icon__action {
+  position: absolute;
+  top: 50%;
+  right: .35rem;
+  width: 34px;
+  height: 34px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #98a2b3;
+  transition: background-color .15s ease, color .15s ease;
+}
+.tm-input-icon__action:hover { background: var(--tm-hover); color: var(--tm-ink); }
+.tm-input-icon__action:focus-visible { outline: 2px solid rgba(var(--bt-accent), .45); outline-offset: 1px; }
+
 /* ---- 9. Casilla ---- */
 .tm-check { width: 1.15rem; height: 1.15rem; margin: 0; accent-color: rgb(var(--bt-accent)); cursor: pointer; }
 

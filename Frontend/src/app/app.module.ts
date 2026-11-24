@@ -70,6 +70,7 @@ import { TablaSkeletonComponent } from './components/shared/tabla-skeleton/tabla
 import { SinRegistrosComponent } from './components/shared/sin-registros/sin-registros.component';
 import { ThSortableDirective } from './components/shared/th-sortable/th-sortable.directive';
 import { TamanioPaginaComponent } from './components/shared/tamanio-pagina/tamanio-pagina.component';
+import { LogoComponent } from './components/shared/logo/logo.component';
 
 @NgModule({
   declarations: [
@@ -79,6 +80,7 @@ import { TamanioPaginaComponent } from './components/shared/tamanio-pagina/taman
     SinRegistrosComponent,
     ThSortableDirective,
     TamanioPaginaComponent,
+    LogoComponent,
     LoginComponent,
     SidebarComponent,
     HeaderComponent,
