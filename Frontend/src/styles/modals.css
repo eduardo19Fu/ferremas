@@ -3,6 +3,15 @@
    Aplica a todos los .modal-content; los formularios dentro de un modal usan
    ademas la clase .tm-form (controles, rejilla, validacion) de forms.css.
    ========================================================================== */
+/* ng-bootstrap 12+ esta pensado para Bootstrap 5: fija el fondo (backdrop) en z-index 1055, pero con Bootstrap 4
+   la ventana (.modal) queda en 1050 y el fondo oscuro la tapa. Se sube la ventana por encima del fondo. */
+ngb-modal-window.modal {
+  z-index: 1060 !important;
+}
+ngb-modal-backdrop.modal-backdrop {
+  z-index: 1055 !important;
+}
+
 .modal-content {
   border: 1px solid var(--tm-edge);
   border-radius: 14px;
