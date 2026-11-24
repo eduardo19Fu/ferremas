@@ -1,6 +1,6 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 
 import { AuthService } from '../../../services/auth.service';
 import { MovimientosProductoService } from '../../../services/movimientos/movimientos-producto.service';
@@ -28,7 +28,7 @@ export class CreateMovimientoComponent implements OnInit, AfterViewInit {
   usuario: UsuarioAuxiliar;
   movimientoProducto: MovimientoProducto;
   producto: Producto;
-  modalForm: FormGroup;
+  modalForm: UntypedFormGroup;
 
   productos: Producto[];
   tiposMovimiento: TipoMovimiento[];
