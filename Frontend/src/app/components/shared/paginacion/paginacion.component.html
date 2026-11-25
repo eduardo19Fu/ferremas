@@ -10,7 +10,7 @@
         <strong>{{desde}}–{{hasta}}</strong> de <strong>{{totalElements}}</strong> registros
     </div>
 
-    <ul class="pagination pagination-sm mb-0 tm-pag-nav" *ngIf="totalPages > 1">
+    <ul class="pagination pagination-sm mb-0 tm-pag-nav" *ngIf="totalPages > 1 || siempreNav">
         <li class="page-item d-none d-sm-block" [class.disabled]="page === 0">
             <a class="page-link" href="javascript:void(0)" (click)="ir(0)" title="Primera página" aria-label="Primera página">
                 <i class="fas fa-angle-double-left"></i>
@@ -25,14 +25,14 @@
             <a class="page-link" href="javascript:void(0)" (click)="ir(p)">{{p + 1}}</a>
         </li>
         <li class="page-item d-sm-none active">
-            <span class="page-link">{{page + 1}} / {{totalPages}}</span>
+            <span class="page-link">{{page + 1}} / {{paginasTotales}}</span>
         </li>
-        <li class="page-item" [class.disabled]="page >= totalPages - 1">
+        <li class="page-item" [class.disabled]="page >= paginasTotales - 1">
             <a class="page-link" href="javascript:void(0)" (click)="ir(page + 1)" title="Siguiente" aria-label="Siguiente">
                 <i class="fas fa-angle-right"></i>
             </a>
         </li>
-        <li class="page-item d-none d-sm-block" [class.disabled]="page >= totalPages - 1">
+        <li class="page-item d-none d-sm-block" [class.disabled]="page >= paginasTotales - 1">
             <a class="page-link" href="javascript:void(0)" (click)="ir(totalPages - 1)" title="Última página" aria-label="Última página">
                 <i class="fas fa-angle-double-right"></i>
             </a>

@@ -18,6 +18,9 @@ public interface IFacturaService {
 	public List<Factura> findAll();
 	
 	public Page<Factura> findAll(Pageable pageable);
+
+	/** Detalle (productos) de una factura, paginado. */
+	public Page<com.aglayatech.licorstore.model.dto.DetalleFacturaItem> findDetalle(Long idFactura, Pageable pageable);
 	
 	public Factura findFactura(Long idfactura);
 

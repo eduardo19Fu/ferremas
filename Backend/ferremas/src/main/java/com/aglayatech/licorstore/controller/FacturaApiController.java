@@ -402,6 +402,24 @@ public class FacturaApiController {
 		return serviceFactura.search(search, pageable);
 	}
 
+	private static final java.util.Map<String, String> SORT_DETALLE_FACTURA = java.util.Map.of(
+			"idDetalle", "idDetalle", "codProducto", "p.codProducto", "nombreProducto", "p.nombre",
+			"cantidad", "cantidad", "precioUnitario", "precioUnitario", "subTotal", "subTotal",
+			"descuento", "descuento", "subTotalDescuento", "subTotalDescuento");
+
+	/** Detalle de una factura (sus productos), paginado y ordenable; lo usa el modal de detalle. */
+	@Secured(value = {"ROLE_ADMIN", "ROLE_COBRADOR"})
+	@GetMapping("/facturas/{id}/detalle")
+	public org.springframework.data.domain.Page<com.aglayatech.licorstore.model.dto.DetalleFacturaItem> detalle(
+			@PathVariable("id") Long idFactura,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size,
+			@RequestParam(required = false) String sort) {
+		int pageSize = Math.min(Math.max(size, 1), 100);
+		org.springframework.data.domain.Sort order = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_DETALLE_FACTURA, org.springframework.data.domain.Sort.by("idDetalle").ascending(), "idDetalle");
+		return serviceFactura.findDetalle(idFactura, org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, order));
+	}
+
 	/** Exporta a Excel todas las facturas que coinciden con la busqueda y el rango de fechas del listado. */
 	@Secured(value = {"ROLE_ADMIN", "ROLE_COBRADOR"})
 	@GetMapping("/facturas/exportar")

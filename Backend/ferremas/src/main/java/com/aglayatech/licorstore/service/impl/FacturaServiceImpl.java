@@ -159,6 +159,11 @@ public class FacturaServiceImpl implements IFacturaService {
 	}
 
 	@Override
+	public org.springframework.data.domain.Page<com.aglayatech.licorstore.model.dto.DetalleFacturaItem> findDetalle(Long idFactura, Pageable pageable) {
+		return repoFactura.findDetalle(idFactura, pageable);
+	}
+
+	@Override
 	public org.springframework.data.domain.Page<Factura> searchPorFechas(String termino, java.util.Date fechaIni, java.util.Date fechaFin, org.springframework.data.domain.Pageable pageable) {
 		String t = termino == null ? "" : termino.trim();
 		return repoFactura.searchPorFechas(t, fechaIni, fechaFin, pageable);

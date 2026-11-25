@@ -1,82 +1,108 @@
-<div *ngIf="detailService.modal" class="abrir-modal animacion fadeIn">
-    <div class="modal" tabindex="-1" style="display: block; overflow-y: scroll;">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content tm-form">
+<div *ngIf="detailService.modal" class="df-fondo" (click)="cerrarModal()">
+    <div class="modal" tabindex="-1" style="display: block; overflow-y: auto;" role="dialog" aria-modal="true"
+        aria-labelledby="df-titulo">
+        <div class="modal-dialog modal-lg modal-dialog-centered" (click)="$event.stopPropagation()">
+            <div class="modal-content tm-form df" *ngIf="factura">
+
                 <div class="modal-header">
-                    <h5 class="modal-title">{{title}}</h5>
-                    <button (click)="cerrarModal()" id="close" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <h5 class="modal-title" id="df-titulo">{{title}}</h5>
+                    <button (click)="cerrarModal()" id="close" type="button" class="close" aria-label="Cerrar">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <div class="container">
-                        <h4>Datos Generales</h4>
-                        <div class="row">
-                            <div class="col-sm">
 
-                                <ul *ngIf="factura" class="list-group mb-3">
-                                    <li class="list-group-item">
-                                        <strong>TRANSACCIÓN: </strong>
-                                        {{factura.idFactura}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>NO. FACTURA: </strong>
-                                        {{factura.noFactura}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>TOTAL: </strong>
-                                        {{factura.total | currency: "Q" : "symbol"}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>FECHA EMISIÓN: </strong>
-                                        {{factura.fecha | date: 'dd/MM/yyyy - hh:mm'}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>CLIENTE: </strong>
-                                        {{factura.cliente.nombre}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>VENDEDOR: </strong>
-                                        {{factura.usuario.usuario}}
-                                    </li>
-                                </ul>
+                <div class="modal-body df-cuerpo">
 
-                            </div>
-
-
+                    <!-- portada: numero, estado y total -->
+                    <div class="df-hero" [class.df-hero--anulada]="anulada">
+                        <div class="df-hero__id">
+                            <span class="df-hero__tipo">Comprobante de venta</span>
+                            <h3 class="df-numero">
+                                Factura No. {{factura.noFactura}}
+                                <span *ngIf="factura.estado" class="df-estado"
+                                    [ngClass]="anulada ? 'df-estado--anulada' : 'df-estado--ok'">{{factura.estado.estado}}</span>
+                            </h3>
                         </div>
-                        <hr>
-                        <div class="row">
-                            <h4>Detalle de Factura</h4>&nbsp;
-                            <table class="table table-hover">
-                                <thead class="thead-dark">
+                        <div class="df-total">
+                            <small>Total</small>
+                            <strong>{{factura.total | currency: "Q" : "symbol"}}</strong>
+                        </div>
+                    </div>
+
+                    <!-- datos agrupados por categoria -->
+                    <div class="df-grupos">
+                        <section class="df-card df-card--cliente">
+                            <h5><i class="fas fa-user" aria-hidden="true"></i> Cliente</h5>
+                            <dl>
+                                <div><dt>Nombre</dt><dd>{{factura.cliente?.nombre || 'Consumidor final'}}</dd></div>
+                                <div><dt>NIT</dt><dd>{{factura.cliente?.nit || 'CF'}}</dd></div>
+                            </dl>
+                        </section>
+
+                        <section class="df-card df-card--venta">
+                            <h5><i class="fas fa-cash-register" aria-hidden="true"></i> Venta</h5>
+                            <dl>
+                                <div><dt>Fecha</dt><dd>{{factura.fecha | date: 'dd/MM/yyyy · hh:mm a'}}</dd></div>
+                                <div><dt>Vendedor</dt><dd>{{factura.usuario?.usuario || '—'}}</dd></div>
+                            </dl>
+                        </section>
+
+                        <section class="df-card df-card--documento">
+                            <h5><i class="fas fa-file-invoice" aria-hidden="true"></i> Documento</h5>
+                            <dl>
+                                <div><dt>Transacción</dt><dd>{{factura.idFactura}}</dd></div>
+                                <div><dt>Serie</dt><dd>{{factura.serie || '—'}}</dd></div>
+                            </dl>
+                        </section>
+                    </div>
+
+                    <!-- productos (paginado desde el backend) -->
+                    <div class="df-seccion">
+                        <h4>Productos <span class="df-cuenta" *ngIf="totalElements">{{totalElements}}</span></h4>
+                    </div>
+
+                    <div class="df-tabla">
+                        <div class="tabla-wrap">
+                            <div class="tabla-progreso" *ngIf="cargando && items.length"></div>
+                            <app-tabla-skeleton *ngIf="cargando && !items.length" [columnas]="6" [filas]="size"></app-tabla-skeleton>
+
+                            <table class="table table-modern" [class.cargando]="cargando" *ngIf="items.length > 0">
+                                <thead>
                                     <tr>
-                                        <th>Fila</th>
-                                        <th>Producto</th>
-                                        <th>Cantidad</th>
-                                        <th>SubTotal</th>
-                                        <th>Descuento</th>
-                                        <th>Descuento Aplicado</th>
+                                        <th tmSortable="cantidad" [sort]="sort" (tmSort)="onSort($event)">Cant.</th>
+                                        <th tmSortable="nombreProducto" [sort]="sort" (tmSort)="onSort($event)">Producto</th>
+                                        <th tmSortable="precioUnitario" [sort]="sort" (tmSort)="onSort($event)">Precio</th>
+                                        <th tmSortable="descuento" [sort]="sort" (tmSort)="onSort($event)">Desc.</th>
+                                        <th tmSortable="subTotal" [sort]="sort" (tmSort)="onSort($event)">Subtotal</th>
+                                        <th tmSortable="subTotalDescuento" [sort]="sort" (tmSort)="onSort($event)">Con descuento</th>
                                     </tr>
                                 </thead>
-
                                 <tbody>
-                                    <tr class="" *ngFor="let item of factura.itemsFactura; let i = index">
-                                        <td>{{item.idDetalle}}</td>
-                                        <td>{{item.producto.nombre}}</td>
-                                        <td>{{item.cantidad}}</td>
-                                        <td>{{item.subTotal | currency : "Q" : "symbol"}}</td>
-                                        <td>{{item.descuento + '%'}}</td>
-                                        <td>{{item.subTotalDescuento | currency: "Q" : "symbol"}}</td>
+                                    <tr *ngFor="let item of items">
+                                        <td data-label="Cant.">{{item.cantidad}}</td>
+                                        <td data-label="Producto">
+                                            {{item.nombreProducto}}
+                                            <small class="df-codigo" *ngIf="item.codProducto">{{item.codProducto}}</small>
+                                        </td>
+                                        <td data-label="Precio">{{item.precioUnitario | currency: "Q" : "symbol"}}</td>
+                                        <td data-label="Desc.">{{item.descuento ? (item.descuento + '%') : '—'}}</td>
+                                        <td data-label="Subtotal">{{item.subTotal | currency: "Q" : "symbol"}}</td>
+                                        <td data-label="Con descuento">{{item.subTotalDescuento | currency: "Q" : "symbol"}}</td>
                                     </tr>
                                 </tbody>
                             </table>
+
+                            <p class="df-vacio" *ngIf="!cargando && !items.length">Esta factura no tiene productos registrados.</p>
                         </div>
                     </div>
+
+                    <app-paginacion *ngIf="totalElements > 0" [siempreNav]="true" [sizes]="tamanios" [page]="page" [size]="size"
+                        [totalElements]="totalElements" [totalPages]="totalPages"
+                        (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
                 </div>
+
                 <div class="modal-footer">
-                    <button (click)="cerrarModal()" type="button" class="btn btn-secondary"
-                        data-dismiss="modal">Cerrar</button>
+                    <button (click)="cerrarModal()" type="button" class="btn btn-secondary">Cerrar</button>
                 </div>
             </div>
         </div>

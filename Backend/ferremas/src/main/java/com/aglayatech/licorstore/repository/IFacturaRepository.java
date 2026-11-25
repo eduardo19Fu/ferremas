@@ -13,6 +13,19 @@ import java.util.List;
 
 public interface IFacturaRepository extends JpaRepository<Factura, Long> {
 
+    /**
+     * Detalle de una factura, paginado. La relacion factura -> detalle es unidireccional, por eso se filtra con
+     * una subconsulta; la proyeccion trae solo las columnas necesarias (sin cargar el producto completo).
+     */
+    @Query(value = "select new com.aglayatech.licorstore.model.dto.DetalleFacturaItem("
+            + "d.idDetalle, p.codProducto, p.nombre, d.cantidad, d.precioUnitario, d.subTotal, d.descuento, d.subTotalDescuento) "
+            + "from DetalleFactura d join d.producto p "
+            + "where d.idDetalle in (select i.idDetalle from Factura f join f.itemsFactura i where f.idFactura = :idFactura)",
+            countQuery = "select count(d) from DetalleFactura d "
+            + "where d.idDetalle in (select i.idDetalle from Factura f join f.itemsFactura i where f.idFactura = :idFactura)")
+    org.springframework.data.domain.Page<com.aglayatech.licorstore.model.dto.DetalleFacturaItem> findDetalle(
+            @Param("idFactura") Long idFactura, org.springframework.data.domain.Pageable pageable);
+
     @Query(value = "Select get_cant_ventas()", nativeQuery = true)
     Integer getMaxVentas();
 

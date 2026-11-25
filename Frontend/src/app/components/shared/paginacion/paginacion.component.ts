@@ -16,6 +16,8 @@ export class PaginacionComponent {
   @Input() sizes: number[] = [10, 25, 50, 100];
   /** false cuando el selector "Mostrar" va en la barra superior de la tabla. */
   @Input() mostrarTamanio = true;
+  /** true para mostrar siempre el selector de paginas, aunque solo exista una. */
+  @Input() siempreNav = false;
 
   @Output() pageChange = new EventEmitter<number>();
   @Output() sizeChange = new EventEmitter<number>();
@@ -30,13 +32,19 @@ export class PaginacionComponent {
 
   /** Numeros de pagina visibles (ventana de 5 alrededor de la actual). */
   get paginas(): number[] {
-    const inicio = Math.max(0, Math.min(this.page - 2, this.totalPages - 5));
-    const fin = Math.min(this.totalPages, inicio + 5);
+    const total = this.paginasTotales;
+    const inicio = Math.max(0, Math.min(this.page - 2, total - 5));
+    const fin = Math.min(total, inicio + 5);
     const paginas: number[] = [];
     for (let i = inicio; i < fin; i++) {
       paginas.push(i);
     }
     return paginas;
+  }
+
+  /** Total de paginas para mostrar (al menos 1, para el caso de una sola pagina). */
+  get paginasTotales(): number {
+    return Math.max(this.totalPages, 1);
   }
 
   ir(pagina: number): void {
