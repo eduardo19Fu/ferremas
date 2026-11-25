@@ -277,6 +277,23 @@ public class CompraApiController {
 		return compraService.search(search, org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, order));
 	}
 
+	private static final java.util.Map<String, String> SORT_DETALLE_COMPRA = java.util.Map.of(
+			"idDetalleCompra", "idDetalleCompra", "codProducto", "p.codProducto", "nombreProducto", "p.nombre",
+			"cantidad", "cantidad", "precioUnitario", "precioUnitario", "subTotal", "subTotal");
+
+	/** Detalle de una compra (sus productos), paginado y ordenable; lo usa el modal de detalle. */
+	@Secured({"ROLE_ADMIN", "ROLE_INVENTARIO"})
+	@GetMapping("/compras/{id}/detalle")
+	public org.springframework.data.domain.Page<com.aglayatech.licorstore.model.dto.DetalleCompraItem> detalle(
+			@org.springframework.web.bind.annotation.PathVariable("id") Integer idCompra,
+			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
+			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "10") int size,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String sort) {
+		int pageSize = Math.min(Math.max(size, 1), 100);
+		org.springframework.data.domain.Sort order = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_DETALLE_COMPRA, org.springframework.data.domain.Sort.by("idDetalleCompra").ascending(), "idDetalleCompra");
+		return compraService.findDetalle(idCompra, org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, order));
+	}
+
 	/** Exporta a Excel todas las compras que coinciden con la busqueda del listado. */
 	@Secured({"ROLE_ADMIN", "ROLE_INVENTARIO"})
 	@GetMapping("/compras/exportar")

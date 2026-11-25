@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import { TipoComprobante } from '../../models/tipo-comprobante';
 
 import { Page } from 'src/app/models/page';
+import { DetalleCompraItem } from 'src/app/models/detalle-compra-item';
 
 @Injectable({
   providedIn: 'root'
@@ -89,5 +90,14 @@ export class CompraService {
       params.sort = sort;
     }
     return this.httpClient.get<Page<Compra>>(`${this.url}/compras/paginado`, { params });
+  }
+
+  /** Detalle (productos) de una compra, paginado desde el backend. */
+  getDetallePaginado(idCompra: number, page: number, size: number, sort: string = ''): Observable<Page<DetalleCompraItem>> {
+    const params: any = { page: String(page), size: String(size) };
+    if (sort) {
+      params.sort = sort;
+    }
+    return this.httpClient.get<Page<DetalleCompraItem>>(`${this.url}/compras/${idCompra}/detalle`, { params });
   }
 }
