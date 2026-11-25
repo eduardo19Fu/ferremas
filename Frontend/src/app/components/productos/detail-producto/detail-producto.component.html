@@ -1,92 +1,117 @@
-<div *ngIf="modalService.modal" class="abrir-modal animacion fadeIn">
-    <div class="modal" tabindex="-1" style="display: block; overflow-y: scroll;">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content tm-form">
+<div *ngIf="modalService.modal" class="dp-fondo" (click)="cerrarModal()">
+    <div class="modal" tabindex="-1" style="display: block; overflow-y: auto;" role="dialog" aria-modal="true"
+        aria-labelledby="dp-titulo" (keydown.escape)="cerrarModal()">
+        <div class="modal-dialog modal-lg modal-dialog-centered" (click)="$event.stopPropagation()">
+            <div class="modal-content tm-form dp" *ngIf="producto">
+
                 <div class="modal-header">
-                    <h5 class="modal-title">{{title}}</h5>
-                    <button (click)="cerrarModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <h5 class="modal-title" id="dp-titulo">{{title}}</h5>
+                    <button (click)="cerrarModal()" type="button" class="close" aria-label="Cerrar">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-sm">
 
-                                <ul *ngIf="producto" class="list-group mb-3">
-                                    <li class="list-group-item active">Detalle</li>
-                                    <li class="list-group-item">
-                                        <strong>Código</strong>
-                                        {{producto.codProducto}}
-                                    </li>
-                                    <li class="list-group-item ">
-                                        <strong>Producto:</strong>
-                                        {{producto.nombre}}</li>
-                                    <li class="list-group-item">
-                                        <strong>Categoría:</strong>
-                                        {{producto.tipoProducto.tipoProducto}}</li>
-                                    <li class="list-group-item">
-                                        <strong>Marca:</strong>
-                                        {{producto.marcaProducto.marca}}</li>
-                                    <li *ngIf="!auth.hasRole('ROLE_COBRADOR')" class="list-group-item">
-                                        <strong>Precio Costo:</strong>
-                                        {{producto.precioCompra | currency: "Q" : "symbol"}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>Precio Venta:</strong>
-                                        {{producto.precioVenta | currency: "Q" : "symbol"}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>Stock:</strong>
-                                        {{producto.stock}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>Fecha Ingreso:</strong>
-                                        {{producto.fechaIngreso}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>Página:</strong>&nbsp;
-                                        <a href="{{producto.link}}">{{producto.link}}</a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>Descripción:</strong>
-                                        {{producto.descripcion}}
-                                    </li>
-                                </ul>
+                <div class="modal-body dp-cuerpo">
 
-                                <div *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_INVENTARIO')"
-                                    class="input-group mb-3">
-                                    <div class="custom-file">
-                                        <input (change)="seleccionarImagen($event)" type="file"
-                                            class="custom-file-input" id="exampleInputFile">
-                                        <label class="custom-file-label" for="exampleInputFile">Seleccionar Foto</label>
-                                    </div>
-                                    <div class="input-group-append">
-                                        <button (click)="subirImagen()" [disabled]="!imagenSeleccionada"
-                                            class="input-group-text" id="" type="button">Subir</button>
-                                    </div>
-                                </div>
-
-                                <div *ngIf="progreso > 0" class="progress" style="height: 40px;">
-                                    <div class="progress-bar progress-bar-striped" role="progressbar"
-                                        [ngStyle]="{'width': progreso+ '%'}" attr.aria-valuenow="{{progreso}"
-                                        aria-valuemin="0" aria-valuemax="100">
-                                        {{progreso}}%
-                                    </div>
-                                </div>
+                    <!-- foto -->
+                    <div class="dp-foto-col">
+                        <div class="dp-foto" [class.dp-foto--vacia]="!producto.imagen">
+                            <img *ngIf="producto.imagen" [src]="imagenUrl" [alt]="producto.nombre">
+                            <div *ngIf="!producto.imagen" class="dp-foto__vacio">
+                                <i class="fas fa-image" aria-hidden="true"></i>
+                                <span>Sin foto</span>
                             </div>
-                            <div class="col-sm">
-                                <!--Mostrar Imagen guardada-->
-                                <img *ngIf="producto?.imagen"
-                                    src="http://localhost:8281/api/uploads/img/{{producto.imagen}}"
-                                    alt="{{producto.imagen}}" class="img-thumbnail rounded">
+                        </div>
+
+                        <div *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_INVENTARIO')" class="dp-subida">
+                            <input (change)="seleccionarImagen($event)" type="file" accept="image/*" id="dp-archivo"
+                                class="dp-archivo">
+                            <label for="dp-archivo" class="btn btn-sm btn-outline-secondary dp-elegir">
+                                <i class="fas fa-camera" aria-hidden="true"></i>
+                                <span class="dp-nombre-archivo">{{ imagenSeleccionada ? imagenSeleccionada.name : (producto.imagen ? 'Cambiar foto' : 'Elegir foto') }}</span>
+                            </label>
+                            <button (click)="subirImagen()" [disabled]="!imagenSeleccionada || (progreso > 0 && progreso < 100)"
+                                class="btn btn-sm btn-primary" type="button">
+                                <i class="fas fa-upload" aria-hidden="true"></i> Subir
+                            </button>
+                        </div>
+
+                        <div *ngIf="progreso > 0" class="dp-progreso" role="progressbar" [attr.aria-valuenow]="progreso"
+                            aria-valuemin="0" aria-valuemax="100">
+                            <span [style.width.%]="progreso"></span>
+                            <small>{{progreso}}%</small>
+                        </div>
+                    </div>
+
+                    <!-- ficha -->
+                    <div class="dp-ficha">
+                        <div class="dp-etiquetas">
+                            <span class="dp-codigo" title="Código del producto">{{producto.codProducto}}</span>
+                            <span *ngIf="producto.estado" class="badge"
+                                [ngClass]="producto.estado.estado === 'ACTIVO' ? 'badge-success' : 'badge-secondary'">
+                                {{producto.estado.estado}}
+                            </span>
+                        </div>
+
+                        <h3 class="dp-nombre">{{producto.nombre}}</h3>
+
+                        <div class="dp-precio-fila">
+                            <div class="dp-precio">
+                                <small>Precio de venta</small>
+                                <strong>{{producto.precioVenta | currency: "Q" : "symbol"}}</strong>
                             </div>
+                            <div class="dp-stock" [ngClass]="'dp-stock--' + nivelStock">
+                                <small>Existencias</small>
+                                <strong>{{producto.stock}}</strong>
+                                <span>{{ nivelStock === 'agotado' ? 'Agotado' : (nivelStock === 'bajo' ? 'Poco stock' : 'Disponible') }}</span>
+                            </div>
+                        </div>
+
+                        <dl class="dp-datos">
+                            <div>
+                                <dt>Categoría</dt>
+                                <dd>{{producto.tipoProducto?.tipoProducto || '—'}}</dd>
+                            </div>
+                            <div>
+                                <dt>Marca</dt>
+                                <dd>{{producto.marcaProducto?.marca || '—'}}</dd>
+                            </div>
+                            <ng-container *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_INVENTARIO')">
+                                <div>
+                                    <dt>Precio de costo</dt>
+                                    <dd>{{producto.precioCompra | currency: "Q" : "symbol"}}</dd>
+                                </div>
+                                <div>
+                                    <dt>% de ganancia</dt>
+                                    <dd>{{producto.porcentajeGanancia != null ? (producto.porcentajeGanancia | number: '1.0-2') + ' %' : '—'}}</dd>
+                                </div>
+                            </ng-container>
+                            <div>
+                                <dt>Fecha de ingreso</dt>
+                                <dd>{{producto.fechaIngreso ? (producto.fechaIngreso | date: 'dd/MM/yyyy') : '—'}}</dd>
+                            </div>
+                            <div *ngIf="producto.fechaVencimiento">
+                                <dt>Vencimiento</dt>
+                                <dd>{{producto.fechaVencimiento | date: 'dd/MM/yyyy'}}</dd>
+                            </div>
+                        </dl>
+
+                        <div class="dp-bloque" *ngIf="producto.link">
+                            <span class="dp-bloque__titulo">Página</span>
+                            <a [href]="producto.link" target="_blank" rel="noopener noreferrer" class="dp-enlace">
+                                <i class="fas fa-external-link-alt" aria-hidden="true"></i> {{producto.link}}
+                            </a>
+                        </div>
+
+                        <div class="dp-bloque" *ngIf="producto.descripcion">
+                            <span class="dp-bloque__titulo">Descripción</span>
+                            <p class="dp-descripcion">{{producto.descripcion}}</p>
                         </div>
                     </div>
                 </div>
+
                 <div class="modal-footer">
-                    <button (click)="cerrarModal()" type="button" class="btn btn-secondary"
-                        data-dismiss="modal">Cerrar</button>
+                    <button (click)="cerrarModal()" type="button" class="btn btn-secondary">Cerrar</button>
                 </div>
             </div>
         </div>

@@ -5,6 +5,8 @@ import { AuthService } from 'src/app/services/auth.service';
 import { ProductoService } from 'src/app/services/producto.service';
 import { ModalService } from 'src/app/services/productos/modal.service';
 
+import { global } from 'src/app/services/global';
+
 import swal from 'sweetalert2';
 
 @Component({
@@ -32,6 +34,17 @@ export class DetailProductoComponent implements OnInit {
 
   ngOnInit(): void {
     // this.getProducto();
+  }
+
+  /** Direccion de la foto del producto en el servidor. */
+  get imagenUrl(): string {
+    return `${global.url}/uploads/img/${this.producto?.imagen}`;
+  }
+
+  /** Nivel de existencias para el indicador: agotado (0), bajo (hasta 5) u ok. */
+  get nivelStock(): 'agotado' | 'bajo' | 'ok' {
+    const stock = this.producto?.stock ?? 0;
+    return stock <= 0 ? 'agotado' : stock <= 5 ? 'bajo' : 'ok';
   }
 
   /*getProducto(): void {
