@@ -122,9 +122,9 @@ const MENU: SeccionMenu[] = [
     ]
   },
   {
-    titulo: 'Reportes',
+    titulo: 'Reportes', rolesTitulo: [ADMIN],
     items: [
-      { etiqueta: 'Reportes', icono: 'fa-chart-line', ruta: '/reportes/main' }
+      { etiqueta: 'Reportes', icono: 'fa-chart-line', ruta: '/reportes/main', roles: [ADMIN] }
     ]
   }
 ];

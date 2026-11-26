@@ -163,9 +163,10 @@ public class CotizacionServiceImpl implements ICotizacionService {
         return estado;
     }
 
+    /** Cliente de la proforma; es opcional (como en las ventas): sin cliente devuelve null. */
     private Cliente clienteValido(Cotizacion datos) {
         if (datos == null || datos.getCliente() == null || datos.getCliente().getIdCliente() == null) {
-            throw new ReglaNegocioException(HttpStatus.BAD_REQUEST, "La proforma debe tener un cliente.");
+            return null;
         }
         Cliente cliente = clienteService.findById(datos.getCliente().getIdCliente());
         if (cliente == null) {

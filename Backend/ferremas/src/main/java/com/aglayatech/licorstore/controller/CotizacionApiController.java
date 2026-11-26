@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aglayatech.licorstore.auth.TokenUsuario;
 import com.aglayatech.licorstore.generics.ExcelExporter;
 import com.aglayatech.licorstore.generics.ReglaNegocioException;
 import com.aglayatech.licorstore.generics.SortParam;
@@ -163,8 +164,8 @@ public class CotizacionApiController {
     }
 
     private Usuario usuarioDelToken(Jwt jwt) {
-        Object claim = jwt == null ? null : jwt.getClaim("id_usuario");
-        return claim instanceof Number ? usuarioService.findById(((Number) claim).intValue()) : null;
+        Integer id = TokenUsuario.idUsuario(jwt);
+        return id == null ? null : usuarioService.findById(id);
     }
 
     // ------------------------------------------------------------------ reportes

@@ -74,16 +74,15 @@ export class CreateProformaComponent implements OnInit {
     return this.proforma.calcularTotal();
   }
 
-  /** Cliente listo: uno existente, o los datos minimos (NIT y nombre) de uno nuevo que se registra al guardar. */
-  get clienteCompleto(): boolean {
-    if (this.cliente?.idCliente) {
-      return true;
-    }
-    return !!(this.cliente?.nit || '').trim() && !!(this.cliente?.nombre || '').trim();
+  /** El cliente es opcional (como en las ventas): basta con tener productos. */
+  get puedeGuardar(): boolean {
+    return this.lineas.length > 0 && !this.guardando;
   }
 
-  get puedeGuardar(): boolean {
-    return this.clienteCompleto && this.lineas.length > 0 && !this.guardando;
+  /** Verdadero si se escribio algun dato de un cliente que aun no esta registrado. */
+  private get hayDatosDeClienteNuevo(): boolean {
+    const c = this.cliente;
+    return !c?.idCliente && [c?.nit, c?.identificacion, c?.nombre, c?.direccion].some(v => !!(v || '').trim());
   }
 
   // ----------------------------------------------------------------- carga
@@ -268,8 +267,9 @@ export class CreateProformaComponent implements OnInit {
     }
     this.guardando = true;
 
-    // igual que en el comprobante de venta: un cliente nuevo (sin id) se registra primero, al guardar
-    if (!this.cliente.idCliente) {
+    // igual que en el comprobante de venta: un cliente nuevo (con datos escritos y sin id) se registra primero,
+    // al guardar; si no se indico ningun cliente, la proforma se guarda sin cliente
+    if (this.hayDatosDeClienteNuevo) {
       this.clienteService.create(this.cliente).subscribe(
         respuesta => {
           this.cliente = respuesta.cliente;
@@ -284,7 +284,7 @@ export class CreateProformaComponent implements OnInit {
 
   private guardarProforma(): void {
     const datos = new Proforma();
-    datos.cliente = this.cliente;
+    datos.cliente = this.cliente?.idCliente ? this.cliente : null;
     datos.itemsProforma = this.lineas;
 
     const peticion = this.editando
