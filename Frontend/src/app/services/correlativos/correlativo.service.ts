@@ -6,6 +6,7 @@ import { Observable, throwError } from 'rxjs';
 import { global } from '../global';
 import swal from 'sweetalert2';
 import { map, catchError } from 'rxjs/operators';
+import { Page } from 'src/app/models/page';
 
 @Injectable({
   providedIn: 'root'
@@ -78,5 +79,17 @@ export class CorrelativoService {
         return throwError(e);
       })
     );
+  }
+
+  /** Listado paginado desde el backend, con busqueda opcional. */
+  getPaginado(page: number, size: number, search: string = '', sort: string = ''): Observable<Page<Correlativo>> {
+    const params: any = { page: String(page), size: String(size) };
+    if (search && search.trim()) {
+      params.search = search.trim();
+    }
+    if (sort) {
+      params.sort = sort;
+    }
+    return this.http.get<Page<Correlativo>>(`${this.url}/correlativos/paginado`, { params });
   }
 }

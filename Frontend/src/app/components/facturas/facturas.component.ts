@@ -1,4 +1,5 @@
-import { Component, OnInit, EventEmitter, AfterViewInit } from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
+import { Observable } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 
 import { AuthService } from 'src/app/services/auth.service';
@@ -8,7 +9,8 @@ import { FacturaService } from 'src/app/services/facturas/factura.service';
 import { Factura } from 'src/app/models/factura';
 import { Usuario } from 'src/app/models/usuario';
 
-import { JqueryConfigs } from '../../utils/jquery/jquery-utils';
+import { Page } from 'src/app/models/page';
+import { ListaPaginada } from 'src/app/utils/lista-paginada';
 import swal from 'sweetalert2';
 
 @Component({
@@ -16,17 +18,19 @@ import swal from 'sweetalert2';
   templateUrl: './facturas.component.html',
   styleUrls: ['./facturas.component.css']
 })
-export class FacturasComponent implements OnInit {
+export class FacturasComponent extends ListaPaginada<Factura> implements OnInit {
 
   title: string;
   fechaIni: Date;
   fechaFin: Date;
-
-  facturas: Factura[];
+  private fechaAplicadaIni: Date;
+  private fechaAplicadaFin: Date;
 
   usuario: Usuario;
   facturaSeleccionada: Factura;
-  jQueryConfigs: JqueryConfigs;
+
+  /** Ids de las facturas cuyo comprobante se esta generando (muestra el loading del boton). */
+  imprimiendo = new Set<number>();
 
   private notificarAnulacion: EventEmitter<any>;
 
@@ -43,42 +47,43 @@ export class FacturasComponent implements OnInit {
     private facturaService: FacturaService,
     public auth: AuthService
   ) {
+    super();
     this.title = 'Facturas';
-    this.facturas = [];
-    this.jQueryConfigs = new JqueryConfigs();
     this.usuario = auth.usuario;
   }
 
-  ngOnInit(): void {
-    // this.getFacturas();
+  protected fetch(page: number, size: number, search: string, sort: string): Observable<Page<Factura>> {
+    return this.facturaService.getPaginado(page, size, search, this.fechaAplicadaIni, this.fechaAplicadaFin, sort);
   }
 
-  getFacturas(): void {
-    this.facturaService.getFacturas().subscribe(
-      facturas => {
-        this.facturas = facturas;
-        this.jQueryConfigs.configDataTable('facturas');
-      }
-    );
+  get facturas(): Factura[] {
+    return this.items;
+  }
+
+  ngOnInit(): void {
+    this.cargar();
+  }
+
+  /** Exporta a Excel todas las facturas que coinciden con la busqueda, el rango de fechas aplicado y el orden actuales. */
+  exportar(): void {
+    const extra: { [clave: string]: string } = {};
+    if (this.fechaAplicadaIni && this.fechaAplicadaFin) {
+      extra.fechaIni = this.fechaAplicadaIni.toString();
+      extra.fechaFin = this.fechaAplicadaFin.toString();
+    }
+    this.exportarExcel('facturas/exportar', 'facturas', extra);
   }
 
   getFacturasSP(): void {
-    this.facturas = [];
-    if (this.fechaIni === undefined || this.fechaFin === undefined) {
+    if (!this.fechaIni || !this.fechaFin) {
       swal.fire('Advertencia', 'Porfavor ingrese un rango de fechas valido.', 'warning');
-    } else {
-      if (this.jQueryConfigs) {
-        this.facturaService.getFacturasSP(this.fechaIni, this.fechaFin).subscribe(
-          facturas => {
-            this.facturas = facturas;
-            this.jQueryConfigs.configDataTable('facturas');
-            this.jQueryConfigs = new JqueryConfigs();
-          }, error => {
-            swal.fire(`Ha ocurrido un error: ${error.error.status}`, `${error.error.message}`, 'error')
-          }
-        );
-      }
+      return;
     }
+    // el filtro de fechas se aplica en el servidor junto con la paginacion
+    this.fechaAplicadaIni = this.fechaIni;
+    this.fechaAplicadaFin = this.fechaFin;
+    this.page = 0;
+    this.cargar();
   }
 
   reloadPage(): void {
@@ -136,7 +141,13 @@ export class FacturasComponent implements OnInit {
 
     /************* FACTURA PDF ***************/
 
+    if (this.imprimiendo.has(id)) {
+      return;                                   // ya se esta generando este comprobante
+    }
+    this.imprimiendo.add(id);
+
     this.facturaService.getBillPDF(id).subscribe(res => {
+      this.imprimiendo.delete(id);
       const url = window.URL.createObjectURL(res.data);
       const a = document.createElement('a');
       document.body.appendChild(a);
@@ -152,7 +163,9 @@ export class FacturasComponent implements OnInit {
       a.remove();
     },
       error => {
+        this.imprimiendo.delete(id);
         console.log(error);
+        swal.fire('No se pudo generar el comprobante', 'Intente de nuevo en unos segundos.', 'error');
       });
   }
 }

@@ -1,9 +1,11 @@
+import { Observable } from 'rxjs';
+import { Page } from 'src/app/models/page';
+import { ListaPaginada } from 'src/app/utils/lista-paginada';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 
 import { ProductoService } from '../../../../services/producto.service';
 import { Producto } from '../../../../models/producto';
 
-import { JqueryConfigs } from 'src/app/utils/jquery/jquery-utils';
 
 @Component({
   selector: 'app-modal-buscar-producto-movimiento',
@@ -11,19 +13,25 @@ import { JqueryConfigs } from 'src/app/utils/jquery/jquery-utils';
   styles: [
   ]
 })
-export class ModalBuscarProductoMovimientoComponent implements OnInit {
+export class ModalBuscarProductoMovimientoComponent extends ListaPaginada<Producto> implements OnInit {
 
   @Output() producto = new EventEmitter<Producto>();
   
   title: string;
-  productos: Producto[];
-
-  jqueryConfigs: JqueryConfigs = new JqueryConfigs();
 
   constructor(
     private productoService: ProductoService
   ) {
+    super();
     this.title = 'Búscar Producto';
+  }
+
+  protected fetch(page: number, size: number, search: string): Observable<Page<Producto>> {
+    return this.productoService.getProductosPaginado(page, size, search, true);
+  }
+
+  get productos(): Producto[] {
+    return this.items;
   }
 
   ngOnInit(): void {
@@ -31,12 +39,7 @@ export class ModalBuscarProductoMovimientoComponent implements OnInit {
   }
 
   loadProductos(): void {
-    this.productoService.getProductosActivos().subscribe(
-      productos => {
-        this.productos = productos;
-        this.jqueryConfigs.configDataTableModal("productos");
-      }
-    );
+    this.cargar();
   }
   
   chooseProducto(producto: Producto): void {

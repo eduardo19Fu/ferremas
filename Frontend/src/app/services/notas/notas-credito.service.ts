@@ -7,6 +7,8 @@ import { global } from '../global';
 import { NotaCredito } from 'src/app/models/nota-credito';
 
 import Swal from 'sweetalert2';
+import { Page } from 'src/app/models/page';
+import { DetalleNotaCreditoItem } from 'src/app/models/detalle-nota-credito-item';
 
 @Injectable({
   providedIn: 'root'
@@ -53,5 +55,39 @@ export class NotasCreditoService {
         return throwError(e);
       })
     );
+  }
+
+  /** Listado paginado desde el backend, con busqueda opcional. */
+  getPaginado(page: number, size: number, search: string = '', activas: boolean = false, sort: string = ''): Observable<Page<NotaCredito>> {
+    const params: any = { page: String(page), size: String(size) };
+    if (search && search.trim()) {
+      params.search = search.trim();
+    }
+    if (activas) {
+      params.activas = 'true';
+    }
+    if (sort) {
+      params.sort = sort;
+    }
+    return this.httpClient.get<Page<NotaCredito>>(`${this.url}/notas-credito/paginado`, { params });
+  }
+
+  /** Anula la nota (devuelve sus productos al inventario). El usuario que anula lo determina el servidor por el token. */
+  anular(idNota: number): Observable<any> {
+    return this.httpClient.put<any>(`${this.url}/notas-credito/${idNota}/anular`, {}).pipe(
+      catchError(e => {
+        Swal.fire(e.error?.mensaje || 'No se pudo anular la nota de crédito', e.error?.error || 'Intente de nuevo.', 'error');
+        return throwError(e);
+      })
+    );
+  }
+
+  /** Detalle (productos) de una nota de credito, paginado desde el backend. */
+  getDetallePaginado(idNota: number, page: number, size: number, sort: string = ''): Observable<Page<DetalleNotaCreditoItem>> {
+    const params: any = { page: String(page), size: String(size) };
+    if (sort) {
+      params.sort = sort;
+    }
+    return this.httpClient.get<Page<DetalleNotaCreditoItem>>(`${this.url}/notas-credito/${idNota}/detalle`, { params });
   }
 }

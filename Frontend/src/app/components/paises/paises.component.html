@@ -4,48 +4,53 @@
             <div class="col-sm-6">
                 <h1>{{title}}</h1>
                 <br>
-                <a [routerLink]="['/paises/create']" class="btn bg-gradient-success">
+                <button type="button" class="btn bg-gradient-success" (click)="abrirModal()">
                     <i class="fas fa-plus-circle"></i>
                     Nuevo
-                </a>
+                </button>
             </div>
         </div>
     </div>
 </section>
 
 <div class="card">
-    <div class="card-header">
-        Listado de Pa&iacute;ses Registrados
-    </div>
-
-    <div class="card-body table-responsive">
-        <div *ngIf="paises?.length === 0" class="alert alert-info alert-dismissible">
-            <h5>
-                <i class="icon fas fa-info"></i>
-                ¡Atenci&oacute;n!
-            </h5>
-
-            No existe ning&uacute;n pa&iacute;s registrado en la base de datos!
+<div class="card-body table-responsive">
+        <div class="row mb-2">
+            <div class="col-md-auto tm-toolbar-size">
+                <app-tamanio-pagina [size]="size" (sizeChange)="onSizeChange($event)"></app-tamanio-pagina>
+            </div>
+            <div class="col-md-4 ml-md-auto tm-buscador">
+                <i class="fas fa-search"></i>
+                <input type="search" class="form-control form-control-sm" placeholder="Buscar..."
+                    [ngModel]="search" (ngModelChange)="onBuscar($event)">
+                <span class="tm-spinner" *ngIf="cargando"></span>
+            </div>
         </div>
 
-        <table id="paises" class="table table-hover table-striped table-bordered dataTable dtr-inline table-sm" role="grid"
+        <app-sin-registros *ngIf="paises?.length === 0 && !cargando" entidad="países" [busqueda]="search"
+            (limpiar)="onBuscar('')"></app-sin-registros>
+
+        <div class="tabla-wrap">
+            <div class="tabla-progreso" *ngIf="cargando && paises?.length"></div>
+            <app-tabla-skeleton *ngIf="cargando && !paises?.length" [columnas]="3"></app-tabla-skeleton>
+            <table id="paises" class="table table-modern" [class.cargando]="cargando"
             *ngIf="paises?.length > 0">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Pais</th>
+                    <th tmSortable="idPais" [sort]="sort" (tmSort)="onSort($event)">#</th>
+                    <th tmSortable="nombre" [sort]="sort" (tmSort)="onSort($event)">Pais</th>
                     <th>Opciones</th>
                 </tr>
             </thead>
 
             <tbody>
                 <tr *ngFor="let pais of paises">
-                    <td>{{pais.idPais}}</td>
-                    <td>{{pais.nombre}}</td>
-                    <td class="center-options">
+                    <td data-label="#">{{pais.idPais}}</td>
+                    <td data-label="Pais">{{pais.nombre}}</td>
+                    <td data-label="Opciones" class="center-options">
 
                         <button class="btn bg-gradient-info margin" placement="top" ngbTooltip="Editar"
-                            [routerLink]="['/paises/create', pais.idPais]"
+                            (click)="abrirModal(pais)"
                             *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_INVENTARIO')">
                             <i class="fas fa-edit"></i>
                         </button>
@@ -57,14 +62,10 @@
                     </td>
                 </tr>
             </tbody>
-
-            <tfoot>
-                <tr>
-                    <th>#</th>
-                    <th>Pais</th>
-                    <th>Opciones</th>
-                </tr>
-            </tfoot>
         </table>
+        </div>
+
+        <app-paginacion [mostrarTamanio]="false" [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+            (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
 </div>

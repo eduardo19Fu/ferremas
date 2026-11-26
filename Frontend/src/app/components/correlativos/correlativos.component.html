@@ -21,44 +21,49 @@
 <!-- /.content-header -->
 
 <div class="card">
-    <div class="card-header">
-        Listado de Correlativos Creados
-    </div>
-    <!-- /.card-header -->
-    <div class="card-body table-responsive">
+<div class="card-body table-responsive">
 
-        <div *ngIf="correlativos?.length == 0" class="alert alert-info alert-dismissible">
-            <h5>
-                <i class="icon fas fa-info"></i>
-                Atención!
-            </h5>
-
-            No existe ningún correlativo registrado en la base de datos!
+        <div class="row mb-2">
+            <div class="col-md-auto tm-toolbar-size">
+                <app-tamanio-pagina [size]="size" (sizeChange)="onSizeChange($event)"></app-tamanio-pagina>
+            </div>
+            <div class="col-md-4 ml-md-auto tm-buscador">
+                <i class="fas fa-search"></i>
+                <input type="search" class="form-control form-control-sm" placeholder="Buscar..."
+                    [ngModel]="search" (ngModelChange)="onBuscar($event)">
+                <span class="tm-spinner" *ngIf="cargando"></span>
+            </div>
         </div>
 
-        <table id="correlativos" class="table table-hover table-striped table-bordered dataTable dtr-inline table-sm" role="grid" 
+        <app-sin-registros *ngIf="correlativos?.length == 0 && !cargando" entidad="correlativos" [busqueda]="search"
+            (limpiar)="onBuscar('')"></app-sin-registros>
+
+        <div class="tabla-wrap">
+            <div class="tabla-progreso" *ngIf="cargando && correlativos?.length"></div>
+            <app-tabla-skeleton *ngIf="cargando && !correlativos?.length" [columnas]="8"></app-tabla-skeleton>
+            <table id="correlativos" class="table table-modern" [class.cargando]="cargando" 
             *ngIf="correlativos?.length > 0">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Corr. Inicial</th>
-                    <th>Corr. Final</th>
-                    <th>Corr. Actual</th>
-                    <th>Fecha Registro</th>
-                    <th>Usuario Asignado</th>
-                    <th>Estado</th>
+                    <th tmSortable="idCorrelativo" [sort]="sort" (tmSort)="onSort($event)">ID</th>
+                    <th tmSortable="correlativoInicial" [sort]="sort" (tmSort)="onSort($event)">Corr. Inicial</th>
+                    <th tmSortable="correlativoFinal" [sort]="sort" (tmSort)="onSort($event)">Corr. Final</th>
+                    <th tmSortable="correlativoActual" [sort]="sort" (tmSort)="onSort($event)">Corr. Actual</th>
+                    <th tmSortable="fechaCreacion" [sort]="sort" (tmSort)="onSort($event)">Fecha Registro</th>
+                    <th tmSortable="usuario.usuario" [sort]="sort" (tmSort)="onSort($event)">Usuario Asignado</th>
+                    <th tmSortable="estado.estado" [sort]="sort" (tmSort)="onSort($event)">Estado</th>
                     <th *ngIf="authService.hasRole('ROLE_ADMIN')">Opciones</th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let correlativo of correlativos">
-                    <td>{{correlativo.idCorrelativo}}</td>
-                    <td>{{correlativo.correlativoInicial}}</td>
-                    <td>{{correlativo.correlativoFinal}}</td>
-                    <td>{{correlativo.correlativoActual}}</td>
-                    <td>{{correlativo.fechaCreacion | date: 'dd/MM/yyyy - hh:mm'}}</td>
-                    <td>{{correlativo.usuario.usuario}}</td>
-                    <td>
+                    <td data-label="ID">{{correlativo.idCorrelativo}}</td>
+                    <td data-label="Corr. Inicial">{{correlativo.correlativoInicial}}</td>
+                    <td data-label="Corr. Final">{{correlativo.correlativoFinal}}</td>
+                    <td data-label="Corr. Actual">{{correlativo.correlativoActual}}</td>
+                    <td data-label="Fecha Registro">{{correlativo.fechaCreacion | date: 'dd/MM/yyyy - hh:mm'}}</td>
+                    <td data-label="Usuario Asignado">{{correlativo.usuario.usuario}}</td>
+                    <td data-label="Estado">
                         <span class="badge" 
                             [ngClass]="{'badge-primary': correlativo.estado.estado === 'ACTIVO',
                                 'badge-danger' : correlativo.estado.estado === 'ANULADO',
@@ -66,7 +71,7 @@
                             {{correlativo.estado.estado}}
                         </span>
                     </td>
-                    <td *ngIf="authService.hasRole('ROLE_ADMIN')">
+                    <td data-label="Opciones" *ngIf="authService.hasRole('ROLE_ADMIN')">
 
                         <button class="btn bg-gradient-info margin" name="edit" type="button" placement="top" ngbTooltip="Editar"
                             [routerLink]="['/facturas/correlativos/create', correlativo.idCorrelativo]">
@@ -81,19 +86,11 @@
                     </td>
                 </tr>
             </tbody>
-            <tfoot>
-                <tr>
-                    <th>ID</th>
-                    <th>Corr. Inicial</th>
-                    <th>Corr. Final</th>
-                    <th>Corr. Actual</th>
-                    <th>Fecha Registro</th>
-                    <th>Usuario Asignado</th>
-                    <th>Estado</th>
-                    <th *ngIf="authService.hasRole('ROLE_ADMIN')">Opciones</th>
-                </tr>
-            </tfoot>
         </table>
+        </div>
+
+        <app-paginacion [mostrarTamanio]="false" [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+            (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
     <!-- /.card-body -->
 </div>

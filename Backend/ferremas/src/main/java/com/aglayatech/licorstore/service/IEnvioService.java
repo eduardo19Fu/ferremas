@@ -20,5 +20,5 @@ public interface IEnvioService {
 
     public byte[] showPedido(Integer idenvio) throws SQLException, JRException;
 
-
+	public org.springframework.data.domain.Page<Envio> search(String termino, org.springframework.data.domain.Pageable pageable);
 }

@@ -1,15 +1,34 @@
-/* You can add global styles to this file, and also import other style files */
-.requerido{
-    color: red;
-  }
-  
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
-.center-options{
-    text-align: center;
-}
-
-.margin{
-    margin: auto 5px auto;
-}
+/*
+ * Estilos globales de Ferremas.
+ *
+ * Se cargan DESPUES de AdminLTE (ver "styles" en angular.json) para poder reemplazar sus reglas.
+ * El orden de los @import es el orden de la cascada: no reordenar sin revisar solapamientos.
+ *
+ *   tokens         variables de diseno
+ *   base           tipografia global y utilidades heredadas
+ *   tables         tablas modernas + loading + buscador + paginacion + movil
+ *   buttons        sistema de botones
+ *   empty-state    sin registros / sin resultados
+ *   list-card      tarjeta de listado y bordes
+ *   table-sorting  cabeceras ordenables
+ *   forms          formularios (opt-in con la clase .tm-form)
+ *   modals         marco de los modales
+ *   dashboard      inicio (home): portada, indicadores, accesos y actividad
+ *   sidebar        menu lateral (prefijo .fm-)
+ */
+@import 'styles/tokens.css';
+@import 'styles/base.css';
+@import 'styles/tables.css';
+@import 'styles/loading.css';
+@import 'styles/search.css';
+@import 'styles/pagination.css';
+@import 'styles/tables-mobile.css';
+@import 'styles/buttons.css';
+@import 'styles/empty-state.css';
+@import 'styles/list-card.css';
+@import 'styles/card-edges.css';
+@import 'styles/table-sorting.css';
+@import 'styles/forms.css';
+@import 'styles/modals.css';
+@import 'styles/dashboard.css';
+@import 'styles/sidebar.css';

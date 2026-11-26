@@ -1,3 +1,6 @@
+import { Observable } from 'rxjs';
+import { Page } from 'src/app/models/page';
+import { ListaPaginada } from 'src/app/utils/lista-paginada';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Usuario } from 'src/app/models/usuario';
@@ -6,7 +9,6 @@ import { DetailUsuarioService } from 'src/app/services/usuarios/detail-usuario.s
 import { UsuarioService } from 'src/app/services/usuarios/usuario.service';
 
 import swal from 'sweetalert2';
-import { JqueryConfigs } from '../../utils/jquery/jquery-utils';
 
 @Component({
   selector: 'app-usuarios',
@@ -14,13 +16,10 @@ import { JqueryConfigs } from '../../utils/jquery/jquery-utils';
   styles: [
   ]
 })
-export class UsuariosComponent implements OnInit {
+export class UsuariosComponent extends ListaPaginada<Usuario> implements OnInit {
 
   title: string;
-  usuarios: Usuario[];
   usuarioSeleccionado: Usuario;
-
-  jQueryConfigs: JqueryConfigs;
 
   swalWithBootstrapButtons = swal.mixin({
     customClass: {
@@ -36,8 +35,16 @@ export class UsuariosComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private authService: AuthService
   ) {
+    super();
     this.title = 'Listado de Usuarios';
-    this.jQueryConfigs = new JqueryConfigs();
+  }
+
+  protected fetch(page: number, size: number, search: string, sort: string): Observable<Page<Usuario>> {
+    return this.usuarioService.getPaginado(page, size, search, sort);
+  }
+
+  get usuarios(): Usuario[] {
+    return this.items;
   }
 
   ngOnInit(): void {
@@ -45,11 +52,7 @@ export class UsuariosComponent implements OnInit {
   }
 
   getUsuarios(): void {
-    this.usuarioService.getUsuarios().subscribe(usuarios => {
-      this.usuarios = usuarios;
-      this.jQueryConfigs.configDataTable('usuarios');
-      this.jQueryConfigs.configToolTip();
-    });
+    this.cargar();
   }
 
   delete(usuario: Usuario): void {
@@ -70,7 +73,7 @@ export class UsuariosComponent implements OnInit {
             if (this.authService.usuario.idUsuario === usuario.idUsuario) {
               this.authService.logout();
             } else {
-              this.usuarios = this.usuarios.filter(us => us !== usuario);
+              this.recargarTrasEliminar();
               this.swalWithBootstrapButtons.fire(
                 '¡Usuario eliminado con éxito!',
                 'El registro ha sido eliminado con éxito!',

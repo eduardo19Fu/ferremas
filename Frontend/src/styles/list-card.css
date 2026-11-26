@@ -1,0 +1,59 @@
+/* ==========================================================================
+   TARJETA DE LISTADO — sin encabezado. Barra superior (Mostrar + buscador),
+   tabla con margen interior y cabecera como franja redondeada y cerrada,
+   pie con conteo y paginacion.
+   ========================================================================== */
+.card { border-radius: 12px; }
+
+.card > .card-body.table-responsive { padding: 1rem 1.25rem 1.1rem; }
+
+/* barra superior: "Mostrar N registros" a la izquierda, buscador a la derecha */
+.card > .card-body.table-responsive > .row.mb-2 {
+  margin: 0 0 .9rem !important;
+  align-items: center;
+  gap: .6rem 1rem;
+}
+.card > .card-body.table-responsive > .row.mb-2 > [class*="col"] { padding: 0; }
+
+.tm-toolbar-size { color: var(--tm-muted); font-size: .9rem; }
+.tm-toolbar-size .tm-pag-size { display: flex; align-items: center; gap: .5rem; font-weight: 400; margin: 0; }
+.tm-toolbar-size .custom-select { width: auto; border-radius: 8px; }
+
+/* tabla: sin margen inferior; el pie lleva su propia separacion */
+.card > .card-body.table-responsive .tabla-wrap { margin: 0; }
+.card > .card-body.table-responsive .table.table-modern { margin-bottom: 0; }
+
+/* cabecera: franja con borde completo y esquinas redondeadas en ambos extremos */
+.card > .card-body.table-responsive .table.table-modern thead th:first-child {
+  border-left: 1px solid var(--tm-edge);
+  border-radius: 10px 0 0 10px;
+  padding-left: 1rem;
+}
+.card > .card-body.table-responsive .table.table-modern thead th:last-child {
+  border-right: 1px solid var(--tm-edge);
+  border-radius: 0 10px 10px 0;
+  padding-right: 1rem;
+}
+.card > .card-body.table-responsive .table.table-modern tbody td:first-child { padding-left: 1rem; }
+.card > .card-body.table-responsive .table.table-modern tbody td:last-child { padding-right: 1rem; }
+
+/* pie: conteo + paginacion */
+.card > .card-body.table-responsive .tm-paginacion {
+  margin: 0;
+  padding: .9rem 0 0;
+  border-top: 1px solid var(--tm-line);
+}
+.card > .card-body.table-responsive .tm-paginacion .tm-pag-info { text-align: left; }
+
+/* estado vacio dentro de la tarjeta */
+.card > .card-body.table-responsive .tm-empty { margin: .25rem 0 1rem; }
+
+/* movil: las filas son tarjetas y el selector + buscador se apilan */
+@media (max-width: 767.98px) {
+  .card > .card-body.table-responsive { padding: .85rem .75rem; }
+  .card > .card-body.table-responsive .table.table-modern tbody td:first-child,
+  .card > .card-body.table-responsive .table.table-modern tbody td:last-child { padding-left: 0; padding-right: 0; }
+  .tm-toolbar-size { width: 100%; }
+  .card > .card-body.table-responsive > .row.mb-2 > .tm-buscador { width: 100%; max-width: 100%; flex: 0 0 100%; }
+  .card > .card-body.table-responsive .tm-paginacion { padding-top: .75rem; }
+}

@@ -1,3 +1,6 @@
+<!-- MODAL DE DETALLE PARA LA NOTA SELECCIONADA -->
+<app-detail-nota-credito *ngIf="notaSeleccionada" [nota]="notaSeleccionada"></app-detail-nota-credito>
+
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <div class="container-fluid">
@@ -20,52 +23,59 @@
 </section>
 
 <div class="card">
-    <div class="card-header">
-        Listado de Notas de Cr&eacute;dito Creadas
-    </div>
-    <div class="card-body table-responsive">
+<div class="card-body table-responsive">
 
-        <div *ngIf="notasCredito?.length == 0" class="alert alert-info alert-dismissible">
-            <h5>
-                <i class="icon fas fa-info"></i>
-                Atención!
-            </h5>
-
-            No existe ninguna nota de cr&eacute;dito registrada en la base de datos!
+        <div class="row mb-2">
+            <div class="col-md-auto tm-toolbar-size">
+                <app-tamanio-pagina [size]="size" (sizeChange)="onSizeChange($event)"></app-tamanio-pagina>
+            </div>
+            <div class="col-md-4 ml-md-auto tm-buscador">
+                <i class="fas fa-search"></i>
+                <input type="search" class="form-control form-control-sm" placeholder="Buscar por cliente..."
+                    [ngModel]="search" (ngModelChange)="onBuscar($event)">
+                <span class="tm-spinner" *ngIf="cargando"></span>
+            </div>
         </div>
 
-        <table id="notas-credito" class="table table-hover table-striped table-bordered dataTable dtr-inline table-sm"
-            role="grid" *ngIf="notasCredito?.length > 0">
+        <app-sin-registros *ngIf="notasCredito?.length == 0 && !cargando" entidad="notas de crédito" [busqueda]="search"
+            (limpiar)="onBuscar('')"></app-sin-registros>
+
+        <div class="tabla-wrap">
+            <div class="tabla-progreso" *ngIf="cargando && notasCredito?.length"></div>
+            <app-tabla-skeleton *ngIf="cargando && !notasCredito?.length" [columnas]="10"></app-tabla-skeleton>
+            <table id="notas-credito" class="table table-modern" [class.cargando]="cargando" *ngIf="notasCredito?.length > 0">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Abono</th>
-                    <th>Total</th>
-                    <th>Restante</th>
-                    <th>Emisor</th>
-                    <th>Fecha Creaci&oacute;n</th>
-                    <th>Fecha L&iacute;mite de Pago</th>
-                    <th>Estado</th>
+                    <th tmSortable="idNotaCredito" [sort]="sort" (tmSort)="onSort($event)">ID</th>
+                    <th tmSortable="cliente.nombre" [sort]="sort" (tmSort)="onSort($event)">Cliente</th>
+                    <th tmSortable="abono" [sort]="sort" (tmSort)="onSort($event)">Abono</th>
+                    <th tmSortable="total" [sort]="sort" (tmSort)="onSort($event)">Total</th>
+                    <th tmSortable="restante" [sort]="sort" (tmSort)="onSort($event)">Restante</th>
+                    <th tmSortable="usuario.usuario" [sort]="sort" (tmSort)="onSort($event)">Emisor</th>
+                    <th tmSortable="fechaCreacion" [sort]="sort" (tmSort)="onSort($event)">Fecha Creaci&oacute;n</th>
+                    <th tmSortable="fechaPagoLimite" [sort]="sort" (tmSort)="onSort($event)">Fecha L&iacute;mite de Pago</th>
+                    <th tmSortable="estado.estado" [sort]="sort" (tmSort)="onSort($event)">Estado</th>
                     <th *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">Opciones</th>
                 </tr>
             </thead>
 
             <tbody>
                 <tr *ngFor="let nota of notasCredito">
-                    <td>{{nota.idNotaCredito}}</td>
-                    <td>{{nota.abono}}</td>
-                    <td>{{nota.total}}</td>
-                    <td>{{nota.restante}}</td>
-                    <td>{{nota.usuario.usuario}}</td>
-                    <td>{{nota.fechaCreacion | date: 'dd/MM/yyyy - hh:mm'}}</td>
-                    <td>{{nota.fechaPagoLimite | date: 'dd/MM/yyyy'}}</td>
-                    <td>
+                    <td data-label="ID">{{nota.idNotaCredito}}</td>
+                    <td data-label="Cliente">{{nota.cliente?.nombre || '—'}}</td>
+                    <td data-label="Abono">{{nota.abono}}</td>
+                    <td data-label="Total">{{nota.total}}</td>
+                    <td data-label="Restante">{{nota.restante}}</td>
+                    <td data-label="Emisor">{{nota.usuario.usuario}}</td>
+                    <td data-label="Fecha Creaci&oacute;n">{{nota.fechaCreacion | date: 'dd/MM/yyyy - hh:mm'}}</td>
+                    <td data-label="Fecha L&iacute;mite de Pago">{{nota.fechaPagoLimite | date: 'dd/MM/yyyy'}}</td>
+                    <td data-label="Estado">
                         <span class="badge"
                             [ngClass]="{'badge-success': nota.estado.idEstado === 3, 'badge-danger': nota.estado.idEstado === 4}">
                             {{nota.estado.estado}}
                         </span>
                     </td>
-                    <td class="center-options" *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">
+                    <td data-label="Opciones" class="center-options" *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">
 
                         <button class="btn bg-gradient-success margin" name="detail" type="button" placement="top" ngbTooltip="Detalle"
                             (click)="abrirDetalle(nota)">
@@ -78,28 +88,20 @@
                         </button> -->
 
                         <!-- Aquí va el botón de eliminar -->
-                        <button class="btn bg-gradient-danger margin" name="cancel" type="button" placement="top" ngbTooltip="Anular Factura"
+                        <button class="btn bg-gradient-danger margin" name="cancel" type="button" placement="top" ngbTooltip="Anular nota de crédito"
                             (click)="cancel(nota)" *ngIf="auth.hasRole('ROLE_ADMIN')"
-                            [disabled]="nota.estado.idEstado === 4">
-                            <i class="fas fa-ban"></i>
+                            [disabled]="nota.estado?.idEstado !== 1"
+                            [class.is-loading]="anulando.has(nota.idNotaCredito)" [attr.aria-busy]="anulando.has(nota.idNotaCredito)">
+                            <span class="tm-spinner tm-spinner--btn" *ngIf="anulando.has(nota.idNotaCredito); else iconoAnular" role="status" aria-label="Anulando"></span>
+                            <ng-template #iconoAnular><i class="fas fa-ban"></i></ng-template>
                         </button>
                     </td>
                 </tr>
             </tbody>
-
-            <tfoot>
-                <tr>
-                    <th>ID</th>
-                    <th>Abono</th>
-                    <th>Total</th>
-                    <th>Restante</th>
-                    <th>Emisor</th>
-                    <th>Fecha Creaci&oacute;n</th>
-                    <th>Fecha L&iacute;mite de Pago</th>
-                    <th>Estado</th>
-                    <th *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">Opciones</th>
-                </tr>
-            </tfoot>
         </table>
+        </div>
+
+        <app-paginacion [mostrarTamanio]="false" [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+            (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
 </div>

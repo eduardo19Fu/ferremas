@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.aglayatech.licorstore.generics.ErroresHandler;
 import com.aglayatech.licorstore.generics.Excepcion;
@@ -192,4 +192,15 @@ public class UsuarioApiController {
 	}
 	
 
+	private static final java.util.Map<String, String> SORT_USUARIO = com.aglayatech.licorstore.generics.SortParam.keys("idUsuario", "usuario", "primerNombre", "apellido", "fechaRegistro");
+
+	@GetMapping("/usuarios/paginado")
+	public org.springframework.data.domain.Page<Usuario> paginado(@org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
+			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "10") int size,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String search,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String sort) {
+		int pageSize = Math.min(Math.max(size, 1), 100);
+		org.springframework.data.domain.Sort order = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_USUARIO, org.springframework.data.domain.Sort.by("usuario").ascending(), "idUsuario");
+		return serviceUsuario.search(search, org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, order));
+	}
 }

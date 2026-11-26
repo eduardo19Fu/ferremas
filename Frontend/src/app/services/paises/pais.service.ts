@@ -7,6 +7,7 @@ import { Pais } from '../../models/pais';
 import { global } from '../global';
 
 import Swal from 'sweetalert2';
+import { Page } from 'src/app/models/page';
 
 @Injectable({
   providedIn: 'root'
@@ -67,4 +68,15 @@ export class PaisService {
     );
   }
 
+  /** Listado paginado desde el backend, con busqueda opcional. */
+  getPaginado(page: number, size: number, search: string = '', sort: string = ''): Observable<Page<Pais>> {
+    const params: any = { page: String(page), size: String(size) };
+    if (search && search.trim()) {
+      params.search = search.trim();
+    }
+    if (sort) {
+      params.sort = sort;
+    }
+    return this.httpClient.get<Page<Pais>>(`${this.url}/paises/paginado`, { params });
+  }
 }

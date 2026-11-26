@@ -301,7 +301,15 @@ export class CreateFacturaComponent implements OnInit {
     return cliente;
   }
 
+  /** Verdadero mientras se registra la venta y se genera el comprobante (loading del boton Pagar). */
+  generando = false;
+
   createFactura(): void {
+
+    if (this.generando) {
+      return;                                   // evita doble clic mientras se procesa
+    }
+    this.generando = true;
 
     if (!this.cliente.idCliente) {
       this.clienteService.create(this.cliente).subscribe(response => {
@@ -331,9 +339,13 @@ export class CreateFacturaComponent implements OnInit {
             this.generarComprobante(response.factura);
 
           }, error => {
+            this.generando = false;
             console.log(<any>error);
           }
         );
+      }, error => {
+        this.generando = false;
+        console.log(<any>error);
       });
     } else {
       this.factura.cliente = this.cliente;
@@ -358,6 +370,7 @@ export class CreateFacturaComponent implements OnInit {
           this.generarComprobante(response.factura);
 
         }, error => {
+          this.generando = false;
           console.log(<any>error);
         }
       );
@@ -385,6 +398,7 @@ export class CreateFacturaComponent implements OnInit {
       location.reload();
     },
       error => {
+        this.generando = false;
         swal.fire(`Error al crear factura para imprimir.`, error.message, 'error');
       });
   }

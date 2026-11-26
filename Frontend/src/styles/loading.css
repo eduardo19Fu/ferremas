@@ -1,0 +1,55 @@
+/* contenedor con barra de progreso superior */
+.tabla-wrap { position: relative; }
+
+.tabla-progreso {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--tm-line);
+  z-index: 2;
+}
+
+.tabla-progreso::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 35%;
+  background: var(--tm-accent);
+  border-radius: 3px;
+  animation: tm-progreso 1.1s ease-in-out infinite;
+}
+
+@keyframes tm-progreso {
+  0% { left: -35%; }
+  100% { left: 100%; }
+}
+
+/* esqueleto de carga */
+.tm-skeleton { width: 100%; }
+
+.tm-skeleton .tm-row {
+  display: flex;
+  gap: 1.25rem;
+  padding: .95rem .9rem;
+  border-bottom: 1px solid var(--tm-line);
+}
+
+.tm-skeleton .tm-row.tm-head { background: var(--tm-head); padding: .8rem .9rem; }
+
+.tm-skeleton .tm-cell {
+  flex: 1;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #eef0f3 25%, #f8f9fb 45%, #eef0f3 65%);
+  background-size: 300% 100%;
+  animation: tm-shimmer 1.4s ease-in-out infinite;
+}
+
+.tm-skeleton .tm-head .tm-cell { height: 9px; opacity: .7; }
+
+@keyframes tm-shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}

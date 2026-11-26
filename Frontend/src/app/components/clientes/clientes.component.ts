@@ -1,3 +1,6 @@
+import { Observable } from 'rxjs';
+import { Page } from 'src/app/models/page';
+import { ListaPaginada } from 'src/app/utils/lista-paginada';
 import { Component, OnInit } from '@angular/core';
 
 import { AuthService } from 'src/app/services/auth.service';
@@ -5,7 +8,6 @@ import { ClienteService } from 'src/app/services/cliente.service';
 
 import { Cliente } from 'src/app/models/cliente';
 
-import { JqueryConfigs } from '../../utils/jquery/jquery-utils';
 import swal from 'sweetalert2';
 
 @Component({
@@ -14,12 +16,9 @@ import swal from 'sweetalert2';
   styles: [
   ]
 })
-export class ClientesComponent implements OnInit {
+export class ClientesComponent extends ListaPaginada<Cliente> implements OnInit {
 
   title: string;
-  clientes: Cliente[];
-
-  jQueryConfigs: JqueryConfigs;
 
   swalWithBootstrapButtons = swal.mixin({
     customClass: {
@@ -33,8 +32,16 @@ export class ClientesComponent implements OnInit {
     private clienteService: ClienteService,
     public auth: AuthService
   ) {
+    super();
     this.title = 'Listado de clientes';
-    this.jQueryConfigs = new JqueryConfigs();
+  }
+
+  protected fetch(page: number, size: number, search: string, sort: string): Observable<Page<Cliente>> {
+    return this.clienteService.getPaginado(page, size, search, sort);
+  }
+
+  get clientes(): Cliente[] {
+    return this.items;
   }
 
   ngOnInit(): void {
@@ -43,14 +50,7 @@ export class ClientesComponent implements OnInit {
 
   getClientes(): void {
     // tslint:disable-next-line: deprecation
-    this.clienteService.getClientes().subscribe(
-      clientes => {
-        this.clientes = clientes;
-        this.jQueryConfigs.configDataTable('clientes');
-        this.jQueryConfigs.configToolTip();
-      },
-      error => { }
-    );
+    this.cargar();
   }
 
   delete(cliente: Cliente): void {
@@ -67,7 +67,7 @@ export class ClientesComponent implements OnInit {
 
         this.clienteService.delete(cliente.idCliente).subscribe(
           response => {
-            this.clientes = this.clientes.filter(cli => cli !== cliente);
+            this.recargarTrasEliminar();
             this.swalWithBootstrapButtons.fire(
               '¡Cliente Eliminado!',
               'El cliente ha sido eliminado con éxito!',

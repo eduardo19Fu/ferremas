@@ -1,25 +1,32 @@
+import { Observable } from 'rxjs';
+import { Page } from 'src/app/models/page';
+import { ListaPaginada } from 'src/app/utils/lista-paginada';
 import { Component, OnInit } from '@angular/core';
 import { Producto } from 'src/app/models/producto';
 import { ProductoService } from '../../../services/producto.service';
-import { JqueryConfigs } from '../../../utils/jquery/jquery-utils';
 
 @Component({
   selector: 'app-search-product-modal',
   templateUrl: './search-product-modal.component.html',
   styleUrls: ['./search-product-modal.component.css']
 })
-export class SearchProductModalComponent implements OnInit {
+export class SearchProductModalComponent extends ListaPaginada<Producto> implements OnInit {
 
   title: string;
-  productos: Producto[];
-
-  jqueryConfig: JqueryConfigs;
 
   constructor(
     private productoService: ProductoService
   ) {
+    super();
     this.title = 'Listado de Productos';
-    this.jqueryConfig = new JqueryConfigs();
+  }
+
+  protected fetch(page: number, size: number, search: string): Observable<Page<Producto>> {
+    return this.productoService.getProductosPaginado(page, size, search);
+  }
+
+  get productos(): Producto[] {
+    return this.items;
   }
 
   ngOnInit(): void {
@@ -27,12 +34,7 @@ export class SearchProductModalComponent implements OnInit {
   }
 
   loadProductos(): void{
-    this.productoService.getProductos().subscribe(
-      productos => {
-        this.productos = productos;
-        this.jqueryConfig.configDataTableModal('productos');
-      }
-    );
+    this.cargar();
   }
 
 }

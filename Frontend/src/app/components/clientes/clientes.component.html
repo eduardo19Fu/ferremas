@@ -16,44 +16,50 @@
 </section>
 
 <div class="card">
-    <div class="card-header">
-        Listado de Clientes Registrados
-    </div>
-    <div class="card-body table-responsive">
+<div class="card-body table-responsive">
 
-        <div *ngIf="clientes?.length == 0" class="alert alert-info alert-dismissible">
-            <h5>
-                <i class="icon fas fa-info"></i>
-                Atención!
-            </h5>
-
-            No existe ningún cliente registrado en la base de datos!
+        <div class="row mb-2">
+            <div class="col-md-auto tm-toolbar-size">
+                <app-tamanio-pagina [size]="size" (sizeChange)="onSizeChange($event)"></app-tamanio-pagina>
+            </div>
+            <div class="col-md-4 ml-md-auto tm-buscador">
+                <i class="fas fa-search"></i>
+                <input type="search" class="form-control form-control-sm" placeholder="Buscar..."
+                    [ngModel]="search" (ngModelChange)="onBuscar($event)">
+                <span class="tm-spinner" *ngIf="cargando"></span>
+            </div>
         </div>
 
-        <table id="clientes" class="table table-hover table-striped table-bordered dataTable dtr-inline table-sm" role="grid" 
+        <app-sin-registros *ngIf="clientes?.length == 0 && !cargando" entidad="clientes" [busqueda]="search"
+            (limpiar)="onBuscar('')"></app-sin-registros>
+
+        <div class="tabla-wrap">
+            <div class="tabla-progreso" *ngIf="cargando && clientes?.length"></div>
+            <app-tabla-skeleton *ngIf="cargando && !clientes?.length" [columnas]="7"></app-tabla-skeleton>
+            <table id="clientes" class="table table-modern" [class.cargando]="cargando" 
             *ngIf="clientes?.length > 0">
 
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>NIT</th>
-                    <th>Teléfono</th>
-                    <th>Dirección</th>
-                    <th>Fecha Registro</th>
+                    <th tmSortable="idCliente" [sort]="sort" (tmSort)="onSort($event)">ID</th>
+                    <th tmSortable="nombre" [sort]="sort" (tmSort)="onSort($event)">Nombre</th>
+                    <th tmSortable="nit" [sort]="sort" (tmSort)="onSort($event)">NIT</th>
+                    <th tmSortable="telefono" [sort]="sort" (tmSort)="onSort($event)">Teléfono</th>
+                    <th tmSortable="direccion" [sort]="sort" (tmSort)="onSort($event)">Dirección</th>
+                    <th tmSortable="fechaRegistro" [sort]="sort" (tmSort)="onSort($event)">Fecha Registro</th>
                     <th *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">Opciones</th>
                 </tr>
             </thead>
 
             <tbody>
                 <tr *ngFor="let cliente of clientes">
-                    <td>{{cliente.idCliente}}</td>
-                    <td>{{cliente.nombre}}</td>
-                    <td>{{cliente.nit}}</td>
-                    <td>{{cliente.telefono}}</td>
-                    <td>{{cliente.direccion}}</td>
-                    <td>{{cliente.fechaRegistro | date: 'dd/MM/yyyy - hh:mm'}}</td>
-                    <td *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')" class="center-options">
+                    <td data-label="ID">{{cliente.idCliente}}</td>
+                    <td data-label="Nombre">{{cliente.nombre}}</td>
+                    <td data-label="NIT">{{cliente.nit}}</td>
+                    <td data-label="Teléfono">{{cliente.telefono}}</td>
+                    <td data-label="Dirección">{{cliente.direccion}}</td>
+                    <td data-label="Fecha Registro">{{cliente.fechaRegistro | date: 'dd/MM/yyyy - hh:mm'}}</td>
+                    <td data-label="Opciones" *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')" class="center-options">
 
                         <button class="btn bg-gradient-info margin" type="button" name="edit" 
                             placement="top" ngbTooltip="Editar Cliente" title="Editar"
@@ -70,19 +76,11 @@
                     </td>
                 </tr>
             </tbody>
-
-            <tfoot>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>NIT</th>
-                    <th>Teléfono</th>
-                    <th>Dirección</th>
-                    <th>Fecha Registro</th>
-                    <th *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">Opciones</th>
-                </tr>
-            </tfoot>
         </table>
+        </div>
+
+        <app-paginacion [mostrarTamanio]="false" [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+            (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
 </div>
 

@@ -1,0 +1,299 @@
+/*
+ * Menu lateral (app-sidebar).
+ *
+ * Panel oscuro con el degradado de marca del login y el home. Mantiene el comportamiento de AdminLTE
+ * (ancho, modo mini al colapsar, superposicion en movil); aqui solo cambia el aspecto.
+ * Prefijo .fm-  ->  fm-brand, fm-user, fm-search, fm-nav/section/item/link/sub, fm-foot.
+ */
+
+.main-sidebar.fm-sidebar {
+  --fm-text: rgba(255, 255, 255, .72);
+  --fm-text-strong: #fff;
+  --fm-line: rgba(255, 255, 255, .08);
+  --fm-hover: rgba(255, 255, 255, .06);
+  --fm-active: rgba(244, 190, 74, .14);
+  --fm-gold: #f4be4a;
+
+  background: linear-gradient(170deg, #0a232e 0%, #0e3041 55%, #134a60 100%);
+  border-right: 1px solid rgba(0, 0, 0, .25);
+  box-shadow: none;
+  color: var(--fm-text);
+  font-family: 'Source Sans Pro', -apple-system, 'Segoe UI', sans-serif;
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------- marca */
+
+.fm-brand {
+  align-items: center;
+  border-bottom: 1px solid var(--fm-line);
+  display: flex;
+  height: 57px;                       /* misma altura que la barra superior */
+  padding: 0 1.1rem;
+  text-decoration: none;
+}
+.fm-brand:hover { text-decoration: none; }
+.fm-brand__mark { display: none; height: 34px; margin: 0 auto; width: 34px; }
+
+/* ----------------------------------------------------------- contenedor */
+
+/* El desplazamiento lo gestiona AdminLTE (OverlayScrollbars) sobre .sidebar: todo el panel scrollea junto. */
+.fm-sidebar__body.sidebar {
+  height: calc(100% - 57px);
+  padding: 0;
+}
+
+/* -------------------------------------------------------------- usuario */
+
+.fm-user {
+  align-items: center;
+  display: flex;
+  gap: .7rem;
+  margin: 1rem .85rem .6rem;
+  min-width: 0;
+}
+.fm-user__avatar {
+  align-items: center;
+  background: linear-gradient(135deg, #f4be4a, #e29a2b);
+  border-radius: 12px;
+  color: #3b2a05;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: 800 .95rem/1 'Bricolage Grotesque', 'Source Sans Pro', sans-serif;
+  height: 38px;
+  justify-content: center;
+  letter-spacing: .02em;
+  width: 38px;
+}
+.fm-user__info { display: flex; flex-direction: column; min-width: 0; }
+.fm-user__name {
+  color: var(--fm-text-strong);
+  font-size: .95rem;
+  font-weight: 600;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fm-user__role { color: var(--fm-gold); font-size: .72rem; font-weight: 600; letter-spacing: .04em; margin-top: 2px; }
+
+/* ------------------------------------------------------------- buscador */
+
+.fm-search { margin: .4rem .85rem .2rem; position: relative; }
+.fm-search > .fa-search {
+  color: rgba(255, 255, 255, .4);
+  font-size: .78rem;
+  left: .8rem;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.fm-search__input {
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--fm-text-strong);
+  font-size: .86rem;
+  height: 36px;
+  padding: 0 2rem 0 2.15rem;
+  transition: background .15s, border-color .15s;
+  width: 100%;
+  -webkit-appearance: none;
+}
+.fm-search__input::placeholder { color: rgba(255, 255, 255, .42); }
+.fm-search__input::-webkit-search-cancel-button { display: none; }
+.fm-search__input:focus {
+  background: rgba(255, 255, 255, .1);
+  border-color: rgba(244, 190, 74, .55);
+  outline: 0;
+}
+.fm-search__clear {
+  background: none;
+  border: 0;
+  color: rgba(255, 255, 255, .55);
+  cursor: pointer;
+  height: 28px;
+  padding: 0;
+  position: absolute;
+  right: .25rem;
+  top: 4px;
+  width: 28px;
+}
+.fm-search__clear:hover { color: #fff; }
+
+/* ----------------------------------------------------------- navegacion */
+
+.fm-nav {
+  padding: .25rem .6rem .5rem;
+}
+
+.fm-section { margin-top: .7rem; }
+.fm-section__title {
+  color: rgba(255, 255, 255, .42);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .09em;
+  margin: 0 .55rem .35rem;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.fm-empty { color: rgba(255, 255, 255, .5); font-size: .85rem; margin: 1rem .6rem; }
+
+.fm-list, .fm-sub { list-style: none; margin: 0; padding: 0; }
+.fm-item { margin-bottom: 2px; }
+
+/* enlaces principales */
+.fm-link, .fm-logout {
+  align-items: center;
+  border-radius: 10px;
+  color: var(--fm-text);
+  display: flex;
+  font-size: .92rem;
+  font-weight: 500;
+  gap: .7rem;
+  padding: .5rem .6rem;
+  position: relative;
+  text-decoration: none;
+  transition: background .15s, color .15s;
+}
+.fm-link:hover, .fm-logout:hover {
+  background: var(--fm-hover);
+  color: var(--fm-text-strong);
+  text-decoration: none;
+}
+.fm-link:focus-visible, .fm-logout:focus-visible, .fm-sublink:focus-visible {
+  outline: 2px solid var(--fm-gold);
+  outline-offset: -2px;
+}
+
+.fm-link__icon {
+  align-items: center;
+  background: rgba(255, 255, 255, .07);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, .75);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: .8rem;
+  height: 30px;
+  justify-content: center;
+  transition: background .15s, color .15s;
+  width: 30px;
+}
+.fm-link__text { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fm-link__chevron { color: rgba(255, 255, 255, .4); font-size: .62rem; transition: transform .2s ease; }
+.fm-item.is-open > .fm-link .fm-link__chevron { transform: rotate(90deg); }
+
+/* activo: barra dorada + fondo suave + icono resaltado */
+.fm-link.is-current,
+.fm-item.is-active > .fm-link {
+  background: var(--fm-active);
+  color: var(--fm-text-strong);
+}
+.fm-link.is-current::before,
+.fm-item.is-active > .fm-link::before {
+  background: var(--fm-gold);
+  border-radius: 0 3px 3px 0;
+  bottom: 9px;
+  content: '';
+  left: -.6rem;
+  position: absolute;
+  top: 9px;
+  width: 3px;
+}
+.fm-link.is-current .fm-link__icon,
+.fm-item.is-active > .fm-link .fm-link__icon {
+  background: var(--fm-gold);
+  color: #3b2a05;
+}
+
+/* submenu */
+.fm-sub {
+  animation: fm-sub-in .18s ease-out;
+  margin: 2px 0 4px 1.05rem;
+  padding-left: .85rem;
+  position: relative;
+}
+.fm-sub::before {
+  background: var(--fm-line);
+  bottom: 6px;
+  content: '';
+  left: 0;
+  position: absolute;
+  top: 6px;
+  width: 1px;
+}
+.fm-sublink {
+  align-items: center;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, .62);
+  display: flex;
+  font-size: .86rem;
+  gap: .55rem;
+  padding: .38rem .6rem;
+  text-decoration: none;
+  transition: background .15s, color .15s;
+}
+.fm-sublink:hover { background: var(--fm-hover); color: #fff; text-decoration: none; }
+.fm-sublink__dot {
+  background: rgba(255, 255, 255, .28);
+  border-radius: 50%;
+  flex: 0 0 auto;
+  height: 5px;
+  transition: background .15s, transform .15s;
+  width: 5px;
+}
+.fm-sublink.is-current { color: #fff; font-weight: 600; }
+.fm-sublink.is-current .fm-sublink__dot { background: var(--fm-gold); transform: scale(1.5); }
+
+@keyframes fm-sub-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ----------------------------------------------------------------- pie */
+
+.fm-foot { border-top: 1px solid var(--fm-line); margin: .4rem .6rem 1rem; padding-top: .6rem; }
+.fm-logout:hover { background: rgba(216, 56, 76, .16); }
+.fm-logout:hover .fm-link__icon { background: #d8384c; color: #fff; }
+
+/* ---------------------------------------------- modo mini (escritorio) */
+
+@media (min-width: 992px) {
+  /* colapsado y sin el cursor encima: solo iconos */
+  .sidebar-mini.sidebar-collapse .main-sidebar.fm-sidebar:not(:hover) .fm-brand { justify-content: center; padding: 0; }
+  .sidebar-mini.sidebar-collapse .main-sidebar.fm-sidebar:not(:hover) .fm-brand__full { display: none; }
+  .sidebar-mini.sidebar-collapse .main-sidebar.fm-sidebar:not(:hover) .fm-brand__mark { display: block; }
+
+  .sidebar-mini.sidebar-collapse .main-sidebar.fm-sidebar:not(:hover) .fm-user { justify-content: center; margin-left: 0; margin-right: 0; }
+  .sidebar-mini.sidebar-collapse .main-sidebar.fm-sidebar:not(:hover) .fm-user__info,
+  .sidebar-mini.sidebar-collapse .main-sidebar.fm-sidebar:not(:hover) .fm-search,
+  .sidebar-mini.sidebar-collapse .main-sidebar.fm-sidebar:not(:hover) .fm-link__text,
+  .sidebar-mini.sidebar-collapse .main-sidebar.fm-sidebar:not(:hover) .fm-link__chevron,
+  .sidebar-mini.sidebar-collapse .main-sidebar.fm-sidebar:not(:hover) .fm-sub { display: none; }
+
+  /* los titulos se vuelven una linea fina para conservar la separacion */
+  .sidebar-mini.sidebar-collapse .main-sidebar.fm-sidebar:not(:hover) .fm-section__title {
+    background: var(--fm-line);
+    font-size: 0;
+    height: 1px;
+    margin: .9rem .6rem .7rem;
+  }
+  .sidebar-mini.sidebar-collapse .main-sidebar.fm-sidebar:not(:hover) .fm-link,
+  .sidebar-mini.sidebar-collapse .main-sidebar.fm-sidebar:not(:hover) .fm-logout { justify-content: center; padding-left: 0; padding-right: 0; }
+  .sidebar-mini.sidebar-collapse .main-sidebar.fm-sidebar:not(:hover) .fm-link::before { left: -.6rem; }
+}
+
+/* ---------------------------------------------------------------- movil */
+
+@media (max-width: 991.98px) {
+  .main-sidebar.fm-sidebar { box-shadow: 0 0 40px rgba(0, 0, 0, .35); }
+  /* objetivos tactiles mas comodos */
+  .fm-link, .fm-logout { padding: .6rem; }
+  .fm-sublink { padding: .5rem .6rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fm-sub { animation: none; }
+  .fm-link, .fm-link__chevron, .fm-sublink, .fm-search__input { transition: none; }
+}

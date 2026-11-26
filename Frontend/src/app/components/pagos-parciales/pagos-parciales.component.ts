@@ -1,7 +1,9 @@
+import { Observable } from 'rxjs';
+import { Page } from 'src/app/models/page';
+import { ListaPaginada } from 'src/app/utils/lista-paginada';
 import { Component, OnInit } from '@angular/core';
 import { PagoParcialService } from '../../services/pago-parcial.service';
 import { PagoParcial } from '../../models/pago-parcial';
-import { JqueryConfigs } from '../../utils/jquery/jquery-utils';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -10,19 +12,25 @@ import { AuthService } from '../../services/auth.service';
   styles: [
   ]
 })
-export class PagosParcialesComponent implements OnInit {
+export class PagosParcialesComponent extends ListaPaginada<PagoParcial> implements OnInit {
 
   title: string;
-  jQueryConfigs: JqueryConfigs;
 
-  pagosParciales: PagoParcial[];
 
   constructor(
     private pagosService: PagoParcialService,
     public auth: AuthService
   ) {
+    super();
     this.title = 'Pagos Parciales';
-    this.jQueryConfigs = new JqueryConfigs();
+  }
+
+  protected fetch(page: number, size: number, search: string, sort: string): Observable<Page<PagoParcial>> {
+    return this.pagosService.getPaginado(page, size, search, sort);
+  }
+
+  get pagosParciales(): PagoParcial[] {
+    return this.items;
   }
 
   ngOnInit(): void {
@@ -30,10 +38,7 @@ export class PagosParcialesComponent implements OnInit {
   }
 
   loadPagosParciales(): void {
-    this.pagosService.getPagosParciales().subscribe(pagosParciales => {
-      this.pagosParciales = pagosParciales;
-      this.jQueryConfigs.configDataTable('pagos-parciales');
-    });
+    this.cargar();
   }
 
 }

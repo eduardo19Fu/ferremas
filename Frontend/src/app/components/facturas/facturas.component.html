@@ -27,91 +27,104 @@
                 <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#modal-eliminar-facturas">
                     <i class="fas fa-trash-alt"></i>
                     Eliminar
+                </button>&nbsp;
+
+                <button type="button" class="btn btn-outline-success" (click)="exportar()"
+                    [class.is-loading]="exportando" [attr.aria-busy]="exportando" [disabled]="!totalElements"
+                    ngbTooltip="Exportar a Excel todo el listado filtrado" placement="bottom">
+                    <span class="tm-spinner tm-spinner--btn" *ngIf="exportando; else iconoExcel" role="status"></span>
+                    <ng-template #iconoExcel><i class="fas fa-file-excel"></i></ng-template>
+                    {{ exportando ? 'Generando…' : 'Excel' }}
                 </button>
             </div>
         </div>
     </div><!-- /.container-fluid -->
 </section>
 
-<div class="card card-secondary">
+<div class="card tm-form">
     <div class="card-header">
-        Filtros
+        <h3 class="card-title">Filtros</h3>
     </div>
 
     <form #searchForm="ngForm">
         <div class="card-body">
-            <div class="form-group">
-                <div class="row">
-                    <div class="col">
-                        <label for="fecha-inicio">Fecha Inicio</label>
-                        <input type="date" name="fecha-inicio" id="fecha-inicio" class="form-control" [(ngModel)]="fechaIni">
-                    </div>
+            <div class="tm-grid">
+                <div class="tm-field">
+                    <label for="fecha-inicio">Fecha inicio</label>
+                    <input type="date" name="fecha-inicio" id="fecha-inicio" class="form-control" [(ngModel)]="fechaIni">
+                </div>
 
-                    <div class="col">
-                        <label for="fecha-fin">Fecha Fin</label>
-                        <input type="date" name="fecha-fin" id="fecha-fin" class="form-control" [(ngModel)]="fechaFin">
-                    </div>
+                <div class="tm-field">
+                    <label for="fecha-fin">Fecha fin</label>
+                    <input type="date" name="fecha-fin" id="fecha-fin" class="form-control" [(ngModel)]="fechaFin">
                 </div>
             </div>
         </div>
 
         <div class="card-footer">
-            <button type="submit" class="btn bg-gradient-info" (click)="getFacturasSP()" [disabled]="facturas.length > 0">
-                <i class="fas fa-search"></i>
-                Búscar
-            </button>
-            &nbsp;
             <button type="button" class="btn bg-gradient-warning" (click)="reloadPage()">
                 <i class="fas fa-brush"></i>
                 Limpiar
+            </button>
+
+            <button type="submit" class="btn bg-gradient-info" (click)="getFacturasSP()">
+                <i class="fas fa-search"></i>
+                Buscar
             </button>
         </div>
     </form>
 </div>
 
 <div class="card">
-    <div class="card-header">
-        Listado de Ventas Creadas
-    </div>
-    <div class="card-body table-responsive">
+<div class="card-body table-responsive">
 
-        <div *ngIf="facturas?.length == 0" class="alert alert-info alert-dismissible">
-            <h5>
-                <i class="icon fas fa-info"></i>
-                Atención!
-            </h5>
-
-            No existe ninguna factura registrada en la base de datos!
+        <div class="row mb-2">
+            <div class="col-md-auto tm-toolbar-size">
+                <app-tamanio-pagina [size]="size" (sizeChange)="onSizeChange($event)"></app-tamanio-pagina>
+            </div>
+            <div class="col-md-4 ml-md-auto tm-buscador">
+                <i class="fas fa-search"></i>
+                <input type="search" class="form-control form-control-sm" placeholder="Buscar por cliente, NIT o No. factura..."
+                    [ngModel]="search" (ngModelChange)="onBuscar($event)">
+                <span class="tm-spinner" *ngIf="cargando"></span>
+            </div>
         </div>
 
-        <table id="facturas" class="table table-hover table-striped table-bordered dataTable dtr-inline table-sm"
-            role="grid" *ngIf="facturas?.length > 0">
+        <app-sin-registros *ngIf="facturas?.length == 0 && !cargando" entidad="facturas" [busqueda]="search"
+            (limpiar)="onBuscar('')"></app-sin-registros>
+
+        <div class="tabla-wrap">
+            <div class="tabla-progreso" *ngIf="cargando && facturas?.length"></div>
+            <app-tabla-skeleton *ngIf="cargando && !facturas?.length" [columnas]="8"></app-tabla-skeleton>
+            <table id="facturas" class="table table-modern" [class.cargando]="cargando" *ngIf="facturas?.length > 0">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>No. Factura</th>
-                    <th>Fecha</th>
-                    <th>Total</th>
-                    <th>Estado</th>
-                    <th>Emisor</th>
+                    <th tmSortable="idFactura" [sort]="sort" (tmSort)="onSort($event)">ID</th>
+                    <th tmSortable="noFactura" [sort]="sort" (tmSort)="onSort($event)">No. Factura</th>
+                    <th tmSortable="fecha" [sort]="sort" (tmSort)="onSort($event)">Fecha</th>
+                    <th tmSortable="cliente.nombre" [sort]="sort" (tmSort)="onSort($event)">Cliente</th>
+                    <th tmSortable="total" [sort]="sort" (tmSort)="onSort($event)">Total</th>
+                    <th tmSortable="estado.estado" [sort]="sort" (tmSort)="onSort($event)">Estado</th>
+                    <th tmSortable="usuario.usuario" [sort]="sort" (tmSort)="onSort($event)">Emisor</th>
                     <th *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">Opciones</th>
                 </tr>
             </thead>
 
             <tbody>
                 <tr *ngFor="let factura of facturas">
-                    <td>{{factura.idFactura}}</td>
-                    <td>{{factura.noFactura}}</td>
-                    <td>{{factura.fecha | date: 'dd/MM/yyyy - hh:mm'}}</td>
-                    <td>{{factura.total | currency: 'Q' : 'symbol'}}</td>
-                    <td>
+                    <td data-label="ID">{{factura.idFactura}}</td>
+                    <td data-label="No. Factura">{{factura.noFactura}}</td>
+                    <td data-label="Fecha">{{factura.fecha | date: 'dd/MM/yyyy - hh:mm'}}</td>
+                    <td data-label="Cliente">{{factura.cliente?.nombre || '—'}}</td>
+                    <td data-label="Total">{{factura.total | currency: 'Q' : 'symbol'}}</td>
+                    <td data-label="Estado">
                         <span class="badge"
                             [ngClass]="{'badge-success': factura.estado.idEstado === 3, 'badge-danger': factura.estado.idEstado === 4}">
                             {{factura.estado.estado}}
                         </span>
                     </td>
-                    <td>{{factura.usuario.usuario}}</td>
-                    <td class="center-options" *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">
+                    <td data-label="Emisor">{{factura.usuario.usuario}}</td>
+                    <td data-label="Opciones" class="center-options" *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">
 
                         <button class="btn bg-gradient-success margin" name="detail" type="button" placement="top" ngbTooltip="Detalle"
                             (click)="abrirDetalle(factura)">
@@ -119,8 +132,12 @@
                         </button>
 
                         <button class="btn bg-gradient-warning margin" name="print" type="button" placement="top" ngbTooltip="Imprimir Comprobante"
-                            (click)="printBill(factura)" [disabled]="factura.estado.idEstado === 4">
-                            <i class="fas fa-print"></i>
+                            (click)="printBill(factura)" [disabled]="factura.estado.idEstado === 4"
+                            [class.is-loading]="imprimiendo.has(factura.idFactura)"
+                            [attr.aria-busy]="imprimiendo.has(factura.idFactura)">
+                            <span class="tm-spinner tm-spinner--btn" *ngIf="imprimiendo.has(factura.idFactura); else iconoImprimir"
+                                role="status" aria-label="Generando comprobante"></span>
+                            <ng-template #iconoImprimir><i class="fas fa-print"></i></ng-template>
                         </button>
 
                         <!-- Aquí va el botón de eliminar -->
@@ -132,18 +149,10 @@
                     </td>
                 </tr>
             </tbody>
-
-            <tfoot>
-                <tr>
-                    <th>ID</th>
-                    <th>No. Factura</th>
-                    <th>Fecha</th>
-                    <th>Total</th>
-                    <th>Estado</th>
-                    <th>Emisor</th>
-                    <th *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_COBRADOR')">Opciones</th>
-                </tr>
-            </tfoot>
         </table>
+        </div>
+
+        <app-paginacion [mostrarTamanio]="false" [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+            (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
 </div>

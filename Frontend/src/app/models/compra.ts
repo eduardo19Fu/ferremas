@@ -10,6 +10,7 @@ export class Compra {
     iva: number;
     totalCompra: number;
     fechaCompra: Date;
+    fechaRegistro: Date;
 
     proveedor: Proveedor
     estado: Estado;

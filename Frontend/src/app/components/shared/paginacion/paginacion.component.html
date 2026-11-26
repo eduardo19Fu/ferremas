@@ -1,0 +1,41 @@
+<div class="tm-paginacion">
+    <label class="tm-pag-size mb-0" *ngIf="mostrarTamanio">
+        <span>Mostrar</span>
+        <select class="custom-select custom-select-sm" [ngModel]="size" (ngModelChange)="cambiarTamanio($event)">
+            <option *ngFor="let s of sizes" [value]="s">{{s}}</option>
+        </select>
+    </label>
+
+    <div class="tm-pag-info">
+        <strong>{{desde}}–{{hasta}}</strong> de <strong>{{totalElements}}</strong> registros
+    </div>
+
+    <ul class="pagination pagination-sm mb-0 tm-pag-nav" *ngIf="totalPages > 1 || siempreNav">
+        <li class="page-item d-none d-sm-block" [class.disabled]="page === 0">
+            <a class="page-link" href="javascript:void(0)" (click)="ir(0)" title="Primera página" aria-label="Primera página">
+                <i class="fas fa-angle-double-left"></i>
+            </a>
+        </li>
+        <li class="page-item" [class.disabled]="page === 0">
+            <a class="page-link" href="javascript:void(0)" (click)="ir(page - 1)" title="Anterior" aria-label="Anterior">
+                <i class="fas fa-angle-left"></i>
+            </a>
+        </li>
+        <li class="page-item d-none d-sm-block" *ngFor="let p of paginas" [class.active]="p === page">
+            <a class="page-link" href="javascript:void(0)" (click)="ir(p)">{{p + 1}}</a>
+        </li>
+        <li class="page-item d-sm-none active">
+            <span class="page-link">{{page + 1}} / {{paginasTotales}}</span>
+        </li>
+        <li class="page-item" [class.disabled]="page >= paginasTotales - 1">
+            <a class="page-link" href="javascript:void(0)" (click)="ir(page + 1)" title="Siguiente" aria-label="Siguiente">
+                <i class="fas fa-angle-right"></i>
+            </a>
+        </li>
+        <li class="page-item d-none d-sm-block" [class.disabled]="page >= paginasTotales - 1">
+            <a class="page-link" href="javascript:void(0)" (click)="ir(totalPages - 1)" title="Última página" aria-label="Última página">
+                <i class="fas fa-angle-double-right"></i>
+            </a>
+        </li>
+    </ul>
+</div>

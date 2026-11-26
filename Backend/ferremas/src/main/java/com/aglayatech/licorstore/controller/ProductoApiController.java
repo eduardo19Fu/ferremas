@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.aglayatech.licorstore.generics.Excepcion;
+import com.aglayatech.licorstore.generics.ExcelExporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +49,7 @@ import com.aglayatech.licorstore.service.IUploadFileService;
 
 import net.sf.jasperreports.engine.JRException;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 @CrossOrigin(origins = { "${ferremas.origins}" })
 @RestController
@@ -75,6 +77,55 @@ public class ProductoApiController {
 		return serviceProducto.findAll(PageRequest.of(page, 5));
 	}
 	
+	private static final java.util.Map<String, String> SORT_PRODUCTO = com.aglayatech.licorstore.generics.SortParam.keys("idProducto", "codProducto", "nombre", "precioVenta", "stock", "tipoProducto.tipoProducto", "marcaProducto.marca", "estado.estado");
+
+	@GetMapping(value = "/productos/paginado")
+	public org.springframework.data.domain.Page<Producto> paginado(@org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
+			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "10") int size,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String search,
+			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "false") boolean soloActivos,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String sort) {
+		int pageSize = Math.min(Math.max(size, 1), 100);
+		org.springframework.data.domain.Sort order = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_PRODUCTO, org.springframework.data.domain.Sort.by("nombre").ascending(), "idProducto");
+		org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, order);
+		if (soloActivos) {
+			return serviceProducto.searchByEstado(search, serviceEstado.findById(1), pageable);
+		}
+		return serviceProducto.search(search, pageable);
+	}
+
+	/** Exporta a Excel todos los productos que coinciden con la busqueda (mismo filtro y orden del listado). */
+	@Secured({ "ROLE_ADMIN", "ROLE_COBRADOR", "ROLE_INVENTARIO" })
+	@GetMapping(value = "/productos/exportar")
+	public ResponseEntity<byte[]> exportar(@RequestParam(required = false) String search,
+			@RequestParam(defaultValue = "false") boolean soloActivos,
+			@RequestParam(required = false) String sort,
+			org.springframework.security.core.Authentication autenticacion) throws IOException {
+		Sort orden = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_PRODUCTO, Sort.by("nombre").ascending(), "idProducto");
+		Estado activo = soloActivos ? serviceEstado.findById(1) : null;
+
+		// los costos y la ganancia solo los ven quienes administran inventario (los cobradores no)
+		boolean veCostos = autenticacion != null && autenticacion.getAuthorities().stream()
+				.anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_INVENTARIO"));
+
+		List<ExcelExporter.Columna<Producto>> columnas = new java.util.ArrayList<>();
+		columnas.add(ExcelExporter.columna("Código", 16, ExcelExporter.Tipo.TEXTO, Producto::getCodProducto));
+		columnas.add(ExcelExporter.columna("Nombre", 46, ExcelExporter.Tipo.TEXTO, Producto::getNombre));
+		if (veCostos) {
+			columnas.add(ExcelExporter.columna("Precio de costo", 16, ExcelExporter.Tipo.MONEDA, Producto::getPrecioCompra));
+			columnas.add(ExcelExporter.columna("% de ganancia", 15, ExcelExporter.Tipo.DECIMAL, Producto::getPorcentajeGanancia));
+		}
+		columnas.add(ExcelExporter.columna("Precio de venta", 16, ExcelExporter.Tipo.MONEDA, Producto::getPrecioVenta));
+		columnas.add(ExcelExporter.columna("Stock", 10, ExcelExporter.Tipo.ENTERO, Producto::getStock));
+		columnas.add(ExcelExporter.columna("Tipo", 24, ExcelExporter.Tipo.TEXTO, p -> p.getTipoProducto() == null ? null : p.getTipoProducto().getTipoProducto()));
+		columnas.add(ExcelExporter.columna("Marca", 24, ExcelExporter.Tipo.TEXTO, p -> p.getMarcaProducto() == null ? null : p.getMarcaProducto().getMarca()));
+		columnas.add(ExcelExporter.columna("Estado", 12, ExcelExporter.Tipo.TEXTO, p -> p.getEstado() == null ? null : p.getEstado().getEstado()));
+
+		byte[] archivo = ExcelExporter.exportar("Productos", columnas, orden,
+				pageable -> soloActivos ? serviceProducto.searchByEstado(search, activo, pageable) : serviceProducto.search(search, pageable));
+		return ExcelExporter.respuesta("productos", archivo);
+	}
+
 	@GetMapping(value = "/productos-activos")
 	public List<Producto> findAll(){
 		Estado estado = serviceEstado.findById(1);

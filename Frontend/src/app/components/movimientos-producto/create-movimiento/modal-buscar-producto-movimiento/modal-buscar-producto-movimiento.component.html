@@ -1,8 +1,8 @@
 <div class="modal fade" id="modal-buscar-producto">
     <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header header-modal" style="background-color: rebeccapurple;">
-                <h4 class="modal-title" style="color: #ffffff">{{title}}</h4>
+        <div class="modal-content tm-form">
+            <div class="modal-header">
+                <h4 class="modal-title">{{title}}</h4>
                 <button type="button" id="button-x" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -10,8 +10,20 @@
 
             <div class="card-body">
                 <div class="modal-body table-responsive">
-                    <table id="productos"
-                        class="table table-hover table-striped table-bordered dataTable dtr-inline table-sm" role="grid"
+                    <div class="row mb-2">
+                        <div class="col-md-5 ml-md-auto tm-buscador">
+                            <i class="fas fa-search"></i>
+                <input type="search" class="form-control form-control-sm" placeholder="Buscar por nombre o código..."
+                                [ngModel]="search" (ngModelChange)="onBuscar($event)">
+                <span class="tm-spinner" *ngIf="cargando"></span>
+                        </div>
+                    </div>
+
+                    <div class="tabla-wrap">
+            <div class="tabla-progreso" *ngIf="cargando && productos?.length"></div>
+            <app-tabla-skeleton *ngIf="cargando && !productos?.length" [columnas]="7"></app-tabla-skeleton>
+            <table id="productos"
+                        class="table table-modern" [class.cargando]="cargando"
                         *ngIf="productos?.length > 0">
                         <thead>
                             <tr>
@@ -27,32 +39,27 @@
 
                         <tbody>
                             <tr *ngFor="let producto of productos">
-                                <td>{{ producto.idProducto }}</td>
-                                <td>{{ producto.codProducto }}</td>
-                                <td>{{ producto.nombre }}</td>
-                                <td>{{ producto.precioVenta | currency: "Q" : "symbol" }}</td>
-                                <td>{{ producto.stock }}</td>
-                                <td>{{ producto.marcaProducto.marca }}</td>
-                                <td class="center-options">
+                                <td data-label="ID">{{ producto.idProducto }}</td>
+                                <td data-label="Codigo">{{ producto.codProducto }}</td>
+                                <td data-label="Nombre">{{ producto.nombre }}</td>
+                                <td data-label="Precio">{{ producto.precioVenta | currency: "Q" : "symbol" }}</td>
+                                <td data-label="Stock">{{ producto.stock }}</td>
+                                <td data-label="Marca">{{ producto.marcaProducto.marca }}</td>
+                                <td data-label="Opciones" class="center-options">
                                     <button class="btn bg-gradient-cyan" (click)="chooseProducto(producto)">
                                         Elegir
                                     </button>
                                 </td>
                             </tr>
                         </tbody>
-
-                        <tfoot>
-                            <tr>
-                                <th>ID</th>
-                                <th>Codigo</th>
-                                <th>Nombre</th>
-                                <th>Precio</th>
-                                <th>Stock</th>
-                                <th>Marca</th>
-                                <th>Opciones</th>
-                            </tr>
-                        </tfoot>
                     </table>
+        </div>
+
+                    <app-sin-registros *ngIf="items.length === 0 && !cargando" entidad="movimientos" [busqueda]="search"
+                        (limpiar)="onBuscar('')"></app-sin-registros>
+
+                    <app-paginacion [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+                        (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
                 </div>
             </div>
         </div>

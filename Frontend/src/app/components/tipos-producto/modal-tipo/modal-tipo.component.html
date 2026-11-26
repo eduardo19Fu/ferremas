@@ -1,0 +1,30 @@
+<form #tipoForm="ngForm" (ngSubmit)="guardar()" class="tm-form" autocomplete="off">
+    <div class="modal-header">
+        <h4 class="modal-title">{{ title }}</h4>
+        <button type="button" class="close" aria-label="Cerrar" (click)="activeModal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div class="modal-body">
+        <div class="tm-field">
+            <label for="tipo-producto">Tipo de producto</label>
+            <input #campo type="text" class="form-control" id="tipo-producto" name="tipoProducto"
+                [(ngModel)]="tipoProducto.tipoProducto" placeholder="Ingrese el nombre de la categoría" required
+                #tipo="ngModel">
+
+            <div *ngIf="tipo.invalid && (tipo.touched || tipo.dirty)">
+                <span class="requerido">
+                    El tipo no puede estar vacío.
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="!tipoForm.form.valid || guardando">
+            {{ esEdicion ? 'Actualizar' : 'Guardar' }}
+        </button>
+    </div>
+</form>

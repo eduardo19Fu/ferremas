@@ -1,0 +1,18 @@
+/* ==========================================================================
+   PAGINACION — sin solapamientos, se reordena en pantallas pequenas
+   ========================================================================== */
+.tm-paginacion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem 1.25rem;
+  padding-top: .5rem;
+}
+
+.tm-paginacion .tm-pag-size { display: flex; align-items: center; gap: .5rem; font-weight: 400; }
+.tm-paginacion .tm-pag-size select { width: auto; border-radius: 8px; }
+.tm-paginacion .tm-pag-info { flex: 1 1 auto; text-align: center; min-width: 0; }
+.tm-paginacion .tm-pag-info strong { color: var(--tm-ink); font-weight: 600; }
+.tm-paginacion .tm-pag-nav { flex: 0 0 auto; }
+.tm-paginacion .page-link { padding: .35rem .6rem; }

@@ -1,88 +1,107 @@
-<div *ngIf="detailService.modal" class="abrir-modal animacion fadeIn">
-    <div class="modal" tabindex="-1" style="display: block; overflow-y: scroll;">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
+<div *ngIf="detailService.modal" class="df-fondo" (click)="cerrarModal()">
+    <div class="modal" tabindex="-1" style="display: block; overflow-y: auto;" role="dialog" aria-modal="true"
+        aria-labelledby="dc-titulo">
+        <div class="modal-dialog modal-lg modal-dialog-centered" (click)="$event.stopPropagation()">
+            <div class="modal-content tm-form df" *ngIf="compra">
+
                 <div class="modal-header">
-                    <h5 class="modal-title">{{title}}</h5>
-                    <button (click)="cerrarModal()" id="close" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true" style="color: white;">&times;</span>
+                    <h5 class="modal-title" id="dc-titulo">{{title}}</h5>
+                    <button (click)="cerrarModal()" id="close" type="button" class="close" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <div class="container">
-                        <h4>Datos Generales</h4>
-                        <div class="row">
-                            <div class="col-sm">
 
-                                <ul *ngIf="compra" class="list-group mb-3">
-                                    <li class="list-group-item">
-                                        <strong>ID Compra: </strong>
-                                        {{compra.idCompra}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>NO. COMPROBANTE: </strong>
-                                        {{compra.noComprobante}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>TOTAL: </strong>
-                                        {{compra.totalCompra | currency: "Q" : "symbol"}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>FECHA EMISIÓN: </strong>
-                                        {{compra.fechaCompra | date: 'dd/MM/yyyy'}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>PROVEEDOR: </strong>
-                                        {{compra.proveedor.nombre}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>INGRESADO POR: </strong>
-                                        {{compra.usuario.usuario}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>TIPO COMPROBANTE:</strong>
-                                        {{compra.tipoComprobante.tipoComprobante}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>ESTADO:</strong>
-                                        {{compra.estado.estado}}
-                                    </li>
-                                </ul>
+                <div class="modal-body df-cuerpo">
 
-                            </div>
-
-
+                    <!-- portada: numero, estado y total -->
+                    <div class="df-hero" [class.df-hero--anulada]="anulada">
+                        <div class="df-hero__id">
+                            <span class="df-hero__tipo">Ingreso de mercadería</span>
+                            <h3 class="df-numero">
+                                Compra No. {{compra.idCompra}}
+                                <span *ngIf="compra.estado" class="df-estado"
+                                    [ngClass]="anulada ? 'df-estado--anulada' : 'df-estado--ok'">{{compra.estado.estado}}</span>
+                            </h3>
                         </div>
-                        <hr>
-                        <div class="row">
-                            <h4>Detalle de Compra</h4>&nbsp;
-                            <table class="table table-hover">
-                                <thead class="thead-dark">
+                        <div class="df-total">
+                            <small>Total</small>
+                            <strong>{{compra.totalCompra | currency: "Q" : "symbol"}}</strong>
+                        </div>
+                    </div>
+
+                    <!-- datos agrupados por categoria -->
+                    <div class="df-grupos">
+                        <section class="df-card df-card--cliente">
+                            <h5><i class="fas fa-people-carry" aria-hidden="true"></i> Proveedor</h5>
+                            <dl>
+                                <div><dt>Nombre</dt><dd>{{compra.proveedor?.nombre || '—'}}</dd></div>
+                                <div><dt>Contacto</dt><dd>{{compra.proveedor?.contacto || '—'}}</dd></div>
+                                <div><dt>Teléfono</dt><dd>{{compra.proveedor?.telefono || '—'}}</dd></div>
+                            </dl>
+                        </section>
+
+                        <section class="df-card df-card--venta">
+                            <h5><i class="fas fa-shopping-basket" aria-hidden="true"></i> Compra</h5>
+                            <dl>
+                                <div><dt>Fecha</dt><dd>{{compra.fechaCompra | date: 'dd/MM/yyyy'}}</dd></div>
+                                <div><dt>Registrada</dt><dd>{{compra.fechaRegistro ? (compra.fechaRegistro | date: 'dd/MM/yyyy · hh:mm a') : '—'}}</dd></div>
+                                <div><dt>Ingresada por</dt><dd>{{compra.usuario?.usuario || '—'}}</dd></div>
+                            </dl>
+                        </section>
+
+                        <section class="df-card df-card--documento">
+                            <h5><i class="fas fa-file-invoice" aria-hidden="true"></i> Comprobante</h5>
+                            <dl>
+                                <div><dt>Tipo</dt><dd>{{compra.tipoComprobante?.tipoComprobante || '—'}}</dd></div>
+                                <div><dt>Número</dt><dd>{{compra.noComprobante || '—'}}</dd></div>
+                                <div><dt>IVA</dt><dd>{{compra.iva != null ? (compra.iva | currency: "Q" : "symbol") : '—'}}</dd></div>
+                            </dl>
+                        </section>
+                    </div>
+
+                    <!-- productos (paginado desde el backend) -->
+                    <div class="df-seccion">
+                        <h4>Productos <span class="df-cuenta" *ngIf="totalElements">{{totalElements}}</span></h4>
+                    </div>
+
+                    <div class="df-tabla">
+                        <div class="tabla-wrap">
+                            <div class="tabla-progreso" *ngIf="cargando && items.length"></div>
+                            <app-tabla-skeleton *ngIf="cargando && !items.length" [columnas]="4" [filas]="size"></app-tabla-skeleton>
+
+                            <table class="table table-modern" [class.cargando]="cargando" *ngIf="items.length > 0">
+                                <thead>
                                     <tr>
-                                        <th>Fila</th>
-                                        <th>Registro</th>
-                                        <th>Producto</th>
-                                        <th>Cantidad</th>
-                                        <th>SubTotal</th>
+                                        <th tmSortable="cantidad" [sort]="sort" (tmSort)="onSort($event)">Cant.</th>
+                                        <th tmSortable="nombreProducto" [sort]="sort" (tmSort)="onSort($event)">Producto</th>
+                                        <th tmSortable="precioUnitario" [sort]="sort" (tmSort)="onSort($event)">Costo unit.</th>
+                                        <th tmSortable="subTotal" [sort]="sort" (tmSort)="onSort($event)">Subtotal</th>
                                     </tr>
                                 </thead>
-
                                 <tbody>
-                                    <tr class="" *ngFor="let item of compra.items; let i = index">
-                                        <td>{{'#' + (i + 1)}}</td>
-                                        <td>{{item.idDetalleCompra}}</td>
-                                        <td>{{item.producto.nombre}}</td>
-                                        <td>{{item.cantidad}}</td>
-                                        <td>{{item.subTotal | currency : "Q" : "symbol"}}</td>
+                                    <tr *ngFor="let item of items">
+                                        <td data-label="Cant.">{{item.cantidad}}</td>
+                                        <td data-label="Producto">
+                                            {{item.nombreProducto || "Producto no disponible"}}
+                                            <small class="df-codigo" *ngIf="item.codProducto">{{item.codProducto}}</small>
+                                        </td>
+                                        <td data-label="Costo unit.">{{item.precioUnitario | currency: "Q" : "symbol"}}</td>
+                                        <td data-label="Subtotal">{{item.subTotal | currency: "Q" : "symbol"}}</td>
                                     </tr>
                                 </tbody>
                             </table>
+
+                            <p class="df-vacio" *ngIf="!cargando && !items.length">Esta compra no tiene productos registrados.</p>
                         </div>
                     </div>
+
+                    <app-paginacion *ngIf="totalElements > 0" [siempreNav]="true" [sizes]="tamanios" [page]="page" [size]="size"
+                        [totalElements]="totalElements" [totalPages]="totalPages"
+                        (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
                 </div>
+
                 <div class="modal-footer">
-                    <button (click)="cerrarModal()" type="button" class="btn btn-secondary"
-                        data-dismiss="modal">Cerrar</button>
+                    <button (click)="cerrarModal()" type="button" class="btn btn-secondary">Cerrar</button>
                 </div>
             </div>
         </div>

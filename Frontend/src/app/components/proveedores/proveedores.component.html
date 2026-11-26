@@ -15,52 +15,57 @@
 </section>
 
 <div class="card">
-    <div class="card-header">
-        Listado de Proveedores Registrados
-    </div>
-
-    <div class="card-body table-responsive">
-        <div *ngIf="proveedores?.length === 0" class="alert alert-info alert-dismissible">
-            <h5>
-                <i class="icon fas fa-info"></i>
-                ¡Atención!
-            </h5>
-
-            No existe ningún proveedor registrado en la base de datos!
+<div class="card-body table-responsive">
+        <div class="row mb-2">
+            <div class="col-md-auto tm-toolbar-size">
+                <app-tamanio-pagina [size]="size" (sizeChange)="onSizeChange($event)"></app-tamanio-pagina>
+            </div>
+            <div class="col-md-4 ml-md-auto tm-buscador">
+                <i class="fas fa-search"></i>
+                <input type="search" class="form-control form-control-sm" placeholder="Buscar..."
+                    [ngModel]="search" (ngModelChange)="onBuscar($event)">
+                <span class="tm-spinner" *ngIf="cargando"></span>
+            </div>
         </div>
 
-        <table id="proveedores" class="table table-hover table-striped table-bordered dataTable dtr-inline table-sm" role="grid"
+        <app-sin-registros *ngIf="proveedores?.length === 0 && !cargando" entidad="proveedores" [busqueda]="search"
+            (limpiar)="onBuscar('')"></app-sin-registros>
+
+        <div class="tabla-wrap">
+            <div class="tabla-progreso" *ngIf="cargando && proveedores?.length"></div>
+            <app-tabla-skeleton *ngIf="cargando && !proveedores?.length" [columnas]="9"></app-tabla-skeleton>
+            <table id="proveedores" class="table table-modern" [class.cargando]="cargando"
             *ngIf="proveedores?.length > 0">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Contacto</th>
-                    <th>Pais</th>
-                    <th>Web</th>
-                    <th>E-mail</th>
-                    <th>Teléfono</th>
-                    <th>Dirección</th>
-                    <th>Estado</th>
+                    <th tmSortable="idProveedor" [sort]="sort" (tmSort)="onSort($event)">#</th>
+                    <th tmSortable="contacto" [sort]="sort" (tmSort)="onSort($event)">Contacto</th>
+                    <th tmSortable="pais.nombre" [sort]="sort" (tmSort)="onSort($event)">Pais</th>
+                    <th tmSortable="web" [sort]="sort" (tmSort)="onSort($event)">Web</th>
+                    <th tmSortable="email" [sort]="sort" (tmSort)="onSort($event)">E-mail</th>
+                    <th tmSortable="telefono" [sort]="sort" (tmSort)="onSort($event)">Teléfono</th>
+                    <th tmSortable="direccion" [sort]="sort" (tmSort)="onSort($event)">Dirección</th>
+                    <th tmSortable="estado.estado" [sort]="sort" (tmSort)="onSort($event)">Estado</th>
                     <th>Opciones</th>
                 </tr>
             </thead>
 
             <tbody>
                 <tr *ngFor="let proveedor of proveedores">
-                    <td>{{proveedor.idProveedor}}</td>
-                    <td>{{proveedor.contacto}}</td>
-                    <td>{{proveedor.pais.nombre}}</td>
-                    <td>{{proveedor.web}}</td>
-                    <td>{{proveedor.email}}</td>
-                    <td>{{proveedor.telefono}}</td>
-                    <td>{{proveedor.direccion}}</td>
-                    <td>
+                    <td data-label="#">{{proveedor.idProveedor}}</td>
+                    <td data-label="Contacto">{{proveedor.contacto}}</td>
+                    <td data-label="Pais">{{proveedor.pais.nombre}}</td>
+                    <td data-label="Web">{{proveedor.web}}</td>
+                    <td data-label="E-mail">{{proveedor.email}}</td>
+                    <td data-label="Teléfono">{{proveedor.telefono}}</td>
+                    <td data-label="Dirección">{{proveedor.direccion}}</td>
+                    <td data-label="Estado">
                         <span class="badge"
                             [ngClass]="{'badge-primary': proveedor.estado.estado === 'ACTIVO', 'badge-danger': proveedor.estado.estado === 'INACTIVO'}">
                             {{proveedor.estado.estado}}
                         </span>
                     </td>
-                    <td class="center-options">
+                    <td data-label="Opciones" class="center-options">
                         <button class="btn bg-gradient-info margin" placement="top" ngbTooltip="Editar"
                             [routerLink]="['/proveedor/create', proveedor.idProveedor]" 
                             *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_INVENTARIO')">
@@ -74,20 +79,10 @@
                     </td>
                 </tr>
             </tbody>
-
-            <tfoot>
-                <tr>
-                    <th>#</th>
-                    <th>Contacto</th>
-                    <th>Pais</th>
-                    <th>Web</th>
-                    <th>E-mail</th>
-                    <th>Teléfono</th>
-                    <th>Dirección</th>
-                    <th>Estado</th>
-                    <th>Opciones</th>
-                </tr>
-            </tfoot>
         </table>
+        </div>
+
+        <app-paginacion [mostrarTamanio]="false" [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+            (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
 </div>

@@ -11,4 +11,6 @@ public interface IPagoParcialService {
     public PagoParcial findPagoParcial(Integer idpago);
 
     public PagoParcial save(PagoParcial pagoParcial);
+
+	public org.springframework.data.domain.Page<PagoParcial> search(String termino, org.springframework.data.domain.Pageable pageable);
 }

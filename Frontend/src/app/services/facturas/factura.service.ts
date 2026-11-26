@@ -7,6 +7,8 @@ import { Factura } from 'src/app/models/factura';
 
 import { global } from '../global';
 import swal from 'sweetalert2';
+import { Page } from 'src/app/models/page';
+import { DetalleFacturaItem } from 'src/app/models/detalle-factura-item';
 
 @Injectable({
   providedIn: 'root'
@@ -128,5 +130,30 @@ export class FacturaService {
         };
       })
     );
+  }
+
+  /** Listado paginado desde el backend, con busqueda opcional. */
+  getPaginado(page: number, size: number, search: string = '', fechaIni?: Date, fechaFin?: Date, sort: string = ''): Observable<Page<Factura>> {
+    const params: any = { page: String(page), size: String(size) };
+    if (search && search.trim()) {
+      params.search = search.trim();
+    }
+    if (fechaIni && fechaFin) {
+      params.fechaIni = fechaIni.toString();
+      params.fechaFin = fechaFin.toString();
+    }
+    if (sort) {
+      params.sort = sort;
+    }
+    return this.http.get<Page<Factura>>(`${this.url}/facturas/paginado`, { params });
+  }
+
+  /** Detalle (productos) de una factura, paginado desde el backend. */
+  getDetallePaginado(idFactura: number, page: number, size: number, sort: string = ''): Observable<Page<DetalleFacturaItem>> {
+    const params: any = { page: String(page), size: String(size) };
+    if (sort) {
+      params.sort = sort;
+    }
+    return this.http.get<Page<DetalleFacturaItem>>(`${this.url}/facturas/${idFactura}/detalle`, { params });
   }
 }

@@ -12,15 +12,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.aglayatech.licorstore.generics.ErroresHandler;
 import com.aglayatech.licorstore.generics.Excepcion;
+import com.aglayatech.licorstore.generics.ExcelExporter;
 import com.aglayatech.licorstore.model.*;
 import com.aglayatech.licorstore.service.*;
-import com.fel.firma.emisor.FirmaEmisor;
-import com.fel.firma.emisor.RespuestaServicioFirma;
-import com.fel.validaciones.documento.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
@@ -382,4 +380,70 @@ public class FacturaApiController {
 
         serviceMovimiento.save(movimiento);
     }
+
+	// Las consultas de busqueda usan "left join f.cliente c": se ordena por el alias para conservar las facturas sin cliente
+	private static final java.util.Map<String, String> SORT_FACTURA = java.util.Map.of(
+			"idFactura", "idFactura", "noFactura", "noFactura", "fecha", "fecha", "cliente.nombre", "c.nombre",
+			"total", "total", "estado.estado", "estado.estado", "usuario.usuario", "usuario.usuario");
+
+	@GetMapping("/facturas/paginado")
+	public org.springframework.data.domain.Page<Factura> paginado(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size,
+			@RequestParam(required = false) String search,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaIni,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin,
+			@RequestParam(required = false) String sort) {
+		int pageSize = Math.min(Math.max(size, 1), 100);
+		org.springframework.data.domain.Sort order = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_FACTURA, org.springframework.data.domain.Sort.by("idFactura").descending(), "idFactura");
+		org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, order);
+		if (fechaIni != null && fechaFin != null) {
+			return serviceFactura.searchPorFechas(search, fechaIni, fechaFin, pageable);
+		}
+		return serviceFactura.search(search, pageable);
+	}
+
+	private static final java.util.Map<String, String> SORT_DETALLE_FACTURA = java.util.Map.of(
+			"idDetalle", "idDetalle", "codProducto", "p.codProducto", "nombreProducto", "p.nombre",
+			"cantidad", "cantidad", "precioUnitario", "precioUnitario", "subTotal", "subTotal",
+			"descuento", "descuento", "subTotalDescuento", "subTotalDescuento");
+
+	/** Detalle de una factura (sus productos), paginado y ordenable; lo usa el modal de detalle. */
+	@Secured(value = {"ROLE_ADMIN", "ROLE_COBRADOR"})
+	@GetMapping("/facturas/{id}/detalle")
+	public org.springframework.data.domain.Page<com.aglayatech.licorstore.model.dto.DetalleFacturaItem> detalle(
+			@PathVariable("id") Long idFactura,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size,
+			@RequestParam(required = false) String sort) {
+		int pageSize = Math.min(Math.max(size, 1), 100);
+		org.springframework.data.domain.Sort order = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_DETALLE_FACTURA, org.springframework.data.domain.Sort.by("idDetalle").ascending(), "idDetalle");
+		return serviceFactura.findDetalle(idFactura, org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, order));
+	}
+
+	/** Exporta a Excel todas las facturas que coinciden con la busqueda y el rango de fechas del listado. */
+	@Secured(value = {"ROLE_ADMIN", "ROLE_COBRADOR"})
+	@GetMapping("/facturas/exportar")
+	public ResponseEntity<byte[]> exportar(@RequestParam(required = false) String search,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaIni,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin,
+			@RequestParam(required = false) String sort) throws java.io.IOException {
+		org.springframework.data.domain.Sort orden = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_FACTURA, org.springframework.data.domain.Sort.by("idFactura").descending(), "idFactura");
+
+		java.util.List<ExcelExporter.Columna<Factura>> columnas = java.util.List.of(
+				ExcelExporter.columna("ID", 9, ExcelExporter.Tipo.ENTERO, Factura::getIdFactura),
+				ExcelExporter.columna("No. factura", 13, ExcelExporter.Tipo.ENTERO, Factura::getNoFactura),
+				ExcelExporter.columna("Serie", 10, ExcelExporter.Tipo.TEXTO, Factura::getSerie),
+				ExcelExporter.columna("Fecha", 13, ExcelExporter.Tipo.FECHA, Factura::getFecha),
+				ExcelExporter.columna("Cliente", 36, ExcelExporter.Tipo.TEXTO, f -> f.getCliente() == null ? null : f.getCliente().getNombre()),
+				ExcelExporter.columna("NIT", 14, ExcelExporter.Tipo.TEXTO, f -> f.getCliente() == null ? null : f.getCliente().getNit()),
+				ExcelExporter.columna("Total", 14, ExcelExporter.Tipo.MONEDA, Factura::getTotal),
+				ExcelExporter.columna("Estado", 12, ExcelExporter.Tipo.TEXTO, f -> f.getEstado() == null ? null : f.getEstado().getEstado()),
+				ExcelExporter.columna("Emisor", 16, ExcelExporter.Tipo.TEXTO, f -> f.getUsuario() == null ? null : f.getUsuario().getUsuario()));
+
+		byte[] archivo = ExcelExporter.exportar("Facturas", columnas, orden, pageable ->
+				(fechaIni != null && fechaFin != null)
+						? serviceFactura.searchPorFechas(search, fechaIni, fechaFin, pageable)
+						: serviceFactura.search(search, pageable));
+		return ExcelExporter.respuesta("facturas", archivo);
+	}
 }

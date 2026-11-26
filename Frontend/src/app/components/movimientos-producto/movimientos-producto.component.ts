@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Page } from 'src/app/models/page';
+import { ListaPaginada } from 'src/app/utils/lista-paginada';
 
 import { MovimientoProducto } from 'src/app/models/movimiento-producto';
 
 import { AuthService } from 'src/app/services/auth.service';
 import { MovimientosProductoService } from '../../services/movimientos/movimientos-producto.service';
 
-import { JqueryConfigs } from '../../utils/jquery/jquery-utils';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -14,32 +16,28 @@ import Swal from 'sweetalert2';
   styles: [
   ]
 })
-export class MovimientosProductoComponent implements OnInit {
+export class MovimientosProductoComponent extends ListaPaginada<MovimientoProducto> implements OnInit {
 
   title: string;
-  jQueryConfigs: JqueryConfigs;
-
-  movimientosProducto: MovimientoProducto[];
 
   constructor(
     private movimientosProductoService: MovimientosProductoService,
     public authService: AuthService
   ) {
+    super();
     this.title = 'Movimientos de Productos Creados';
-    this.jQueryConfigs = new JqueryConfigs();
+  }
+
+  protected fetch(page: number, size: number, search: string, sort: string): Observable<Page<MovimientoProducto>> {
+    return this.movimientosProductoService.getPaginado(page, size, search, sort);
+  }
+
+  get movimientosProducto(): MovimientoProducto[] {
+    return this.items;
   }
 
   ngOnInit(): void {
-    this.getMovimientosProducto();
-  }
-
-  getMovimientosProducto(): void{
-    this.movimientosProductoService.getMovimientosProducto().subscribe(
-      movimientosProducto => {
-        this.movimientosProducto = movimientosProducto;
-        this.jQueryConfigs.configDataTable('movimientos');
-      }
-    );
+    this.cargar();
   }
 
 }

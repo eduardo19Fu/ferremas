@@ -135,4 +135,16 @@ public class PaisApiController {
         response.put("mensaje", "¡El país ha sido eliminado con éxito!");
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
     }
+
+	private static final java.util.Map<String, String> SORT_PAIS = com.aglayatech.licorstore.generics.SortParam.keys("idPais", "nombre");
+
+	@GetMapping("/paises/paginado")
+	public org.springframework.data.domain.Page<Pais> paginado(@org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
+			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "10") int size,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String search,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String sort) {
+		int pageSize = Math.min(Math.max(size, 1), 100);
+		org.springframework.data.domain.Sort order = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_PAIS, org.springframework.data.domain.Sort.by("nombre").ascending(), "idPais");
+		return paisService.search(search, org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, order));
+	}
 }

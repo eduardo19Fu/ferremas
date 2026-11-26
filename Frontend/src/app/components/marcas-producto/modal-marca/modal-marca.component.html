@@ -1,0 +1,30 @@
+<form #marcaForm="ngForm" (ngSubmit)="guardar()" class="tm-form" autocomplete="off">
+    <div class="modal-header">
+        <h4 class="modal-title">{{ title }}</h4>
+        <button type="button" class="close" aria-label="Cerrar" (click)="activeModal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div class="modal-body">
+        <div class="tm-field">
+            <label for="marca">Marca de producto</label>
+            <input #campo type="text" class="form-control" id="marca" name="marca"
+                [(ngModel)]="marcaProducto.marca" placeholder="Ingrese el nombre de la marca" required
+                #marca="ngModel">
+
+            <div *ngIf="marca.invalid && (marca.dirty || marca.touched)">
+                <span class="requerido" *ngIf="marca.errors.required">
+                    La marca no puede estar vacía.
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="!marcaForm.form.valid || guardando">
+            {{ esEdicion ? 'Actualizar' : 'Guardar' }}
+        </button>
+    </div>
+</form>

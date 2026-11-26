@@ -48,4 +48,12 @@ public class MarcaProductoServiceImpl implements IMarcaProductoService {
 		marcaProductoRepo.deleteById(idMarca);
 	}
 
+	@Override
+	public org.springframework.data.domain.Page<MarcaProducto> search(String termino, org.springframework.data.domain.Pageable pageable) {
+		if (termino == null || termino.trim().isEmpty()) {
+			return marcaProductoRepo.findAll(pageable);
+		}
+		String t = termino.trim();
+		return marcaProductoRepo.findByMarcaContainingIgnoreCase(t, pageable);
+	}
 }

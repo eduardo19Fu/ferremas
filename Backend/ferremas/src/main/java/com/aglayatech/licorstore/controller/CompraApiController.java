@@ -1,6 +1,7 @@
 package com.aglayatech.licorstore.controller;
 
 import com.aglayatech.licorstore.generics.ErroresHandler;
+import com.aglayatech.licorstore.generics.ExcelExporter;
 import com.aglayatech.licorstore.model.*;
 import com.aglayatech.licorstore.service.ICompraService;
 import com.aglayatech.licorstore.service.IEstadoService;
@@ -263,4 +264,55 @@ public class CompraApiController {
             return false;
         }
     }
+
+	private static final java.util.Map<String, String> SORT_COMPRA = com.aglayatech.licorstore.generics.SortParam.keys("idCompra", "proveedor.nombre", "fechaCompra", "tipoComprobante.tipoComprobante", "noComprobante", "iva", "totalCompra", "estado.estado", "fechaRegistro");
+
+	@GetMapping("/compras/paginado")
+	public org.springframework.data.domain.Page<Compra> paginado(@org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
+			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "10") int size,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String search,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String sort) {
+		int pageSize = Math.min(Math.max(size, 1), 100);
+		org.springframework.data.domain.Sort order = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_COMPRA, org.springframework.data.domain.Sort.by("idCompra").descending(), "idCompra");
+		return compraService.search(search, org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, order));
+	}
+
+	private static final java.util.Map<String, String> SORT_DETALLE_COMPRA = java.util.Map.of(
+			"idDetalleCompra", "idDetalleCompra", "codProducto", "p.codProducto", "nombreProducto", "p.nombre",
+			"cantidad", "cantidad", "precioUnitario", "precioUnitario", "subTotal", "subTotal");
+
+	/** Detalle de una compra (sus productos), paginado y ordenable; lo usa el modal de detalle. */
+	@Secured({"ROLE_ADMIN", "ROLE_INVENTARIO"})
+	@GetMapping("/compras/{id}/detalle")
+	public org.springframework.data.domain.Page<com.aglayatech.licorstore.model.dto.DetalleCompraItem> detalle(
+			@org.springframework.web.bind.annotation.PathVariable("id") Integer idCompra,
+			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
+			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "10") int size,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String sort) {
+		int pageSize = Math.min(Math.max(size, 1), 100);
+		org.springframework.data.domain.Sort order = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_DETALLE_COMPRA, org.springframework.data.domain.Sort.by("idDetalleCompra").ascending(), "idDetalleCompra");
+		return compraService.findDetalle(idCompra, org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, order));
+	}
+
+	/** Exporta a Excel todas las compras que coinciden con la busqueda del listado. */
+	@Secured({"ROLE_ADMIN", "ROLE_INVENTARIO"})
+	@GetMapping("/compras/exportar")
+	public ResponseEntity<byte[]> exportar(@org.springframework.web.bind.annotation.RequestParam(required = false) String search,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String sort) throws java.io.IOException {
+		org.springframework.data.domain.Sort orden = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_COMPRA, org.springframework.data.domain.Sort.by("idCompra").descending(), "idCompra");
+
+		java.util.List<ExcelExporter.Columna<Compra>> columnas = java.util.List.of(
+				ExcelExporter.columna("ID", 9, ExcelExporter.Tipo.ENTERO, Compra::getIdCompra),
+				ExcelExporter.columna("Proveedor", 34, ExcelExporter.Tipo.TEXTO, c -> c.getProveedor() == null ? null : c.getProveedor().getNombre()),
+				ExcelExporter.columna("Fecha de compra", 16, ExcelExporter.Tipo.FECHA, Compra::getFechaCompra),
+				ExcelExporter.columna("Tipo de comprobante", 22, ExcelExporter.Tipo.TEXTO, c -> c.getTipoComprobante() == null ? null : c.getTipoComprobante().getTipoComprobante()),
+				ExcelExporter.columna("No. comprobante", 18, ExcelExporter.Tipo.TEXTO, Compra::getNoComprobante),
+				ExcelExporter.columna("IVA", 12, ExcelExporter.Tipo.MONEDA, Compra::getIva),
+				ExcelExporter.columna("Total", 14, ExcelExporter.Tipo.MONEDA, Compra::getTotalCompra),
+				ExcelExporter.columna("Estado", 12, ExcelExporter.Tipo.TEXTO, c -> c.getEstado() == null ? null : c.getEstado().getEstado()),
+				ExcelExporter.columna("Registrada", 18, ExcelExporter.Tipo.FECHA_HORA, Compra::getFechaRegistro));
+
+		byte[] archivo = ExcelExporter.exportar("Compras", columnas, orden, pageable -> compraService.search(search, pageable));
+		return ExcelExporter.respuesta("compras", archivo);
+	}
 }

@@ -14,4 +14,6 @@ public interface ITipoProductoRepository extends JpaRepository<TipoProducto, Int
 	@Query("Select t from TipoProducto t where t.tipoProducto = :tipo")
 	List<TipoProducto> findByTipoProducto(@Param("tipo") String tipo);
 
+	// Busqueda paginada (sin distinguir mayusculas)
+	org.springframework.data.domain.Page<TipoProducto> findByTipoProductoContainingIgnoreCase(String nombre, org.springframework.data.domain.Pageable pageable);
 }

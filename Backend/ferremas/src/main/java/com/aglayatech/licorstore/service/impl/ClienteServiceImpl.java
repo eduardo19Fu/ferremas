@@ -58,4 +58,12 @@ public class ClienteServiceImpl implements IClienteService {
 		return repoCliente.getMaxClientes();
 	}
 
+	@Override
+	public org.springframework.data.domain.Page<Cliente> search(String termino, org.springframework.data.domain.Pageable pageable) {
+		if (termino == null || termino.trim().isEmpty()) {
+			return repoCliente.findAll(pageable);
+		}
+		String t = termino.trim();
+		return repoCliente.findByNombreContainingIgnoreCaseOrNitContainingIgnoreCase(t, t, pageable);
+	}
 }

@@ -8,6 +8,7 @@ import swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
 import { AppUnauthorizated } from '../app.unauthorizated';
+import { Page } from 'src/app/models/page';
 
 @Injectable({
   providedIn: 'root'
@@ -88,5 +89,17 @@ export class ClienteService {
         return throwError(e);
       })
     );
+  }
+
+  /** Listado paginado desde el backend, con busqueda opcional. */
+  getPaginado(page: number, size: number, search: string = '', sort: string = ''): Observable<Page<Cliente>> {
+    const params: any = { page: String(page), size: String(size) };
+    if (search && search.trim()) {
+      params.search = search.trim();
+    }
+    if (sort) {
+      params.sort = sort;
+    }
+    return this.http.get<Page<Cliente>>(`${this.url}/clientes/paginado`, { params });
   }
 }

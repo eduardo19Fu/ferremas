@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="fondo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a232e"/>
+      <stop offset="1" stop-color="#1a6580"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="128" height="128" rx="28" fill="url(#fondo)"/>
+
+  <!-- marca de Ferre-mass (misma carretilla del logo) -->
+  <g transform="translate(9.5 20) scale(.85)">
+    <ellipse cx="76" cy="103" rx="50" ry="4.5" fill="#000" opacity=".25"/>
+
+    <g transform="rotate(-20 42 40)">
+      <rect x="39" y="2" width="6" height="15" rx="3" fill="#d8384c"/>
+      <rect x="41" y="16" width="2" height="9" fill="#e4eaf0"/>
+      <path d="M33 24h18l-9 20z" fill="#e4eaf0"/>
+    </g>
+    <g transform="rotate(17 104 40)">
+      <rect x="99" y="0" width="10" height="17" rx="4" fill="#d8384c"/>
+      <rect x="102" y="16" width="4" height="26" rx="2" fill="#e4eaf0"/>
+    </g>
+
+    <path d="M46 42c0-17 7-25 18-25s18 8 18 25z" fill="#f4be4a"/>
+    <rect x="61" y="13" width="6" height="12" rx="3" fill="#f8d27c"/>
+    <rect x="41" y="38" width="46" height="6" rx="3" fill="#dd9f2c"/>
+
+    <path d="M26 44h78l-12 31q-2 5-7 5H45q-5 0-7-5z" fill="#d8384c"/>
+    <path d="M31 63h69l-8 12q-2 5-7 5H45q-5 0-7-5z" fill="#a82437" opacity=".4"/>
+    <rect x="22" y="39" width="86" height="8" rx="4" fill="#ee5468"/>
+    <path d="M40 71 11 55" fill="none" stroke="#e4eaf0" stroke-width="5" stroke-linecap="round"/>
+    <path d="M11 55 4 51" fill="none" stroke="#d8384c" stroke-width="7" stroke-linecap="round"/>
+    <path d="M58 79 52 99" fill="none" stroke="#e4eaf0" stroke-width="5" stroke-linecap="round"/>
+    <rect x="45" y="97" width="15" height="4" rx="2" fill="#e4eaf0"/>
+
+    <path d="M97 71 112 87" fill="none" stroke="#e4eaf0" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="113" cy="87" r="15" fill="#1d2833" stroke="rgba(255,255,255,.3)" stroke-width="1.6"/>
+    <circle cx="113" cy="87" r="8" fill="#3a4857"/>
+    <circle cx="113" cy="87" r="3.5" fill="#e4eaf0"/>
+  </g>
+</svg>

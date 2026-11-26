@@ -14,7 +14,14 @@
         <div class="row">
             <div class="col s6">
                 <a [routerLink]="['/compras/create']" class="btn bg-gradient-success">
-                    <i class="fas fa-plus-square"></i>&nbsp; Nuevo</a>
+                    <i class="fas fa-plus-square"></i>&nbsp; Nuevo</a>&nbsp;
+                <button type="button" class="btn btn-outline-success" (click)="exportar()"
+                    [class.is-loading]="exportando" [attr.aria-busy]="exportando" [disabled]="!totalElements"
+                    ngbTooltip="Exportar a Excel todo el listado filtrado" placement="bottom">
+                    <span class="tm-spinner tm-spinner--btn" *ngIf="exportando; else iconoExcel" role="status"></span>
+                    <ng-template #iconoExcel><i class="fas fa-file-excel"></i></ng-template>
+                    {{ exportando ? 'Generando…' : 'Excel' }}
+                </button>
             </div>
         </div>
     </div><!-- /.container-fluid -->
@@ -22,56 +29,61 @@
 <!-- /.content-header -->
 
 <div class="card">
-    <div class="card-header">
-        Listado de Compras Realizadas
-    </div>
-    <!-- /.card-header -->
-    <div class="card-body table-responsive">
+<div class="card-body table-responsive">
 
-        <div *ngIf="compras?.length == 0" class="alert alert-info alert-dismissible">
-            <h5>
-                <i class="icon fas fa-info"></i>
-                ¡Atención!
-            </h5>
-
-            No existe ninguna compra registrada en la base de datos.
+        <div class="row mb-2">
+            <div class="col-md-auto tm-toolbar-size">
+                <app-tamanio-pagina [size]="size" (sizeChange)="onSizeChange($event)"></app-tamanio-pagina>
+            </div>
+            <div class="col-md-4 ml-md-auto tm-buscador">
+                <i class="fas fa-search"></i>
+                <input type="search" class="form-control form-control-sm" placeholder="Buscar..."
+                    [ngModel]="search" (ngModelChange)="onBuscar($event)">
+                <span class="tm-spinner" *ngIf="cargando"></span>
+            </div>
         </div>
 
-        <table id="compras" class="table table-hover table-striped table-bordered dataTable dtr-inline table-sm" role="grid" 
+        <app-sin-registros *ngIf="compras?.length == 0 && !cargando" entidad="compras" [busqueda]="search"
+            (limpiar)="onBuscar('')"></app-sin-registros>
+
+        <div class="tabla-wrap">
+            <div class="tabla-progreso" *ngIf="cargando && compras?.length"></div>
+            <app-tabla-skeleton *ngIf="cargando && !compras?.length" [columnas]="10"></app-tabla-skeleton>
+            <table id="compras" class="table table-modern" [class.cargando]="cargando" 
             *ngIf="compras?.length > 0">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Proveedor</th>
-                    <th>Fecha de Compra</th>
-                    <th>Tipo Comprobante</th>
-                    <th>No. Comprobante</th>
-                    <th>IVA</th>
-                    <th>Total</th>
-                    <th>Estado</th>
-                    <th>Fecha Registro</th>
+                    <th tmSortable="idCompra" [sort]="sort" (tmSort)="onSort($event)">#</th>
+                    <th tmSortable="proveedor.nombre" [sort]="sort" (tmSort)="onSort($event)">Proveedor</th>
+                    <th tmSortable="fechaCompra" [sort]="sort" (tmSort)="onSort($event)">Fecha de Compra</th>
+                    <th tmSortable="tipoComprobante.tipoComprobante" [sort]="sort" (tmSort)="onSort($event)">Tipo Comprobante</th>
+                    <th tmSortable="noComprobante" [sort]="sort" (tmSort)="onSort($event)">No. Comprobante</th>
+                    <th tmSortable="iva" [sort]="sort" (tmSort)="onSort($event)">IVA</th>
+                    <th tmSortable="totalCompra" [sort]="sort" (tmSort)="onSort($event)">Total</th>
+                    <th tmSortable="estado.estado" [sort]="sort" (tmSort)="onSort($event)">Estado</th>
+                    <th tmSortable="fechaRegistro" [sort]="sort" (tmSort)="onSort($event)">Fecha Registro</th>
                     <th *ngIf="authService.hasRole('ROLE_ADMIN')">Opciones</th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let compra of compras">
-                    <td>{{compra.idCompra}}</td>
-                    <td>{{compra.proveedor.nombre}}</td>
-                    <td>{{compra.fechaCompra | date: 'dd/MM/yyyy'}}</td>
-                    <td>{{compra.tipoComprobante.tipoComprobante}}</td>
-                    <td>{{compra.noComprobante}}</td>
-                    <td>{{compra.iva}}</td>
-                    <td>{{compra.totalCompra}}</td>
-                    <td>
+                    <td data-label="#">{{compra.idCompra}}</td>
+                    <td data-label="Proveedor">{{compra.proveedor?.nombre}}</td>
+                    <td data-label="Fecha de Compra">{{compra.fechaCompra | date: 'dd/MM/yyyy'}}</td>
+                    <td data-label="Tipo Comprobante">{{compra.tipoComprobante?.tipoComprobante}}</td>
+                    <td data-label="No. Comprobante">{{compra.noComprobante}}</td>
+                    <td data-label="IVA">{{compra.iva}}</td>
+                    <td data-label="Total">{{compra.totalCompra}}</td>
+                    <td data-label="Estado">
                         <span class="badge" 
-                            [ngClass]="{'badge-primary': compra.estado.estado === 'ACTIVO',
-                                'badge-danger' : compra.estado.estado === 'ANULADO',
-                                'badge-secondary' : compra.estado.estado === 'INACTIVO'}">
-                            {{compra.estado.estado}}
+                            [ngClass]="{'badge-primary': compra.estado?.estado === 'ACTIVO',
+                                'badge-danger' : compra.estado?.estado === 'ANULADO',
+                                'badge-secondary' : compra.estado?.estado === 'INACTIVO'}">
+                            {{compra.estado?.estado}}
                         </span>
                     </td>
-                    <td>{{compra.fechaRegistro | date: 'dd/MM/yyyy - hh:mm:ss'}}</td>
-                    <td *ngIf="authService.hasRole('ROLE_ADMIN')">
+                    <td data-label="Fecha Registro">{{compra.fechaRegistro | date: 'dd/MM/yyyy - hh:mm:ss'}}</td>
+                    <td data-label="Opciones" *ngIf="authService.hasRole('ROLE_ADMIN')">
                         <!-- Aquí val el botón de detalle de compra -->
                         <button class="btn bg-gradient-success margin" placement="top" ngbTooltip="Detalle Compra"
                             (click)="abrirDetalle(compra)">
@@ -85,21 +97,11 @@
                     </td>
                 </tr>
             </tbody>
-            <tfoot>
-                <tr>
-                    <th>#</th>
-                    <th>Proveedor</th>
-                    <th>Fecha de Compra</th>
-                    <th>Tipo Comprobante</th>
-                    <th>No. Comprobante</th>
-                    <th>IVA</th>
-                    <th>Total</th>
-                    <th>Estado</th>
-                    <th>Fecha Registro</th>
-                    <th *ngIf="authService.hasRole('ROLE_ADMIN')">Opciones</th>
-                </tr>
-            </tfoot>
         </table>
+        </div>
+
+        <app-paginacion [mostrarTamanio]="false" [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+            (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
     <!-- /.card-body -->
 </div>

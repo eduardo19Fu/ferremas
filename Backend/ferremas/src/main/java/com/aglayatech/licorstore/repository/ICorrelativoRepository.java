@@ -13,4 +13,6 @@ public interface ICorrelativoRepository extends JpaRepository<Correlativo, Long>
 	// Buscar el correlativo del usuario logueado en el sistema
 	public Optional<Correlativo> findByUsuarioAndEstado(Usuario usuario, Estado estado);
 
+	// Busqueda paginada (sin distinguir mayusculas)
+	org.springframework.data.domain.Page<Correlativo> findBySerieContainingIgnoreCase(String nombre, org.springframework.data.domain.Pageable pageable);
 }

@@ -28,4 +28,9 @@ public class PagoParcialServiceImpl implements IPagoParcialService {
     public PagoParcial save(PagoParcial pagoParcial) {
         return repository.save(pagoParcial);
     }
+
+	@Override
+	public org.springframework.data.domain.Page<PagoParcial> search(String termino, org.springframework.data.domain.Pageable pageable) {
+		return repository.findAll(pageable);
+	}
 }

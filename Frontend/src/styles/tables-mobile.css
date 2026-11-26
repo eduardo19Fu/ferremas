@@ -1,0 +1,62 @@
+/* ==========================================================================
+   MOVIL — cada fila se convierte en una tarjeta con etiqueta : valor
+   ========================================================================== */
+@media (max-width: 767.98px) {
+  .table.table-modern { border-collapse: separate; }
+  .table.table-modern thead { display: none; }
+  .table.table-modern,
+  .table.table-modern tbody,
+  .table.table-modern tr,
+  .table.table-modern td { display: block; width: 100%; }
+
+  .table.table-modern tbody tr {
+    margin-bottom: .75rem;
+    padding: .35rem .9rem;
+    background: #fff;
+    border: 1px solid var(--tm-line);
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, .05);
+  }
+
+  .table.table-modern tbody tr:hover td { background: transparent; }
+
+  .table.table-modern tbody td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .55rem 0;
+    text-align: right;
+    word-break: break-word;
+    border-bottom: 1px dashed var(--tm-line);
+  }
+
+  .table.table-modern tbody td::before {
+    content: attr(data-label);
+    flex: 0 0 38%;
+    max-width: 38%;
+    text-align: left;
+    color: var(--tm-muted);
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  .table.table-modern tbody td:last-child { border-bottom: 0; }
+
+  /* columna de acciones: botones repartidos a lo ancho, sin etiqueta */
+  .table.table-modern td.center-options,
+  .table.table-modern td[data-label="Opciones"] {
+    width: 100%;
+    justify-content: stretch;
+    gap: .5rem;
+    padding-top: .75rem;
+  }
+
+  .table.table-modern td[data-label="Opciones"]::before,
+  .table.table-modern td.center-options::before { display: none; }
+
+  .tm-paginacion { justify-content: center; }
+  .tm-paginacion .tm-pag-info { order: 3; flex-basis: 100%; }
+}

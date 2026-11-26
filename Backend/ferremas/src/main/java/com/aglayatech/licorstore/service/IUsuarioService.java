@@ -29,4 +29,5 @@ public interface IUsuarioService {
 	// método encargado de recolectar los roles de la BD
 	public List<Role> findRoles();
 
+	public org.springframework.data.domain.Page<Usuario> search(String termino, org.springframework.data.domain.Pageable pageable);
 }

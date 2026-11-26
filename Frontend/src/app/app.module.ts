@@ -22,12 +22,12 @@ import { FacturasComponent } from './components/facturas/facturas.component';
 import { CreateFacturaComponent } from './components/facturas/create-factura/create-factura.component';
 import { DetailFacturaComponent } from './components/facturas/detail/detail-factura.component';
 import { MarcasProductoComponent } from './components/marcas-producto/marcas-producto.component';
-import { CreateMarcaComponent } from './components/marcas-producto/create-marca/create-marca.component';
+import { ModalMarcaComponent } from './components/marcas-producto/modal-marca/modal-marca.component';
 import { ProductosComponent } from './components/productos/productos.component';
 import { CreateProductoComponent } from './components/productos/create-producto/create-producto.component';
 import { DetailProductoComponent } from './components/productos/detail-producto/detail-producto.component';
 import { TiposProductoComponent } from './components/tipos-producto/tipos-producto.component';
-import { CreateTipoComponent } from './components/tipos-producto/create-producto/create-tipo.component';
+import { ModalTipoComponent } from './components/tipos-producto/modal-tipo/modal-tipo.component';
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
 import { CreateUsuarioComponent } from './components/usuarios/create-usuario/create-usuario.component';
 import { DetailUsuarioComponent } from './components/usuarios/detail-usuario/detail-usuario.component';
@@ -45,7 +45,7 @@ import { ModalBuscarProductoMovimientoComponent } from './components/movimientos
 import { ProveedoresComponent } from './components/proveedores/proveedores.component';
 import { PaisesComponent } from './components/paises/paises.component';
 import { CreateProveedorComponent } from './components/proveedores/create-proveedor/create-proveedor.component';
-import { CreatePaisComponent } from './components/paises/create-pais/create-pais.component';
+import { ModalPaisComponent } from './components/paises/modal-pais/modal-pais.component';
 import { ComprasComponent } from './components/compras/compras.component';
 import { CreateCompraComponent } from './components/compras/create-compra/create-compra.component';
 import { ModalDetalleCompraComponent } from './components/compras/modal-detalle-compra/modal-detalle-compra.component';
@@ -59,16 +59,28 @@ import { ModalVentasDiariasComponent } from './components/reportes/modales/modal
 import { ModalEnviosRealizadosComponent } from './components/reportes/modales/modal-envios-realizados/modal-envios-realizados.component';
 import { ModalProductosInventarioComponent } from './components/reportes/modales/modal-productos-inventario/modal-productos-inventario.component';
 import { NotasCreditoComponent } from './components/notas-credito/notas-credito.component';
-import { DetailComponent } from './components/notas-credito/detail/detail.component';
+import { DetailNotaCreditoComponent } from './components/notas-credito/detail/detail.component';
 import { CreateNotaComponent } from './components/notas-credito/create-nota/create-nota.component';
 import { PagosParcialesComponent } from './components/pagos-parciales/pagos-parciales.component';
 import { CreatePagoParcialComponent } from './components/pagos-parciales/create-pago-parcial/create-pago-parcial.component';
 import { ModalNotasCreditoComponent } from './components/notas-credito/modal-notas-credito/modal-notas-credito.component';
 import { EliminarFacturasComponent } from './components/facturas/eliminar-facturas/eliminar-facturas.component';
+import { PaginacionComponent } from './components/shared/paginacion/paginacion.component';
+import { TablaSkeletonComponent } from './components/shared/tabla-skeleton/tabla-skeleton.component';
+import { SinRegistrosComponent } from './components/shared/sin-registros/sin-registros.component';
+import { ThSortableDirective } from './components/shared/th-sortable/th-sortable.directive';
+import { TamanioPaginaComponent } from './components/shared/tamanio-pagina/tamanio-pagina.component';
+import { LogoComponent } from './components/shared/logo/logo.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    PaginacionComponent,
+    TablaSkeletonComponent,
+    SinRegistrosComponent,
+    ThSortableDirective,
+    TamanioPaginaComponent,
+    LogoComponent,
     LoginComponent,
     SidebarComponent,
     HeaderComponent,
@@ -83,12 +95,12 @@ import { EliminarFacturasComponent } from './components/facturas/eliminar-factur
     CreateFacturaComponent,
     DetailFacturaComponent,
     MarcasProductoComponent,
-    CreateMarcaComponent,
+    ModalMarcaComponent,
     ProductosComponent,
     CreateProductoComponent,
     DetailProductoComponent,
     TiposProductoComponent,
-    CreateTipoComponent,
+    ModalTipoComponent,
     UsuariosComponent,
     CreateUsuarioComponent,
     DetailUsuarioComponent,
@@ -106,7 +118,7 @@ import { EliminarFacturasComponent } from './components/facturas/eliminar-factur
     ProveedoresComponent,
     PaisesComponent,
     CreateProveedorComponent,
-    CreatePaisComponent,
+    ModalPaisComponent,
     ComprasComponent,
     CreateCompraComponent,
     ModalDetalleCompraComponent,
@@ -119,7 +131,7 @@ import { EliminarFacturasComponent } from './components/facturas/eliminar-factur
     ModalEnviosRealizadosComponent,
     ModalProductosInventarioComponent,
     NotasCreditoComponent,
-    DetailComponent,
+    DetailNotaCreditoComponent,
     CreateNotaComponent,
     PagosParcialesComponent,
     CreatePagoParcialComponent,

@@ -1,0 +1,78 @@
+/* ==========================================================================
+   MODALES — marco, cabecera, cierre y pie con el mismo lenguaje que las tarjetas.
+   Aplica a todos los .modal-content; los formularios dentro de un modal usan
+   ademas la clase .tm-form (controles, rejilla, validacion) de forms.css.
+   ========================================================================== */
+/* ng-bootstrap 12+ esta pensado para Bootstrap 5: fija el fondo (backdrop) en z-index 1055, pero con Bootstrap 4
+   la ventana (.modal) queda en 1050 y el fondo oscuro la tapa. Se sube la ventana por encima del fondo. */
+ngb-modal-window.modal {
+  z-index: 1060 !important;
+}
+ngb-modal-backdrop.modal-backdrop {
+  z-index: 1055 !important;
+}
+
+.modal-content {
+  border: 1px solid var(--tm-edge);
+  border-radius: 14px;
+  box-shadow: 0 24px 56px -16px rgba(16, 24, 40, .35);
+  overflow: hidden;
+}
+
+.modal-header {
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: transparent;
+  color: var(--tm-ink);
+  border-bottom: 1px solid var(--tm-line);
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--tm-ink);
+}
+
+/* boton de cierre: cuadro suave en lugar de una "x" suelta */
+.modal-header .close {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin: 0 0 0 auto;
+  padding: 0;
+  border-radius: 10px;
+  color: var(--tm-muted);
+  text-shadow: none;
+  opacity: 1;
+  transition: background-color .15s ease, color .15s ease;
+}
+.modal-header .close:hover { background: var(--tm-hover); color: var(--tm-ink); }
+.modal-header .close:focus-visible { outline: 2px solid rgba(var(--bt-accent), .45); outline-offset: 2px; }
+
+.modal-body { padding: 1.25rem; }
+
+.modal-footer {
+  padding: .85rem 1.25rem;
+  background: var(--tm-head);
+  border-top: 1px solid var(--tm-line);
+}
+
+/* texto guia al inicio del cuerpo (reemplaza al <h4> + <br> antiguos) */
+.tm-lead {
+  margin: 0 0 1rem;
+  color: var(--tm-muted);
+  font-size: .95rem;
+}
+
+/* accion principal del modal a todo el ancho, separada de los campos */
+.modal-body form > .btn-block { margin-top: 1.1rem; }
+
+@media (max-width: 575.98px) {
+  .modal-dialog { margin: .6rem; }
+  .modal-header,
+  .modal-body,
+  .modal-footer { padding-left: 1rem; padding-right: 1rem; }
+  .modal-footer .btn { flex: 1 1 auto; }
+}

@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.aglayatech.licorstore.model.TipoMovimiento;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,5 +139,17 @@ public class MovimientoProductoApiController {
 	    } catch (IOException e) {
 	        e.printStackTrace();
 	    }
+	}
+
+	private static final java.util.Map<String, String> SORT_MOVIMIENTOPRODUCTO = com.aglayatech.licorstore.generics.SortParam.keys("idMovimiento", "fechaMovimiento", "tipoMovimiento.tipoMovimiento", "producto.nombre", "cantidad", "usuario.usuario");
+
+	@GetMapping("/movimientos/paginado")
+	public org.springframework.data.domain.Page<MovimientoProducto> paginado(@org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
+			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "10") int size,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String search,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String sort) {
+		int pageSize = Math.min(Math.max(size, 1), 100);
+		org.springframework.data.domain.Sort order = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_MOVIMIENTOPRODUCTO, org.springframework.data.domain.Sort.by("idMovimiento").descending(), "idMovimiento");
+		return serviceMove.search(search, org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, order));
 	}
 }

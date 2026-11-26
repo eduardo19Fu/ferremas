@@ -9,6 +9,7 @@ import { MovimientoProducto } from 'src/app/models/movimiento-producto';
 import { global } from '../global';
 import Swal from 'sweetalert2';
 import { TipoMovimiento } from 'src/app/models/tipo-movimiento';
+import { Page } from 'src/app/models/page';
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +27,18 @@ export class MovimientosProductoService {
 
   getMovimientosProducto(): Observable<MovimientoProducto[]> {
     return this.http.get<MovimientoProducto[]>(`${this.url}/movimientos`);
+  }
+
+  /** Movimientos paginados desde el backend, con busqueda opcional por nombre de producto. */
+  getPaginado(page: number, size: number, search: string = '', sort: string = ''): Observable<Page<MovimientoProducto>> {
+    const params: any = { page: String(page), size: String(size) };
+    if (search && search.trim()) {
+      params.search = search.trim();
+    }
+    if (sort) {
+      params.sort = sort;
+    }
+    return this.http.get<Page<MovimientoProducto>>(`${this.url}/movimientos/paginado`, { params });
   }
 
   getMovimientosProductoPage(idproducto: number, page: number): Observable<any> {

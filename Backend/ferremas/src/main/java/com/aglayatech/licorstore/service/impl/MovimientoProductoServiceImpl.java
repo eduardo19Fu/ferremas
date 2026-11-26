@@ -102,4 +102,11 @@ public class MovimientoProductoServiceImpl implements IMovimientoProductoService
 	    return byteArrayOutputStream;
 	}
 
+	@Override
+	public org.springframework.data.domain.Page<MovimientoProducto> search(String termino, org.springframework.data.domain.Pageable pageable) {
+		if (termino == null || termino.trim().isEmpty()) {
+			return repoMovimiento.findAll(pageable);
+		}
+		return repoMovimiento.findByProductoNombreContainingIgnoreCase(termino.trim(), pageable);
+	}
 }

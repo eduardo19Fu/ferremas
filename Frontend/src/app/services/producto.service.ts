@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { Producto } from '../models/producto';
+import { Page } from '../models/page';
 import { MovimientoProducto } from '../models/movimiento-producto';
 
 import { global } from './global';
@@ -25,6 +26,21 @@ export class ProductoService {
 
   getProductos(): Observable<Producto[]> {
     return this.http.get<Producto[]>(this.url + '/productos');
+  }
+
+  /** Productos paginados desde el backend, con busqueda opcional por nombre o codigo. */
+  getProductosPaginado(page: number, size: number, search: string = '', soloActivos: boolean = false, sort: string = ''): Observable<Page<Producto>> {
+    const params: any = { page: String(page), size: String(size) };
+    if (search && search.trim()) {
+      params.search = search.trim();
+    }
+    if (soloActivos) {
+      params.soloActivos = 'true';
+    }
+    if (sort) {
+      params.sort = sort;
+    }
+    return this.http.get<Page<Producto>>(`${this.url}/productos/paginado`, { params });
   }
 
   getProductosActivos(): Observable<Producto[]>{

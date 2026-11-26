@@ -17,4 +17,9 @@ public interface ICompraService {
 
     /****** Buscar Tipos de Comprobante ******/
     public List<TipoComprobante> getTipos();
+
+	public org.springframework.data.domain.Page<Compra> search(String termino, org.springframework.data.domain.Pageable pageable);
+
+	/** Detalle (productos) de una compra, paginado. */
+	public org.springframework.data.domain.Page<com.aglayatech.licorstore.model.dto.DetalleCompraItem> findDetalle(Integer idCompra, org.springframework.data.domain.Pageable pageable);
 }

@@ -23,38 +23,43 @@
 </section>
 
 <div class="card">
-    <div class="card-header">
-        Listado de Movimientos Generados
-    </div>
-    <div class="card-body table-responsive">
+<div class="card-body table-responsive">
 
-        <div *ngIf="movimientosProducto?.length == 0" class="alert alert-info alert-dismissible">
-            <h5>
-                <i class="icon fas fa-info"></i>
-                Atención!
-            </h5>
+        <app-sin-registros *ngIf="movimientosProducto?.length == 0 && !cargando" entidad="movimientos" [busqueda]="search"
+            (limpiar)="onBuscar('')"></app-sin-registros>
 
-            No existe ningún movimiento registrado en la base de datos!
+        <div class="row mb-2">
+            <div class="col-md-auto tm-toolbar-size">
+                <app-tamanio-pagina [size]="size" (sizeChange)="onSizeChange($event)"></app-tamanio-pagina>
+            </div>
+            <div class="col-md-4 ml-md-auto tm-buscador">
+                <i class="fas fa-search"></i>
+                <input type="search" class="form-control form-control-sm" placeholder="Buscar por producto..."
+                    [ngModel]="search" (ngModelChange)="onBuscar($event)">
+                <span class="tm-spinner" *ngIf="cargando"></span>
+            </div>
         </div>
 
-        <table id="movimientos" class="table table-hover table-striped table-bordered dataTable dtr-inline table-sm"
-            role="grid" *ngIf="movimientosProducto?.length > 0">
+        <div class="tabla-wrap">
+            <div class="tabla-progreso" *ngIf="cargando && movimientosProducto?.length"></div>
+            <app-tabla-skeleton *ngIf="cargando && !movimientosProducto?.length" [columnas]="6"></app-tabla-skeleton>
+            <table id="movimientos" class="table table-modern" [class.cargando]="cargando" *ngIf="movimientosProducto?.length > 0">
             <thead>
                 <tr>
-                    <th>No. Movimiento</th>
-                    <th>Fecha</th>
-                    <th>Tipo de Movimiento</th>
-                    <th>Producto</th>
-                    <th>Cantidad</th>
-                    <th>Creador</th>
+                    <th tmSortable="idMovimiento" [sort]="sort" (tmSort)="onSort($event)">No. Movimiento</th>
+                    <th tmSortable="fechaMovimiento" [sort]="sort" (tmSort)="onSort($event)">Fecha</th>
+                    <th tmSortable="tipoMovimiento.tipoMovimiento" [sort]="sort" (tmSort)="onSort($event)">Tipo de Movimiento</th>
+                    <th tmSortable="producto.nombre" [sort]="sort" (tmSort)="onSort($event)">Producto</th>
+                    <th tmSortable="cantidad" [sort]="sort" (tmSort)="onSort($event)">Cantidad</th>
+                    <th tmSortable="usuario.usuario" [sort]="sort" (tmSort)="onSort($event)">Creador</th>
                 </tr>
             </thead>
 
             <tbody>
                 <tr *ngFor="let movimiento of movimientosProducto">
-                    <td>{{movimiento.idMovimiento}}</td>
-                    <td>{{movimiento.fechaMovimiento | date: 'dd/MM/yyyy - HH:mm'}}</td>
-                    <td>
+                    <td data-label="No. Movimiento">{{movimiento.idMovimiento}}</td>
+                    <td data-label="Fecha">{{movimiento.fechaMovimiento | date: 'dd/MM/yyyy - HH:mm'}}</td>
+                    <td data-label="Tipo de Movimiento">
                         <span class="badge"
                             [ngClass]="{'badge-warning': movimiento.tipoMovimiento.tipoMovimiento === 'ENTRADA', 
                                         'badge-danger' : movimiento.tipoMovimiento.tipoMovimiento === 'SALIDA',
@@ -64,22 +69,15 @@
                             {{movimiento.tipoMovimiento.tipoMovimiento}}
                         </span>
                     </td>
-                    <td>{{movimiento.producto.nombre}}</td>
-                    <td>{{movimiento.cantidad}}</td>
-                    <td>{{movimiento.usuario.usuario}}</td>
+                    <td data-label="Producto">{{movimiento.producto.nombre}}</td>
+                    <td data-label="Cantidad">{{movimiento.cantidad}}</td>
+                    <td data-label="Creador">{{movimiento.usuario.usuario}}</td>
                 </tr>
             </tbody>
-
-            <tfoot>
-                <tr>
-                    <th>No. Movimiento</th>
-                    <th>Fecha</th>
-                    <th>Tipo de Movimiento</th>
-                    <th>Producto</th>
-                    <th>Cantidad</th>
-                    <th>Creador</th>
-                </tr>
-            </tfoot>
         </table>
+        </div>
+
+        <app-paginacion [mostrarTamanio]="false" [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+            (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
 </div>

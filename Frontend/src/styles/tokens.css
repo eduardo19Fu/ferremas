@@ -1,0 +1,19 @@
+/* ==========================================================================
+   TOKENS — variables de diseño compartidas (una sola fuente de verdad)
+   ========================================================================== */
+:root {
+  /* superficies y texto */
+  --tm-ink: #1f2937;
+  --tm-muted: #6b7280;
+  --tm-line: #eef0f3;
+  --tm-head: #f8fafc;
+  --tm-hover: #f1f7fb;
+  --tm-accent: #3a97b9;
+  --tm-edge: #e3e7ec;
+
+  /* botones: acento de marca y peligro (rgb sin rgb() para poder usar alfa) */
+  --bt-accent: 34, 122, 153;
+  --bt-accent-dark: 26, 98, 123;
+  --bt-danger: 200, 40, 62;
+  --bt-danger-dark: 168, 30, 50;
+}

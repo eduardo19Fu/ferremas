@@ -97,4 +97,12 @@ public class UsuarioServiceImpl implements UserDetailsService, IUsuarioService {
 		return repoUsuario.getMaxUsuarios();
 	}
 
+	@Override
+	public org.springframework.data.domain.Page<Usuario> search(String termino, org.springframework.data.domain.Pageable pageable) {
+		if (termino == null || termino.trim().isEmpty()) {
+			return repoUsuario.findAll(pageable);
+		}
+		String t = termino.trim();
+		return repoUsuario.findByUsuarioContainingIgnoreCaseOrPrimerNombreContainingIgnoreCase(t, t, pageable);
+	}
 }

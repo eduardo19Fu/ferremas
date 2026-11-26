@@ -1,7 +1,1 @@
-/*.main-sidebar{
-    z-index: 999 !important;
-}*/
-
-.username{
-    color: #ffffff;
-}
+/* Los estilos del menu lateral viven en src/styles/sidebar.css (globales, prefijo .fm-). */

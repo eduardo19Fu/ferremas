@@ -30,4 +30,6 @@ public interface IUsuarioRepository extends JpaRepository<Usuario, Integer> {
 			nativeQuery = true)
 	public List<Usuario> findByRole();
 
+	// Busqueda paginada (sin distinguir mayusculas)
+	org.springframework.data.domain.Page<Usuario> findByUsuarioContainingIgnoreCaseOrPrimerNombreContainingIgnoreCase(String nombre, String otro, org.springframework.data.domain.Pageable pageable);
 }

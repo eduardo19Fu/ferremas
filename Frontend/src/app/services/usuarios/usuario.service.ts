@@ -8,6 +8,7 @@ import { Role } from '../../models/role';
 
 import swal from 'sweetalert2';
 import { UsuarioAuxiliar } from '../../models/auxiliar/usuario-auxiliar';
+import { Page } from 'src/app/models/page';
 
 @Injectable({
   providedIn: 'root'
@@ -98,5 +99,17 @@ export class UsuarioService {
         return throwError(e);
       })
     );
+  }
+
+  /** Listado paginado desde el backend, con busqueda opcional. */
+  getPaginado(page: number, size: number, search: string = '', sort: string = ''): Observable<Page<Usuario>> {
+    const params: any = { page: String(page), size: String(size) };
+    if (search && search.trim()) {
+      params.search = search.trim();
+    }
+    if (sort) {
+      params.sort = sort;
+    }
+    return this.http.get<Page<Usuario>>(`${this.url}/usuarios/paginado`, { params });
   }
 }

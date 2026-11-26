@@ -1,11 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 
 import { Usuario } from 'src/app/models/usuario';
 
 import { AuthService } from 'src/app/services/auth.service';
-
-import swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -20,13 +17,19 @@ export class LoginComponent implements OnInit {
 
   usuario: Usuario;
 
+  /** true mientras se espera la respuesta del servidor. */
+  cargando = false;
+  /** Muestra la contraseña en texto plano. */
+  verPassword = false;
+  /** Mensaje de error visible bajo el formulario (vacío = sin error). */
+  error = '';
+
   constructor(
-    private router: Router,
     private authService: AuthService
   ) {
-    this.title = 'Iniciar Sesión';
+    this.title = 'Bienvenido';
     this.usuarioTitle = 'Usuario';
-    this.passwordTitle = 'Password';
+    this.passwordTitle = 'Contraseña';
     this.usuario = new Usuario();
   }
 
@@ -35,28 +38,35 @@ export class LoginComponent implements OnInit {
   }
 
   login(): void {
-
-    const pathHome = '/home';
-    const baseUrl = window.location.origin;
-    const fullUrl = baseUrl + pathHome;
-
-    if (this.usuario.usuario == null || this.usuario.password == null) {
-      swal.fire('Error en login', 'Usuario y/o contraseña estan vacíos', 'error');
+    if (this.cargando) {
       return;
     }
 
+    this.error = '';
+
+    if (!this.usuario.usuario || !this.usuario.usuario.trim() || !this.usuario.password) {
+      this.error = 'Ingresa tu usuario y tu contraseña.';
+      return;
+    }
+
+    this.cargando = true;
+
     this.authService.login(this.usuario).subscribe(
       response => {
-        const payload = JSON.parse(atob(response.access_token.split('.')[1]));
-
         this.authService.guardarUsuario(response.access_token);
         this.authService.guardarToken(response.access_token);
 
         window.location.href = '/sitio/home';
       },
       error => {
+        this.cargando = false;
+
         if (error.status === 400) {
-          swal.fire('Error de Autenticación', 'Usuario y/o contraseña incorrectos', 'error');
+          this.error = 'Usuario y/o contraseña incorrectos.';
+        } else if (error.status === 0) {
+          this.error = 'No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.';
+        } else {
+          this.error = 'Ocurrió un problema al iniciar sesión. Inténtalo de nuevo.';
         }
       }
     );

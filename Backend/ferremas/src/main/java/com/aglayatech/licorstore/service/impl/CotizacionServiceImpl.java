@@ -37,4 +37,13 @@ public class CotizacionServiceImpl implements ICotizacionService {
     public Cotizacion save(Cotizacion proforma) {
         return this.proformaRepository.save(proforma);
     }
+
+	@Override
+	public org.springframework.data.domain.Page<Cotizacion> search(String termino, org.springframework.data.domain.Pageable pageable) {
+		if (termino == null || termino.trim().isEmpty()) {
+			return proformaRepository.findAll(pageable);
+		}
+		String t = termino.trim();
+		return proformaRepository.findByClienteNombreContainingIgnoreCase(t, pageable);
+	}
 }

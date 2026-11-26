@@ -1,94 +1,144 @@
-<!-- Content Header (Page header) -->
-<div class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
+<div class="hm">
 
-        </div><!-- /.row -->
-    </div><!-- /.container-fluid -->
-</div>
-<!-- /.content-header -->
+    <!-- ===================== PORTADA: saludo + ventas de hoy ===================== -->
+    <section class="hm-hero">
+        <div class="hm-hero__rays" aria-hidden="true"></div>
+        <div class="hm-hero__glow" aria-hidden="true"></div>
 
-<!-- Small boxes (Stat box) -->
-<div class="row">
-    <div class="col-lg-3 col-6">
-        <!-- small box -->
-        <div class="small-box bg-info">
-            <div class="inner">
-                <h3>{{totalProductos}}</h3>
-
-                <p>Productos</p>
-            </div>
-            <div class="icon">
-                <i class="ion ion-bag"></i>
-            </div>
-            <a [routerLink]="['/productos/index']" class="small-box-footer">Todos <i
-                    class="fas fa-arrow-circle-right"></i></a>
+        <div class="hm-hero__text">
+            <span class="hm-hero__date">{{ fechaHoy }}</span>
+            <h1 class="hm-hero__title">{{ saludo }}<span *ngIf="nombre">, {{ nombre }}</span></h1>
+            <p class="hm-hero__lead">Este es el resumen de tu negocio para hoy.</p>
         </div>
-    </div>
-    <!-- ./col -->
-    <div class="col-lg-3 col-6">
-        <!-- small box -->
-        <div class="small-box bg-success">
-            <div class="inner">
-                <h3>{{totalClientes}}</h3>
 
-                <p>Clientes</p>
-            </div>
-            <div class="icon">
-                <i class="ion ion-ios-people"></i>
-            </div>
-            <a [routerLink]="['/clientes/index']" class="small-box-footer">Todos <i
-                    class="fas fa-arrow-circle-right"></i></a>
+        <div class="hm-hero__stat" *ngIf="puedeVerVentas" aria-live="polite">
+            <span class="hm-hero__stat-label">Ventas de hoy</span>
+
+            <span class="hm-skel hm-skel--light" *ngIf="ventasHoy === null"></span>
+
+            <ng-container *ngIf="ventasHoy">
+                <span class="hm-hero__stat-value">{{ ventasHoy.total | currency: 'Q' : 'symbol' }}</span>
+                <span class="hm-hero__stat-meta">
+                    {{ ventasHoy.cantidad }} {{ ventasHoy.cantidad === 1 ? 'venta' : 'ventas' }}
+                    <span *ngIf="!ventasHoy.completo">· total parcial</span>
+                </span>
+            </ng-container>
+
+            <span class="hm-hero__stat-meta" *ngIf="ventasHoy === false">No disponible</span>
         </div>
-    </div>
-    <!-- ./col -->
-    <div class="col-lg-3 col-6">
-        <!-- small box -->
-        <div class="small-box bg-warning">
-            <div class="inner">
-                <h3>{{totalFacturas}}</h3>
-
-                <p>Ventas</p>
-            </div>
-            <div class="icon">
-                <i class="ion ion-person-add"></i>
-            </div>
-            <a [routerLink]="['/facturas/index']" class="small-box-footer">Todas <i
-                    class="fas fa-arrow-circle-right"></i></a>
-        </div>
-    </div>
-    <!-- ./col -->
-    <div class="col-lg-3 col-6" *ngIf="auth.hasRole('ROLE_ADMIN')">
-        <!-- small box -->
-        <div class="small-box bg-danger">
-            <div class="inner">
-                <h3>{{totalUsuarios}}</h3>
-
-                <p>Usuarios</p>
-            </div>
-            <div class="icon">
-                <i class="ion ion-pie-graph"></i>
-            </div>
-            <a [routerLink]="['/usuarios/index']" class="small-box-footer">Todos <i
-                    class="fas fa-arrow-circle-right"></i></a>
-        </div>
-    </div>
-    <!-- ./col -->
-</div>
-<!-- /.row -->
-<hr>
-<!-- Main row -->
-<div class="row">
-    <!-- Left col -->
-    <section class="col-lg-7 connectedSortable">
-
     </section>
-    <!-- /.Left col -->
 
-    <!-- right col (We are only adding the ID to make the widgets sortable)-->
-    <section class="col-lg-5 connectedSortable">
+    <!-- ===================== INDICADORES ===================== -->
+    <section class="hm-kpis" aria-label="Indicadores generales">
+        <a *ngFor="let i of indicadoresVisibles" class="hm-kpi" [ngClass]="'hm-kpi--' + i.tono"
+            [routerLink]="[i.ruta]">
+            <span class="hm-kpi__icon" aria-hidden="true"><i class="fas" [ngClass]="i.icono"></i></span>
 
+            <span class="hm-kpi__body">
+                <span class="hm-kpi__label">{{ i.etiqueta }}</span>
+
+                <span class="hm-kpi__value" *ngIf="i.valor !== undefined; else cargandoValor">
+                    {{ i.valor === null ? '—' : (i.mostrado | number: '1.0-0') }}
+                </span>
+                <ng-template #cargandoValor><span class="hm-skel"></span></ng-template>
+            </span>
+
+            <span class="hm-kpi__link">
+                {{ i.enlace }} <i class="fas fa-arrow-right" aria-hidden="true"></i>
+            </span>
+        </a>
     </section>
-    <!-- right col -->
+
+    <!-- ===================== ACCESOS RAPIDOS ===================== -->
+    <section class="hm-section" *ngIf="accesosVisibles.length">
+        <h2 class="hm-section__title">Accesos rápidos</h2>
+
+        <div class="hm-actions">
+            <a *ngFor="let a of accesosVisibles" class="hm-action" [class.hm-action--primary]="a.principal"
+                [routerLink]="[a.ruta]">
+                <span class="hm-action__icon" aria-hidden="true"><i class="fas" [ngClass]="a.icono"></i></span>
+                <span class="hm-action__text">
+                    <strong>{{ a.etiqueta }}</strong>
+                    <small>{{ a.descripcion }}</small>
+                </span>
+            </a>
+        </div>
+    </section>
+
+    <!-- ===================== ACTIVIDAD RECIENTE ===================== -->
+    <div class="hm-panels">
+
+        <!-- ultimas ventas -->
+        <section class="hm-panel" *ngIf="puedeVerVentas">
+            <header class="hm-panel__head">
+                <h2 class="hm-panel__title">Últimas ventas</h2>
+                <a class="hm-panel__link" [routerLink]="['/facturas/index']">Ver todas</a>
+            </header>
+
+            <ul class="hm-list" *ngIf="ultimasVentas === null" aria-hidden="true">
+                <li class="hm-list__row" *ngFor="let n of [1, 2, 3, 4]; trackBy: trackPorIndice">
+                    <span class="hm-skel hm-skel--row"></span>
+                </li>
+            </ul>
+
+            <ul class="hm-list" *ngIf="ultimasVentas && ultimasVentas.length">
+                <li class="hm-list__row" *ngFor="let f of ultimasVentas">
+                    <span class="hm-list__icon" [class.is-void]="f.estado?.estado === 'ANULADO'" aria-hidden="true">
+                        <i class="fas fa-receipt"></i>
+                    </span>
+
+                    <span class="hm-list__main">
+                        <strong>Factura {{ f.serie }}-{{ f.noFactura }}</strong>
+                        <span>{{ f.cliente?.nombre || 'Sin cliente' }}</span>
+                    </span>
+
+                    <span class="hm-list__side">
+                        <strong [class.is-void]="f.estado?.estado === 'ANULADO'">{{ f.total | currency: 'Q' : 'symbol' }}</strong>
+                        <span *ngIf="f.estado?.estado !== 'ANULADO'">{{ f.fecha | date: 'dd/MM/yyyy · HH:mm' }}</span>
+                        <span class="hm-chip hm-chip--red" *ngIf="f.estado?.estado === 'ANULADO'">Anulada</span>
+                    </span>
+                </li>
+            </ul>
+
+            <p class="tm-hint" *ngIf="ultimasVentas && !ultimasVentas.length && !errorVentas">
+                Aún no hay ventas registradas.
+            </p>
+            <p class="tm-hint" *ngIf="errorVentas">No se pudieron cargar las ventas.</p>
+        </section>
+
+        <!-- ultimos movimientos de inventario -->
+        <section class="hm-panel" *ngIf="puedeVerInventario">
+            <header class="hm-panel__head">
+                <h2 class="hm-panel__title">Movimientos de inventario</h2>
+                <a class="hm-panel__link" [routerLink]="['/productos/inventario/index']">Ver todos</a>
+            </header>
+
+            <ul class="hm-list" *ngIf="ultimosMovimientos === null" aria-hidden="true">
+                <li class="hm-list__row" *ngFor="let n of [1, 2, 3, 4]; trackBy: trackPorIndice">
+                    <span class="hm-skel hm-skel--row"></span>
+                </li>
+            </ul>
+
+            <ul class="hm-list" *ngIf="ultimosMovimientos && ultimosMovimientos.length">
+                <li class="hm-list__row" *ngFor="let m of ultimosMovimientos">
+                    <span class="hm-chip" [ngClass]="tonoMovimiento(m)">{{ m.tipoMovimiento?.tipoMovimiento }}</span>
+
+                    <span class="hm-list__main">
+                        <strong>{{ m.producto?.nombre }}</strong>
+                        <span>{{ m.usuario?.usuario }}</span>
+                    </span>
+
+                    <span class="hm-list__side">
+                        <strong>× {{ m.cantidad }}</strong>
+                        <span>{{ m.fechaMovimiento | date: 'dd/MM/yyyy · HH:mm' }}</span>
+                    </span>
+                </li>
+            </ul>
+
+            <p class="tm-hint" *ngIf="ultimosMovimientos && !ultimosMovimientos.length && !errorMovimientos">
+                Aún no hay movimientos registrados.
+            </p>
+            <p class="tm-hint" *ngIf="errorMovimientos">No se pudieron cargar los movimientos.</p>
+        </section>
+    </div>
 </div>
-<!-- /.row (main row) -->

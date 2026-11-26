@@ -33,4 +33,6 @@ public interface IMovimientoProductoService {
 	public byte[] inventory(Date fechaIni, Date fechaFin) throws JRException, FileNotFoundException, SQLException;
 
     public TipoMovimiento findTipoMovimiento(String venta);
+
+	public org.springframework.data.domain.Page<MovimientoProducto> search(String termino, org.springframework.data.domain.Pageable pageable);
 }

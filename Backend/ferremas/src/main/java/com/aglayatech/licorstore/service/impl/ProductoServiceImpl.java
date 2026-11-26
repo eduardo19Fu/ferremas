@@ -59,6 +59,15 @@ public class ProductoServiceImpl implements IProductoService {
 		return repoProducto.findAll(pageable);
 	}
 
+	@Override
+	public Page<Producto> search(String termino, Pageable pageable) {
+		if (termino == null || termino.trim().isEmpty()) {
+			return repoProducto.findAll(pageable);
+		}
+		String t = termino.trim();
+		return repoProducto.findByNombreContainingIgnoreCaseOrCodProductoContainingIgnoreCase(t, t, pageable);
+	}
+
 	
 	@Override
 	public Producto findById(Integer idproducto) {
@@ -144,5 +153,10 @@ public class ProductoServiceImpl implements IProductoService {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		JasperExportManager.exportReportToPdfStream(jasperPrint, byteArrayOutputStream);
 		return byteArrayOutputStream;
+	}
+
+	@Override
+	public org.springframework.data.domain.Page<Producto> searchByEstado(String termino, Estado estado, org.springframework.data.domain.Pageable pageable) {
+		return repoProducto.searchByEstado(termino == null ? "" : termino.trim(), estado, pageable);
 	}
 }

@@ -11,186 +11,165 @@
     </div>
     <!-- /.content-header -->
 
-    <div class="col-md-12">
-        <!-- general form elements -->
-        <div class="card card-primary">
-            <div class="card-header">
-                <h3 class="card-title">Ingrese los datos</h3>
-            </div>
-            <!-- /.card-header -->
-            <!-- form start -->
-            <form #productoForm="ngForm">
-                <div class="card-body">
+    <div class="card tm-form">
+        <div class="card-header">
+            <h3 class="card-title">Datos del producto</h3>
+        </div>
 
-                    <div class="form-group">
+        <form #productoForm="ngForm">
+            <div class="card-body">
 
-                        <div class="row">
-                            <div class="col">
-                                <label for="codigo">Código</label>
-                                <input type="text" class="form-control" name="codigo" [(ngModel)]="producto.codProducto"
-                                    placeholder="Código de Producto">
-                                <!-- <div *ngIf="codigo.invalid && (codigo.dirty || codigo.touched)">
-                                    <span class="requerido" *ngIf="codigo.errors.required">
-                                        El código no puede estar vacío.
-                                    </span>
-                                </div> -->
-                            </div>
+                <!-- IDENTIFICACION -->
+                <section class="tm-section">
+                    <h4 class="tm-section-title">Identificación</h4>
 
-                            <div class="col">
-                                <label for="nombre">Nombre</label>
-                                <input type="text" class="form-control" name="nombre" [(ngModel)]="producto.nombre"
-                                    required #nombre="ngModel" placeholder="Ingrese nombre del producto">
-                                <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
-                                    <span class="requerido" *ngIf="nombre.errors.required">
-                                        El nombre no puede estar vacío.
-                                    </span>
-                                </div>
-                            </div>
+                    <div class="tm-grid">
+                        <div class="tm-field">
+                            <label for="codigo">Código</label>
+                            <input type="text" class="form-control" name="codigo" id="codigo"
+                                [(ngModel)]="producto.codProducto" placeholder="Código de Producto">
+                        </div>
 
-                            <div class="col">
-                                <label for="stock">Existencias</label>
-                                <input type="number" name="stock" class="form-control" [(ngModel)]="producto.stock"
-                                    required #stock="ngModel"
-                                    placeholder="Ingrese la cantidad de existencias disponibles">
-                                <div *ngIf="stock.invalid && (stock.dirty || stock.touched)">
-                                    <span class="requerido" *ngIf="stock.errors.required">
-                                        El stock no puede ser vacío.
-                                    </span>
-                                </div>
+                        <div class="tm-field">
+                            <label for="nombre">Nombre</label>
+                            <input type="text" class="form-control" name="nombre" id="nombre"
+                                [(ngModel)]="producto.nombre" required #nombre="ngModel"
+                                placeholder="Ingrese nombre del producto">
+
+                            <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
+                                <span class="requerido" *ngIf="nombre.errors.required">
+                                    El nombre no puede estar vacío.
+                                </span>
                             </div>
                         </div>
 
-                        <br>
-                        <hr>
-                        <div class="row">
-                            <div class="col">
-                                <label for="precio-compra">Precio Compra</label>
-                                <input type="number" id="precio-compra" name="precio-compra" class="form-control"
-                                    [(ngModel)]="producto.precioCompra" required #precioCompra="ngModel"
-                                    placeholder="Ingrese el precio de compra del producto">
+                        <div class="tm-field">
+                            <label for="stock">Existencias</label>
+                            <input type="number" name="stock" id="stock" class="form-control"
+                                [(ngModel)]="producto.stock" required #stock="ngModel"
+                                placeholder="Ingrese la cantidad de existencias disponibles">
 
-                                <div *ngIf="precioCompra.invalid && (precioCompra.dirty || precioCompra.touched)">
-                                    <span class="requerido" *ngIf="precioCompra.errors.required">
-                                        El precio compra no puede estar vacío.
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="col">
-                                <label for="precio-venta">Precio Venta</label>
-                                <input type="number" id="precio-venta" name="precio-venta" class="form-control"
-                                    [(ngModel)]="producto.precioVenta" required #precioVenta="ngModel"
-                                    placeholder="Ingrese el precio de venta para el producto"
-                                    (blur)="calcularPorcentajeGanancia()">
-
-                                <div *ngIf="precioVenta.invalid && (precioVenta.dirty || precioVenta.touched)">
-                                    <span class="requerido" *ngIf="precioVenta.errors.required">
-                                        El precio venta no puede estar vacío.
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="col">
-                                <label for="porcentaje-ganancia">% Ganancia</label>
-                                <input [(ngModel)]="producto.porcentajeGanancia" type="number" id="porcentaje-ganancia"
-                                    name="porcentaje-ganancia" class="form-control" readonly>
-                            </div>
-
-                            <div class="col">
-                                <label for="segundo-precio">Segundo Precio</label>
-                                <input type="number" class="form-control" name="segundo-precio" id="segundo-precio"
-                                    [(ngModel)]="producto.segundoPrecio" placeholder="Ingrese valor de segundo precio si aplica">
-                            </div>
-
-                            <!-- <div class="col">
-                                <label for="porcentaje-ganancia">% Ganancia</label>
-                                <input [(ngModel)]="producto.porcentajeGanancia" type="number" id="porcentaje-ganancia"
-                                    name="porcentaje-ganancia" class="form-control"
-                                    placeholder="Ingrese porcentaje de ganancia deseado" required
-                                    #porcentajeGanancia="ngModel">
-
-                                <div *ngIf="porcentajeGanancia.invalid && (porcentajeGanancia.dirty || porcentajeGanancia.touched)">
-                                    <span class="requerido" *ngIf="porcentajeGanancia.errors.required">
-                                        El porcentaje de ganancia no puede estar vacío.
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="col">
-                                <label for="precio-venta">Precio Venta</label>
-                                <input type="number" id="precio-venta" name="precio-venta" class="form-control"
-                                    [(ngModel)]="producto.precioVenta" required #precioVenta="ngModel" readonly>
-
-                            </div> -->
-                        </div>
-                        <br>
-                        <hr>
-
-                        <div class="row">
-
-                            <div class="col">
-                                <label for="marca">Marca</label>
-                                <select [compareWith]="compararMarca" name="marca" class="form-control"
-                                    [(ngModel)]="producto.marcaProducto">
-                                    <option [ngValue]="undefined">--- Seleccionar Marca ----</option>
-                                    <option *ngFor="let marca of marcas" [ngValue]="marca">{{marca.marca}}</option>
-                                </select>
-                            </div>
-
-                            <div class="col">
-                                <label for="tipo-producto">Tipo</label>
-                                <select [compareWith]="compararTipo" name="tipo-producto" class="form-control"
-                                    [(ngModel)]="producto.tipoProducto">
-                                    <option [ngValue]="undefined">--- Seleccionar Tipo ----</option>
-                                    <option *ngFor="let tipo of tipos" [ngValue]="tipo">{{tipo.tipoProducto}}</option>
-                                </select>
-                            </div>
-
-                            <div class="col">
-                                <label for="fecha-ingreso">Fecha Ingreso</label>
-                                <input type="date" name="fecha-ingreso" class="form-control"
-                                    [(ngModel)]="producto.fechaIngreso">
-                            </div>
-
-                        </div>
-                        <br>
-                        <hr>
-
-                        <div class="row">
-                            <div class="col">
-                                <label for="descripcion">Descripción</label>
-                                <textarea class="form-control" name="descripcion" id="descripcion"
-                                    placeholder="Ingrese una descripción" [(ngModel)]="producto.descripcion" cols="30"
-                                    rows="5"></textarea>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col">
-                                <label for="descripcion">Enlace al Sitio Web</label>
-                                <input type="text" name="link" id="link" class="form-control"
-                                    placeholder="Ingrese link del sitio oficial" [(ngModel)]="producto.link">
+                            <div *ngIf="stock.invalid && (stock.dirty || stock.touched)">
+                                <span class="requerido" *ngIf="stock.errors.required">
+                                    El stock no puede ser vacío.
+                                </span>
                             </div>
                         </div>
                     </div>
+                </section>
 
-                </div>
-                <!-- /.card-body -->
+                <!-- PRECIOS -->
+                <section class="tm-section">
+                    <h4 class="tm-section-title">Precios</h4>
 
-                <div class="card-footer">
-                    <button type="submit" role="button" class="btn btn-primary" [disabled]="!productoForm.form.valid"
-                        *ngIf="!producto.idProducto else elseblock" (click)="create()">
-                        Guardar
+                    <div class="tm-grid tm-grid--narrow">
+                        <div class="tm-field">
+                            <label for="precio-compra">Precio compra</label>
+                            <input type="number" id="precio-compra" name="precio-compra" class="form-control"
+                                [(ngModel)]="producto.precioCompra" required #precioCompra="ngModel"
+                                placeholder="Ingrese el precio de compra del producto">
+
+                            <div *ngIf="precioCompra.invalid && (precioCompra.dirty || precioCompra.touched)">
+                                <span class="requerido" *ngIf="precioCompra.errors.required">
+                                    El precio compra no puede estar vacío.
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="precio-venta">Precio venta</label>
+                            <input type="number" id="precio-venta" name="precio-venta" class="form-control"
+                                [(ngModel)]="producto.precioVenta" required #precioVenta="ngModel"
+                                placeholder="Ingrese el precio de venta para el producto"
+                                (blur)="calcularPorcentajeGanancia()">
+
+                            <div *ngIf="precioVenta.invalid && (precioVenta.dirty || precioVenta.touched)">
+                                <span class="requerido" *ngIf="precioVenta.errors.required">
+                                    El precio venta no puede estar vacío.
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="porcentaje-ganancia">% Ganancia</label>
+                            <input [(ngModel)]="producto.porcentajeGanancia" type="number" id="porcentaje-ganancia"
+                                name="porcentaje-ganancia" class="form-control" readonly>
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="segundo-precio">Segundo precio</label>
+                            <input type="number" class="form-control" name="segundo-precio" id="segundo-precio"
+                                [(ngModel)]="producto.segundoPrecio" placeholder="Si aplica">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CLASIFICACION -->
+                <section class="tm-section">
+                    <h4 class="tm-section-title">Clasificación</h4>
+
+                    <div class="tm-grid">
+                        <div class="tm-field">
+                            <label for="marca">Marca</label>
+                            <select [compareWith]="compararMarca" name="marca" id="marca" class="form-control"
+                                [(ngModel)]="producto.marcaProducto">
+                                <option [ngValue]="undefined">--- Seleccionar Marca ----</option>
+                                <option *ngFor="let marca of marcas" [ngValue]="marca">{{marca.marca}}</option>
+                            </select>
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="tipo-producto">Tipo</label>
+                            <select [compareWith]="compararTipo" name="tipo-producto" id="tipo-producto"
+                                class="form-control" [(ngModel)]="producto.tipoProducto">
+                                <option [ngValue]="undefined">--- Seleccionar Tipo ----</option>
+                                <option *ngFor="let tipo of tipos" [ngValue]="tipo">{{tipo.tipoProducto}}</option>
+                            </select>
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="fecha-ingreso">Fecha de ingreso</label>
+                            <input type="date" name="fecha-ingreso" id="fecha-ingreso" class="form-control"
+                                [(ngModel)]="producto.fechaIngreso">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- DETALLE -->
+                <section class="tm-section">
+                    <h4 class="tm-section-title">Detalle</h4>
+
+                    <div class="tm-grid tm-grid--wide">
+                        <div class="tm-field tm-span-all">
+                            <label for="descripcion">Descripción</label>
+                            <textarea class="form-control" name="descripcion" id="descripcion"
+                                placeholder="Ingrese una descripción" [(ngModel)]="producto.descripcion" cols="30"
+                                rows="5"></textarea>
+                        </div>
+
+                        <div class="tm-field tm-span-all">
+                            <label for="link">Enlace al sitio web</label>
+                            <input type="text" name="link" id="link" class="form-control"
+                                placeholder="Ingrese link del sitio oficial" [(ngModel)]="producto.link">
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <!-- /.card-body -->
+
+            <div class="card-footer">
+                <button type="submit" role="button" class="btn btn-primary btn-lg" [disabled]="!productoForm.form.valid"
+                    *ngIf="!producto.idProducto else elseblock" (click)="create()">
+                    Guardar producto
+                </button>
+
+                <ng-template #elseblock>
+                    <button type="submit" role="button" class="btn btn-primary btn-lg" (click)="update()">
+                        Actualizar producto
                     </button>
-
-                    <ng-template #elseblock>
-                        <button type="submit" role="button" class="btn btn-primary" (click)="update()">
-                            Actualizar
-                        </button>
-                    </ng-template>
-                </div>
-            </form>
-        </div>
-        <!-- /.card -->
+                </ng-template>
+            </div>
+        </form>
     </div>
+    <!-- /.card -->
 </div>

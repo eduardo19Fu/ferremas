@@ -9,83 +9,71 @@
                 <a [routerLink]="['/productos/create']" class="btn bg-gradient-success">
                     <i class="fas fa-plus-circle"></i>
                     Nuevo
-                </a>
+                </a>&nbsp;
+                <button type="button" class="btn btn-outline-success" (click)="exportarExcel()"
+                    [class.is-loading]="exportando" [attr.aria-busy]="exportando" [disabled]="!totalElements"
+                    ngbTooltip="Exportar a Excel todo el listado filtrado" placement="bottom">
+                    <span class="tm-spinner tm-spinner--btn" *ngIf="exportando; else iconoExcel" role="status"></span>
+                    <ng-template #iconoExcel><i class="fas fa-file-excel"></i></ng-template>
+                    {{ exportando ? 'Generando…' : 'Excel' }}
+                </button>
             </div>
         </div>
     </div><!-- /.container-fluid -->
 </section>
 
 <div class="card">
-    <div class="card-header">
-        Listado de Productos Registrados
-    </div>
-    <div class="card-body table-responsive">
+<div class="card-body table-responsive">
 
-        <div *ngIf="productos?.length == 0" class="alert alert-info alert-dismissible">
-            <h5>
-                <i class="icon fas fa-info"></i>
-                Atención!
-            </h5>
-
-            No existe ningún producto registrado en la base de datos!
+        <div class="row mb-2">
+            <div class="col-md-auto tm-toolbar-size">
+                <app-tamanio-pagina [size]="size" (sizeChange)="onSizeChange($event)"></app-tamanio-pagina>
+            </div>
+            <div class="col-md-4 ml-md-auto tm-buscador">
+                <i class="fas fa-search"></i>
+                <input type="search" class="form-control form-control-sm" placeholder="Buscar por nombre o código..."
+                    [ngModel]="search" (ngModelChange)="onBuscar($event)">
+                <span class="tm-spinner" *ngIf="cargando"></span>
+            </div>
         </div>
 
-        <table id="productos" class="table table-hover table-striped table-bordered dataTable dtr-inline table-sm"
-            role="grid" *ngIf="productos?.length > 0">
+        <app-sin-registros *ngIf="productos?.length == 0 && !cargando" entidad="productos" [busqueda]="search"
+            (limpiar)="onBuscar('')"></app-sin-registros>
+
+        <div class="tabla-wrap">
+            <div class="tabla-progreso" *ngIf="cargando && productos?.length"></div>
+            <app-tabla-skeleton *ngIf="cargando && !productos?.length" [columnas]="9"></app-tabla-skeleton>
+            <table class="table table-modern" [class.cargando]="cargando" *ngIf="productos?.length > 0">
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Codigo</th>
-                    <th>Nombre</th>
-                    <th>Precio</th>
-                    <th>Stock</th>
-                    <th>Tipo</th>
-                    <th>Marca</th>
-                    <th>Estado</th>
+                    <th tmSortable="codProducto" [sort]="sort" (tmSort)="onSort($event)">Codigo</th>
+                    <th tmSortable="nombre" [sort]="sort" (tmSort)="onSort($event)">Nombre</th>
+                    <th tmSortable="precioVenta" [sort]="sort" (tmSort)="onSort($event)">Precio</th>
+                    <th tmSortable="stock" [sort]="sort" (tmSort)="onSort($event)">Stock</th>
+                    <th tmSortable="tipoProducto.tipoProducto" [sort]="sort" (tmSort)="onSort($event)">Tipo</th>
+                    <th tmSortable="marcaProducto.marca" [sort]="sort" (tmSort)="onSort($event)">Marca</th>
+                    <th tmSortable="estado.estado" [sort]="sort" (tmSort)="onSort($event)">Estado</th>
                     <th>Opciones</th>
                 </tr>
             </thead>
 
             <tbody>
-                <tr *ngFor="let producto of productos">
-                    <td>
-                        <!-- <img (click)="abrirModal(producto)" *ngIf="producto?.imagen"
-                            src="http://localhost:8282/api/uploads/img/{{producto.imagen}}" alt="{{producto.imagen}}"
-                            class="img-thumbnail rounded" style="width: 45px; height: 48px; cursor: pointer;"> -->
-
-                        <!-- <img (click)="abrirModal(producto)" *ngIf="producto?.imagen"
-                            src="https://dimsa-app2.herokuapp.com/api/uploads/img/{{producto.imagen}}" alt="{{producto.imagen}}"
-                            class="img-thumbnail rounded" style="width: 45px; height: 48px; cursor: pointer;"> -->
-
-                        <!-- <img (click)="abrirModal(producto)" *ngIf="producto?.imagen"
-                            src="https://dimsa-new.herokuapp.com/api/uploads/img/{{producto.imagen}}" alt="{{producto.imagen}}"
-                            class="img-thumbnail rounded" style="width: 45px; height: 48px; cursor: pointer;"> -->
-
-                        <!-- <img (click)="abrirModal(producto)" *ngIf="!producto?.imagen"
-                            src="http://31.220.56.29:8282/images/no-image.jpg" alt="{{producto.imagen}}"
-                            class="img-thumbnail rounded" style="width: 45px; height: 48px; cursor: pointer;"> -->
-
-                        <!-- <img (click)="abrirModal(producto)" *ngIf="!producto?.imagen"
-                            src="https://dimsa-app2.herokuapp.com/images/no-image.jpg" alt="{{producto.imagen}}"
-                            class="img-thumbnail rounded" style="width: 45px; height: 48px; cursor: pointer;"> -->
-
-                        <!-- <img (click)="abrirModal(producto)" *ngIf="!producto?.imagen"
-                            src="https://dimsa-new.herokuapp.com/images/no-image.jpg" alt="{{producto.imagen}}"
-                            class="img-thumbnail rounded" style="width: 45px; height: 48px; cursor: pointer;"> -->
-                    </td>
-                    <td>{{producto.codProducto}}</td>
-                    <td>{{producto.nombre}}</td>
-                    <td>{{producto.precioVenta}}</td>
-                    <td>{{producto.stock}}</td>
-                    <td>{{producto.tipoProducto.tipoProducto}}</td>
-                    <td>{{producto.marcaProducto.marca}}</td>
-                    <td>
+                <tr *ngFor="let producto of productos; let i = index">
+                    <td data-label="#">{{page * size + i + 1}}</td>
+                    <td data-label="Codigo">{{producto.codProducto}}</td>
+                    <td data-label="Nombre">{{producto.nombre}}</td>
+                    <td data-label="Precio">{{producto.precioVenta}}</td>
+                    <td data-label="Stock">{{producto.stock}}</td>
+                    <td data-label="Tipo">{{producto.tipoProducto.tipoProducto}}</td>
+                    <td data-label="Marca">{{producto.marcaProducto.marca}}</td>
+                    <td data-label="Estado">
                         <span class="badge"
                             [ngClass]="{'badge-primary': producto.estado.estado === 'ACTIVO', 'badge-danger': producto.estado.estado === 'INACTIVO'}">
                             {{producto.estado.estado}}
                         </span>
                     </td>
-                    <td class="center-options">
+                    <td data-label="Opciones" class="center-options">
                         <button class="btn bg-gradient-success" data-toggle="modal" placement="top" ngbTooltip="Detalle del Producto"
                             (click)="abrirModal(producto)">
                             <i class="fa fa-asterisk"></i>
@@ -105,20 +93,10 @@
                     </td>
                 </tr>
             </tbody>
-
-            <tfoot>
-                <tr>
-                    <th>#</th>
-                    <th>Codigo</th>
-                    <th>Nombre</th>
-                    <th>Precio</th>
-                    <th>Stock</th>
-                    <th>Tipo</th>
-                    <th>Marca</th>
-                    <th>Estado</th>
-                    <th>Opciones</th>
-                </tr>
-            </tfoot>
         </table>
+        </div>
+
+        <app-paginacion [mostrarTamanio]="false" [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+            (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
 </div>

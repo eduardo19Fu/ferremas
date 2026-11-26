@@ -1,8 +1,8 @@
 <div class="modal fade" id="modal-notas-credito">
     <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header header-modal" style="background-color: rebeccapurple;">
-                <h4 class="modal-title" style="color: #ffffff">{{title}}</h4>
+        <div class="modal-content tm-form">
+            <div class="modal-header">
+                <h4 class="modal-title">{{title}}</h4>
                 <button #myButton2XChild type="button" name="button-2x" id="button-2x" class="close"
                     data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -11,8 +11,20 @@
 
             <div class="card-body">
                 <div class="modal-body table-responsive">
-                    <table id="notas-credito"
-                        class="table table-hover table-striped table-bordered dataTable dtr-inline table-sm" role="grid"
+                    <div class="row mb-2">
+                        <div class="col-md-5 ml-md-auto tm-buscador">
+                            <i class="fas fa-search"></i>
+                <input type="search" class="form-control form-control-sm" placeholder="Buscar por cliente..."
+                                [ngModel]="search" (ngModelChange)="onBuscar($event)">
+                <span class="tm-spinner" *ngIf="cargando"></span>
+                        </div>
+                    </div>
+
+                    <div class="tabla-wrap">
+            <div class="tabla-progreso" *ngIf="cargando && notasCredito?.length"></div>
+            <app-tabla-skeleton *ngIf="cargando && !notasCredito?.length" [columnas]="9"></app-tabla-skeleton>
+            <table id="notas-credito"
+                        class="table table-modern" [class.cargando]="cargando"
                         *ngIf="notasCredito?.length > 0">
                         <thead>
                             <tr>
@@ -30,15 +42,15 @@
 
                         <tbody>
                             <tr *ngFor="let nota of notasCredito">
-                                <td>{{nota.idNotaCredito}}</td>
-                                <td>{{nota.abono}}</td>
-                                <td>{{nota.total}}</td>
-                                <td>{{nota.restante}}</td>
-                                <td>{{nota.usuario.usuario}}</td>
-                                <td>{{nota.cliente.nombre}}</td>
-                                <td>{{nota.fechaCreacion | date: 'dd/MM/yyyy - hh:mm'}}</td>
-                                <td>{{nota.fechaPagoLimite | date: 'dd/MM/yyyy'}}</td>
-                                <td class="center-options">
+                                <td data-label="ID">{{nota.idNotaCredito}}</td>
+                                <td data-label="Abono">{{nota.abono}}</td>
+                                <td data-label="Total">{{nota.total}}</td>
+                                <td data-label="Restante">{{nota.restante}}</td>
+                                <td data-label="Emisor">{{nota.usuario.usuario}}</td>
+                                <td data-label="Cliente">{{nota.cliente.nombre}}</td>
+                                <td data-label="Fecha Creaci&oacute;n">{{nota.fechaCreacion | date: 'dd/MM/yyyy - hh:mm'}}</td>
+                                <td data-label="Fecha L&iacute;mite de Pago">{{nota.fechaPagoLimite | date: 'dd/MM/yyyy'}}</td>
+                                <td data-label="Opciones" class="center-options">
                                     <button class="btn bg-gradient-cyan" (click)="chooseNotaCredito(nota)">
                                         Elegir
                                     </button>
@@ -46,20 +58,14 @@
                             </tr>
                         </tbody>
 
-                        <tfoot>
-                            <tr>
-                                <th>ID</th>
-                                <th>Abono</th>
-                                <th>Total</th>
-                                <th>Restante</th>
-                                <th>Emisor</th>
-                                <th>Fecha Creaci&oacute;n</th>
-                                <th>Fecha L&iacute;mite de Pago</th>
-                                <th>Opciones</th>
-                            </tr>
-                        </tfoot>
-
                     </table>
+        </div>
+
+                    <app-sin-registros *ngIf="items.length === 0 && !cargando" entidad="notas de crédito" [busqueda]="search"
+                        (limpiar)="onBuscar('')"></app-sin-registros>
+
+                    <app-paginacion [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+                        (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
                 </div>
             </div>
         </div>

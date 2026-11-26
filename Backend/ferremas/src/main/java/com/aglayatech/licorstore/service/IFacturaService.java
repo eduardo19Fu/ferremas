@@ -18,6 +18,9 @@ public interface IFacturaService {
 	public List<Factura> findAll();
 	
 	public Page<Factura> findAll(Pageable pageable);
+
+	/** Detalle (productos) de una factura, paginado. */
+	public Page<com.aglayatech.licorstore.model.dto.DetalleFacturaItem> findDetalle(Long idFactura, Pageable pageable);
 	
 	public Factura findFactura(Long idfactura);
 
@@ -39,4 +42,7 @@ public interface IFacturaService {
 
 	public byte[] showBill2(Long idfactura) throws JRException, FileNotFoundException, SQLException;
 
+	public org.springframework.data.domain.Page<Factura> search(String termino, org.springframework.data.domain.Pageable pageable);
+
+	public org.springframework.data.domain.Page<Factura> searchPorFechas(String termino, java.util.Date fechaIni, java.util.Date fechaFin, org.springframework.data.domain.Pageable pageable);
 }

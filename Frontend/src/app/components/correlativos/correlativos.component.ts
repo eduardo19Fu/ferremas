@@ -1,3 +1,6 @@
+import { Observable } from 'rxjs';
+import { Page } from 'src/app/models/page';
+import { ListaPaginada } from 'src/app/utils/lista-paginada';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
@@ -6,7 +9,6 @@ import { Correlativo } from '../../models/correlativo';
 import { CorrelativoService } from '../../services/correlativos/correlativo.service';
 import { AuthService } from '../../services/auth.service';
 
-import { JqueryConfigs } from '../../utils/jquery/jquery-utils';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -15,12 +17,10 @@ import Swal from 'sweetalert2';
   styles: [
   ]
 })
-export class CorrelativosComponent implements OnInit {
+export class CorrelativosComponent extends ListaPaginada<Correlativo> implements OnInit {
 
   title: string;
-  jQueryConfigs: JqueryConfigs;
 
-  correlativos: Correlativo[];
 
   swalWithBootstrapButtons = Swal.mixin({
     customClass: {
@@ -35,8 +35,16 @@ export class CorrelativosComponent implements OnInit {
     public authService: AuthService,
     private activatedRoute: ActivatedRoute
   ) {
+    super();
     this.title = 'Listado de Correlativos';
-    this.jQueryConfigs = new JqueryConfigs();
+  }
+
+  protected fetch(page: number, size: number, search: string, sort: string): Observable<Page<Correlativo>> {
+    return this.correlativoService.getPaginado(page, size, search, sort);
+  }
+
+  get correlativos(): Correlativo[] {
+    return this.items;
   }
 
   ngOnInit(): void {
@@ -44,12 +52,7 @@ export class CorrelativosComponent implements OnInit {
   }
 
   getCorrelativos(): void{
-    this.correlativoService.getCorrelativos().subscribe(
-      correlativos => {
-        this.correlativos = correlativos;
-        this.jQueryConfigs.configDataTable('correlativos');
-      }
-    );
+    this.cargar();
   }
 
   anularCorrelativo(correlativo: Correlativo): void{

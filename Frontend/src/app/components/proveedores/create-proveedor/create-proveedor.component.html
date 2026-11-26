@@ -13,20 +13,20 @@
 
     <div class="col-md-12">
         <!-- general form elements -->
-        <div class="card card-primary">
+        <div class="card tm-form">
             <div class="card-header">
-                <h3 class="card-title">Ingrese los datos</h3>
+                <h3 class="card-title">Datos del proveedor</h3>
             </div>
             <!-- /.card-header -->
             <!-- form start -->
             <form #proveedorForm="ngForm">
                 <div class="card-body">
 
-                    <div class="row">
-                        <div class="form-group col">
+                    <div class="tm-grid">
+                        <div class="tm-field">
                             <label for="nombre">Nombre</label>
                             <input type="text" class="form-control" name="correlativo-inicial" [(ngModel)]="proveedor.nombre"
-                                required placeholder="Ingrese nombre del proveedor" #nombre="ngModel">
+                                required placeholder="Ingrese nombre del proveedor" #nombre="ngModel" id="nombre">
                                 
                             <div *ngIf="nombre.invalid && (nombre.touched || nombre.dirty)">
                                 <span class="requerido">
@@ -35,10 +35,10 @@
                             </div>
                         </div>
 
-                        <div class="form-group col">
+                        <div class="tm-field">
                             <label for="contacto">Contacto</label>
                             <input type="text" name="contacto" class="form-control" [(ngModel)]="proveedor.contacto"
-                                required placeholder="Ingrese contacto del proveedor" #contacto="ngModel">
+                                required placeholder="Ingrese contacto del proveedor" #contacto="ngModel" id="contacto">
 
                             <div *ngIf="contacto.invalid && (contacto.touched || contacto.dirty)">
                                 <span class="requerido">
@@ -47,37 +47,37 @@
                             </div>
                         </div>
 
-                        <div class="form-group col">
-                            <label for="pais">Pa&iacute;s</label>
-                            <select class="form-control" name="paises" [(ngModel)]="proveedor.pais" required #pais="ngModel">
+                        <div class="tm-field">
+                            <label for="paises">Pa&iacute;s</label>
+                            <select class="form-control" name="paises" [(ngModel)]="proveedor.pais" required #pais="ngModel" id="paises">
                                 <option [ngValue]="undefined">Selecciona un pa&iacute;s</option>
                                 <option *ngFor="let pais of paises" [ngValue]="pais">{{pais.nombre}}</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="form-group col">
+                    <div class="tm-grid">
+                        <div class="tm-field">
                             <label for="web">Sitio Web</label>
                             <input type="url" name="web" id="web" [(ngModel)]="proveedor.web" class="form-control" 
                                 placeholder="Ingrese url del sitio web del proveedor">
                         </div>
 
-                        <div class="form-group col">
+                        <div class="tm-field">
                             <label for="email">E-mail</label>
                             <input type="email" name="email" id="email" class="form-control" [(ngModel)]="proveedor.email"
                                 placeholder="Ingrese correo electrónico de contacto">
                         </div>
 
-                        <div class="form-group col">
+                        <div class="tm-field">
                             <label for="telefono">Tel&eacute;fono</label>
                             <input type="text" name="telefono" id="telefono" class="form-control" [(ngModel)]="proveedor.telefono"
                                 placeholder="Ingrese n&uacute;mero de tel&eacute;fono">
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="from-group col">
+                    <div class="tm-grid">
+                        <div class="tm-field">
                             <label for="direccion">Direcci&oacute;n</label>
                             <input type="text" name="direccion" id="direccion" class="form-control" [(ngModel)]="proveedor.direccion"
                                 placeholder="Ingrese la direcci&oacute;n del Proveedor" required #direccion="ngModel">

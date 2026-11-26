@@ -5,52 +5,58 @@
             <div class="col-sm-6">
                 <h1>{{title}}</h1>
                 <br>
-                <a [routerLink]="['/productos/marcas/create']" class="btn bg-gradient-success">
+                <button type="button" class="btn bg-gradient-success" (click)="abrirModal()">
                     <i class="fas fa-plus-circle"></i>
                     Nuevo
-                </a>
+                </button>
             </div>
         </div>
     </div><!-- /.container-fluid -->
 </section>
 
 <div class="card">
-    <div class="card-header">
-        Listado de Tipos de Identificación
-    </div>
-    <div class="card-body table-responsive">
+<div class="card-body table-responsive">
 
-        <div *ngIf="marcas?.length == 0" class="alert alert-info alert-dismissible">
-            <h5>
-                <i class="icon fas fa-info"></i>
-                Atención!
-            </h5>
-
-            No existe ningún cliente registrado en la base de datos!
+        <div class="row mb-2">
+            <div class="col-md-auto tm-toolbar-size">
+                <app-tamanio-pagina [size]="size" (sizeChange)="onSizeChange($event)"></app-tamanio-pagina>
+            </div>
+            <div class="col-md-4 ml-md-auto tm-buscador">
+                <i class="fas fa-search"></i>
+                <input type="search" class="form-control form-control-sm" placeholder="Buscar..."
+                    [ngModel]="search" (ngModelChange)="onBuscar($event)">
+                <span class="tm-spinner" *ngIf="cargando"></span>
+            </div>
         </div>
 
-        <table id="marcas" class="table table-hover table-striped table-bordered dataTable dtr-inline table-sm" role="grid"
+        <app-sin-registros *ngIf="marcas?.length == 0 && !cargando" entidad="marcas" [busqueda]="search"
+            (limpiar)="onBuscar('')"></app-sin-registros>
+
+        <div class="tabla-wrap">
+            <div class="tabla-progreso" *ngIf="cargando && marcas?.length"></div>
+            <app-tabla-skeleton *ngIf="cargando && !marcas?.length" [columnas]="5"></app-tabla-skeleton>
+            <table id="marcas" class="table table-modern" [class.cargando]="cargando"
             *ngIf="marcas?.length > 0">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Marca</th>
-                    <th>Fecha Registro</th>
-                    <th>Creador</th>
+                    <th tmSortable="idMarcaProducto" [sort]="sort" (tmSort)="onSort($event)">ID</th>
+                    <th tmSortable="marca" [sort]="sort" (tmSort)="onSort($event)">Marca</th>
+                    <th tmSortable="fechaRegistro" [sort]="sort" (tmSort)="onSort($event)">Fecha Registro</th>
+                    <th tmSortable="usuario.usuario" [sort]="sort" (tmSort)="onSort($event)">Creador</th>
                     <th>Opciones</th>
                 </tr>
             </thead>
 
             <tbody>
                 <tr *ngFor="let marca of marcas">
-                    <td>{{marca.idMarcaProducto}}</td>
-                    <td>{{marca.marca}}</td>
-                    <td>{{marca.fechaRegistro | date: 'dd/MM/yyyy - hh:mm'}}</td>
-                    <td>{{marca.usuario.usuario}}</td>
-                    <td class="center-options" *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_INVENTARIO')">
+                    <td data-label="ID">{{marca.idMarcaProducto}}</td>
+                    <td data-label="Marca">{{marca.marca}}</td>
+                    <td data-label="Fecha Registro">{{marca.fechaRegistro | date: 'dd/MM/yyyy - hh:mm'}}</td>
+                    <td data-label="Creador">{{marca.usuario.usuario}}</td>
+                    <td data-label="Opciones" class="center-options" *ngIf="auth.hasRole('ROLE_ADMIN') || auth.hasRole('ROLE_INVENTARIO')">
 
                         <button class="btn bg-gradient-info margin" type="button" name="edit" placement="top" ngbTooltip="Editar Marca"
-                            [routerLink]="['/productos/marcas/create', marca.idMarcaProducto]">
+                            (click)="abrirModal(marca)">
 
                             <i class="fas fa-edit"></i>
                         </button>&nbsp;
@@ -63,17 +69,11 @@
                     </td>
                 </tr>
             </tbody>
-
-            <tfoot>
-                <tr>
-                    <th>ID</th>
-                    <th>Marca</th>
-                    <th>Fecha Registro</th>
-                    <th>Creador</th>
-                    <th>Opciones</th>
-                </tr>
-            </tfoot>
         </table>
+        </div>
+
+        <app-paginacion [mostrarTamanio]="false" [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+            (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
     </div>
 </div>
 
