@@ -131,22 +131,28 @@ public class ProductoServiceImpl implements IProductoService {
 	@Override
 	public byte[] reportInventory(String fecha) throws JRException, FileNotFoundException, SQLException, ParseException {
 
-		Date parametroFecha = null;
-		final Connection connection = localDataSource.getConnection();
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		format.setLenient(false);
+		Date parametroFecha;
+		try {
+			parametroFecha = format.parse(fecha);
+		} catch (ParseException e) {
+			throw new com.aglayatech.licorstore.generics.ReglaNegocioException(
+					org.springframework.http.HttpStatus.BAD_REQUEST, "La fecha debe tener el formato yyyy-MM-dd.");
+		}
+
 		Map<String, Object> params = new HashMap<>();
-
-		parametroFecha = format.parse(fecha);
 		params.put("pFecha", parametroFecha);
-		LOGGER.debug("Parámetro fecha mapeado: {}", params.get("pFecha").toString());
-		InputStream file = getClass().getResourceAsStream("/reports/rpt_inventario.jrxml");
+		LOGGER.debug("Parámetro fecha mapeado: {}", parametroFecha);
 
-		JasperReport jasperReport = JasperCompileManager.compileReport(file);
-		JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, connection);
-		ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStream(jasperPrint);
-		connection.close();
-
-		return byteArrayOutputStream.toByteArray();
+		try (Connection connection = localDataSource.getConnection();
+				InputStream file = getClass().getResourceAsStream("/reports/rpt_inventario.jrxml")) {
+			JasperReport jasperReport = JasperCompileManager.compileReport(file);
+			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, connection);
+			return getByteArrayOutputStream(jasperPrint).toByteArray();
+		} catch (java.io.IOException e) {
+			throw new JRException(e);
+		}
 	}
 
 	protected ByteArrayOutputStream getByteArrayOutputStream(JasperPrint jasperPrint) throws JRException {

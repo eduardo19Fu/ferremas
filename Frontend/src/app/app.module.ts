@@ -60,7 +60,6 @@ import { ReportesComponent } from './components/reportes/reportes.component';
 import { ModalVentasMensualesComponent } from './components/reportes/modales/modal-ventas-mensuales/modal-ventas-mensuales.component';
 import { ModalVentasDiariasComponent } from './components/reportes/modales/modal-ventas-diarias/modal-ventas-diarias.component';
 import { ModalConversionProformasComponent } from './components/reportes/modales/modal-conversion-proformas/modal-conversion-proformas.component';
-import { ModalEnviosRealizadosComponent } from './components/reportes/modales/modal-envios-realizados/modal-envios-realizados.component';
 import { ModalProductosInventarioComponent } from './components/reportes/modales/modal-productos-inventario/modal-productos-inventario.component';
 import { NotasCreditoComponent } from './components/notas-credito/notas-credito.component';
 import { DetailNotaCreditoComponent } from './components/notas-credito/detail/detail.component';
@@ -136,7 +135,6 @@ import { LogoComponent } from './components/shared/logo/logo.component';
     ModalVentasMensualesComponent,
     ModalVentasDiariasComponent,
     ModalConversionProformasComponent,
-    ModalEnviosRealizadosComponent,
     ModalProductosInventarioComponent,
     NotasCreditoComponent,
     DetailNotaCreditoComponent,

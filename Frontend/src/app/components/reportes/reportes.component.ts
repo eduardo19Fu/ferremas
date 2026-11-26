@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 
 import { ProductoService } from '../../services/producto.service';
 import { FacturaService } from '../../services/facturas/factura.service';
-import { EnvioService } from '../../services/envios/envio.service';
 
 import Swal from 'sweetalert2';
 
@@ -18,8 +17,7 @@ export class ReportesComponent implements OnInit {
 
   constructor(
     private productoService: ProductoService,
-    private facturaService: FacturaService,
-    private envioService: EnvioService
+    private facturaService: FacturaService
   ) {
     this.title = 'Módulo de Reportes';
   }
