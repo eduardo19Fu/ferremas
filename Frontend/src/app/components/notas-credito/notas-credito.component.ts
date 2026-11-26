@@ -17,6 +17,8 @@ export class NotasCreditoComponent extends ListaPaginada<NotaCredito> implements
 
   title: string;
 
+  /** Nota cuyo detalle se muestra en el modal. */
+  notaSeleccionada: NotaCredito;
 
   constructor(
     private notasService: NotasCreditoService,
@@ -37,6 +39,11 @@ export class NotasCreditoComponent extends ListaPaginada<NotaCredito> implements
 
   ngOnInit(): void {
     this.loadNotasCredito();
+  }
+
+  abrirDetalle(nota: NotaCredito): void {
+    this.notaSeleccionada = nota;
+    this.detailService.abrirModal();
   }
 
   loadNotasCredito(): void {

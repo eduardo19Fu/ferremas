@@ -81,7 +81,7 @@
                                     <tr *ngFor="let item of items">
                                         <td data-label="Cant.">{{item.cantidad}}</td>
                                         <td data-label="Producto">
-                                            {{item.nombreProducto}}
+                                            {{item.nombreProducto || "Producto no disponible"}}
                                             <small class="df-codigo" *ngIf="item.codProducto">{{item.codProducto}}</small>
                                         </td>
                                         <td data-label="Precio">{{item.precioUnitario | currency: "Q" : "symbol"}}</td>

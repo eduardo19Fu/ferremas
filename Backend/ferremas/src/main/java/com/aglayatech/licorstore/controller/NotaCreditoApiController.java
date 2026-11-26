@@ -189,6 +189,23 @@ public class NotaCreditoApiController {
 
 	private static final java.util.Map<String, String> SORT_NOTA = com.aglayatech.licorstore.generics.SortParam.keys("idNotaCredito", "cliente.nombre", "abono", "total", "restante", "usuario.usuario", "fechaCreacion", "fechaPagoLimite", "estado.estado");
 
+	private static final java.util.Map<String, String> SORT_DETALLE_NOTA = java.util.Map.of(
+			"idNotaDetalle", "idNotaDetalle", "codProducto", "p.codProducto", "nombreProducto", "p.nombre",
+			"cantidad", "cantidad", "descuento", "descuento", "subTotal", "subTotal", "subTotalDescuento", "subTotalDescuento");
+
+	/** Detalle de una nota de credito (sus productos), paginado y ordenable; lo usa el modal de detalle. */
+	@org.springframework.security.access.annotation.Secured({"ROLE_ADMIN", "ROLE_COBRADOR"})
+	@GetMapping("/notas-credito/{id}/detalle")
+	public org.springframework.data.domain.Page<com.aglayatech.licorstore.model.dto.DetalleNotaCreditoItem> detalle(
+			@PathVariable("id") Integer idNota,
+			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
+			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "10") int size,
+			@org.springframework.web.bind.annotation.RequestParam(required = false) String sort) {
+		int pageSize = Math.min(Math.max(size, 1), 100);
+		org.springframework.data.domain.Sort order = com.aglayatech.licorstore.generics.SortParam.parse(sort, SORT_DETALLE_NOTA, org.springframework.data.domain.Sort.by("idNotaDetalle").ascending(), "idNotaDetalle");
+		return notaCreditoService.findDetalle(idNota, org.springframework.data.domain.PageRequest.of(Math.max(page, 0), pageSize, order));
+	}
+
 	@GetMapping("/notas-credito/paginado")
 	public org.springframework.data.domain.Page<NotaCredito> paginado(@org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
 			@org.springframework.web.bind.annotation.RequestParam(defaultValue = "10") int size,

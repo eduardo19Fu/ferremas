@@ -8,6 +8,7 @@ import { NotaCredito } from 'src/app/models/nota-credito';
 
 import Swal from 'sweetalert2';
 import { Page } from 'src/app/models/page';
+import { DetalleNotaCreditoItem } from 'src/app/models/detalle-nota-credito-item';
 
 @Injectable({
   providedIn: 'root'
@@ -69,5 +70,14 @@ export class NotasCreditoService {
       params.sort = sort;
     }
     return this.httpClient.get<Page<NotaCredito>>(`${this.url}/notas-credito/paginado`, { params });
+  }
+
+  /** Detalle (productos) de una nota de credito, paginado desde el backend. */
+  getDetallePaginado(idNota: number, page: number, size: number, sort: string = ''): Observable<Page<DetalleNotaCreditoItem>> {
+    const params: any = { page: String(page), size: String(size) };
+    if (sort) {
+      params.sort = sort;
+    }
+    return this.httpClient.get<Page<DetalleNotaCreditoItem>>(`${this.url}/notas-credito/${idNota}/detalle`, { params });
   }
 }

@@ -18,7 +18,7 @@ public interface ICompraRepository extends JpaRepository<Compra, Integer> {
 	 */
 	@Query(value = "select new com.aglayatech.licorstore.model.dto.DetalleCompraItem("
 			+ "d.idDetalleCompra, p.codProducto, p.nombre, d.cantidad, d.precioUnitario, d.subTotal) "
-			+ "from DetalleCompra d join d.producto p "
+			+ "from DetalleCompra d left join d.producto p "
 			+ "where d.idDetalleCompra in (select i.idDetalleCompra from Compra c join c.items i where c.idCompra = :idCompra)",
 			countQuery = "select count(d) from DetalleCompra d "
 			+ "where d.idDetalleCompra in (select i.idDetalleCompra from Compra c join c.items i where c.idCompra = :idCompra)")

@@ -59,7 +59,7 @@ import { ModalVentasDiariasComponent } from './components/reportes/modales/modal
 import { ModalEnviosRealizadosComponent } from './components/reportes/modales/modal-envios-realizados/modal-envios-realizados.component';
 import { ModalProductosInventarioComponent } from './components/reportes/modales/modal-productos-inventario/modal-productos-inventario.component';
 import { NotasCreditoComponent } from './components/notas-credito/notas-credito.component';
-import { DetailComponent } from './components/notas-credito/detail/detail.component';
+import { DetailNotaCreditoComponent } from './components/notas-credito/detail/detail.component';
 import { CreateNotaComponent } from './components/notas-credito/create-nota/create-nota.component';
 import { PagosParcialesComponent } from './components/pagos-parciales/pagos-parciales.component';
 import { CreatePagoParcialComponent } from './components/pagos-parciales/create-pago-parcial/create-pago-parcial.component';
@@ -131,7 +131,7 @@ import { LogoComponent } from './components/shared/logo/logo.component';
     ModalEnviosRealizadosComponent,
     ModalProductosInventarioComponent,
     NotasCreditoComponent,
-    DetailComponent,
+    DetailNotaCreditoComponent,
     CreateNotaComponent,
     PagosParcialesComponent,
     CreatePagoParcialComponent,

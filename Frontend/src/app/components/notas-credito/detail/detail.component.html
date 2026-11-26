@@ -1,1 +1,115 @@
-<p>detail works!</p>
+<div *ngIf="detailService.modal" class="df-fondo" (click)="cerrarModal()">
+    <div class="modal" tabindex="-1" style="display: block; overflow-y: auto;" role="dialog" aria-modal="true"
+        aria-labelledby="dn-titulo">
+        <div class="modal-dialog modal-lg modal-dialog-centered" (click)="$event.stopPropagation()">
+            <div class="modal-content tm-form df" *ngIf="nota">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="dn-titulo">{{title}}</h5>
+                    <button (click)="cerrarModal()" id="close" type="button" class="close" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body df-cuerpo">
+
+                    <!-- portada: numero, estado y total -->
+                    <div class="df-hero" [class.df-hero--anulada]="anulada">
+                        <div class="df-hero__id">
+                            <span class="df-hero__tipo">Crédito a cliente</span>
+                            <h3 class="df-numero">
+                                Nota No. {{nota.idNotaCredito}}
+                                <span *ngIf="nota.estado" class="df-estado"
+                                    [ngClass]="anulada ? 'df-estado--anulada' : 'df-estado--ok'">{{nota.estado.estado}}</span>
+                            </h3>
+                        </div>
+                        <div class="df-total">
+                            <small>Total</small>
+                            <strong>{{nota.total | currency: "Q" : "symbol"}}</strong>
+                        </div>
+                    </div>
+
+                    <!-- datos agrupados por categoria -->
+                    <div class="df-grupos">
+                        <section class="df-card df-card--cliente">
+                            <h5><i class="fas fa-user" aria-hidden="true"></i> Cliente</h5>
+                            <dl>
+                                <div><dt>Nombre</dt><dd>{{nota.cliente?.nombre || '—'}}</dd></div>
+                                <div><dt>NIT</dt><dd>{{nota.cliente?.nit || 'CF'}}</dd></div>
+                                <div><dt>Teléfono</dt><dd>{{nota.cliente?.telefono || '—'}}</dd></div>
+                            </dl>
+                        </section>
+
+                        <section class="df-card df-card--venta">
+                            <h5><i class="fas fa-calendar-alt" aria-hidden="true"></i> Fechas</h5>
+                            <dl>
+                                <div><dt>Creada</dt><dd>{{nota.fechaCreacion | date: 'dd/MM/yyyy · hh:mm a'}}</dd></div>
+                                <div><dt>Límite de pago</dt><dd>{{nota.fechaPagoLimite | date: 'dd/MM/yyyy'}}</dd></div>
+                                <div><dt>Emitida por</dt><dd>{{nota.usuario?.usuario || '—'}}</dd></div>
+                            </dl>
+                        </section>
+
+                        <section class="df-card df-card--documento">
+                            <h5><i class="fas fa-hand-holding-usd" aria-hidden="true"></i> Pagos</h5>
+                            <dl>
+                                <div><dt>Abonado</dt><dd>{{nota.abono | currency: "Q" : "symbol"}}</dd></div>
+                                <div><dt>Restante</dt><dd>{{nota.restante | currency: "Q" : "symbol"}}</dd></div>
+                            </dl>
+                            <div class="dn-avance" role="progressbar" [attr.aria-valuenow]="avancePago" aria-valuemin="0" aria-valuemax="100"
+                                [attr.aria-label]="'Avance del pago: ' + avancePago + '%'">
+                                <span [style.width.%]="avancePago"></span>
+                            </div>
+                            <small class="dn-avance__texto">{{avancePago}}% pagado</small>
+                        </section>
+                    </div>
+
+                    <!-- productos (paginado desde el backend) -->
+                    <div class="df-seccion">
+                        <h4>Productos <span class="df-cuenta" *ngIf="totalElements">{{totalElements}}</span></h4>
+                    </div>
+
+                    <div class="df-tabla">
+                        <div class="tabla-wrap">
+                            <div class="tabla-progreso" *ngIf="cargando && items.length"></div>
+                            <app-tabla-skeleton *ngIf="cargando && !items.length" [columnas]="5" [filas]="size"></app-tabla-skeleton>
+
+                            <table class="table table-modern" [class.cargando]="cargando" *ngIf="items.length > 0">
+                                <thead>
+                                    <tr>
+                                        <th tmSortable="cantidad" [sort]="sort" (tmSort)="onSort($event)">Cant.</th>
+                                        <th tmSortable="nombreProducto" [sort]="sort" (tmSort)="onSort($event)">Producto</th>
+                                        <th tmSortable="descuento" [sort]="sort" (tmSort)="onSort($event)">Desc.</th>
+                                        <th tmSortable="subTotal" [sort]="sort" (tmSort)="onSort($event)">Subtotal</th>
+                                        <th tmSortable="subTotalDescuento" [sort]="sort" (tmSort)="onSort($event)">Con descuento</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of items">
+                                        <td data-label="Cant.">{{item.cantidad}}</td>
+                                        <td data-label="Producto">
+                                            {{item.nombreProducto || "Producto no disponible"}}
+                                            <small class="df-codigo" *ngIf="item.codProducto">{{item.codProducto}}</small>
+                                        </td>
+                                        <td data-label="Desc.">{{item.descuento ? (item.descuento + '%') : '—'}}</td>
+                                        <td data-label="Subtotal">{{item.subTotal | currency: "Q" : "symbol"}}</td>
+                                        <td data-label="Con descuento">{{item.subTotalDescuento | currency: "Q" : "symbol"}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <p class="df-vacio" *ngIf="!cargando && !items.length">Esta nota no tiene productos registrados.</p>
+                        </div>
+                    </div>
+
+                    <app-paginacion *ngIf="totalElements > 0" [siempreNav]="true" [sizes]="tamanios" [page]="page" [size]="size"
+                        [totalElements]="totalElements" [totalPages]="totalPages"
+                        (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
+                </div>
+
+                <div class="modal-footer">
+                    <button (click)="cerrarModal()" type="button" class="btn btn-secondary">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

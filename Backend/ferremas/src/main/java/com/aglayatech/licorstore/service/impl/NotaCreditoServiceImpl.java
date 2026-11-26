@@ -41,6 +41,11 @@ public class NotaCreditoServiceImpl implements INotaCreditoService {
     }
 
 	@Override
+	public org.springframework.data.domain.Page<com.aglayatech.licorstore.model.dto.DetalleNotaCreditoItem> findDetalle(Integer idNota, org.springframework.data.domain.Pageable pageable) {
+		return notaCreditoRepository.findDetalle(idNota, pageable);
+	}
+
+	@Override
 	public org.springframework.data.domain.Page<NotaCredito> search(String termino, org.springframework.data.domain.Pageable pageable) {
 		if (termino == null || termino.trim().isEmpty()) {
 			return notaCreditoRepository.findAll(pageable);

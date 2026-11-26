@@ -19,7 +19,7 @@ public interface IFacturaRepository extends JpaRepository<Factura, Long> {
      */
     @Query(value = "select new com.aglayatech.licorstore.model.dto.DetalleFacturaItem("
             + "d.idDetalle, p.codProducto, p.nombre, d.cantidad, d.precioUnitario, d.subTotal, d.descuento, d.subTotalDescuento) "
-            + "from DetalleFactura d join d.producto p "
+            + "from DetalleFactura d left join d.producto p "
             + "where d.idDetalle in (select i.idDetalle from Factura f join f.itemsFactura i where f.idFactura = :idFactura)",
             countQuery = "select count(d) from DetalleFactura d "
             + "where d.idDetalle in (select i.idDetalle from Factura f join f.itemsFactura i where f.idFactura = :idFactura)")
