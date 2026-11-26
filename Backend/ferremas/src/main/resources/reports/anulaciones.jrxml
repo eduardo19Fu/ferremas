@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="anulaciones" whenNoDataType="NoDataSection" pageWidth="612" pageHeight="792" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="24" bottomMargin="24" uuid="4349cc80-a855-40be-86aa-6223edecb106">
+	<style name="fila" mode="Transparent" fontName="SansSerif" fontSize="8" vAlign="Middle">
+		<conditionalStyle><conditionExpression><![CDATA[$V{REPORT_COUNT} % 2 == 0]]></conditionExpression><style mode="Opaque" backcolor="#FDECEC"/></conditionalStyle>
+	</style>
+	<parameter name="FECHA_INICIO" class="java.sql.Timestamp"/>
+	<parameter name="FECHA_FIN_EXCLUSIVA" class="java.sql.Timestamp"/>
+	<parameter name="RANGO" class="java.lang.String"/>
+	<queryString language="SQL"><![CDATA[SELECT x.DOCUMENTO AS DOCUMENTO, x.NUMERO AS NUMERO, DATE_FORMAT(x.fecha, '%d/%m/%Y %H:%i') AS FECHA,
+       x.TERCERO AS TERCERO, x.USUARIO AS USUARIO, x.TOTAL AS TOTAL
+  FROM (
+        SELECT 'Facturas' AS DOCUMENTO, CONCAT(COALESCE(f.serie, ''), '-', COALESCE(f.no_factura, '')) AS NUMERO, f.fecha AS fecha,
+               COALESCE(c.nombre, 'Consumidor final') AS TERCERO,
+               TRIM(CONCAT(COALESCE(u.primer_nombre, ''), ' ', COALESCE(u.apellido, ''))) AS USUARIO,
+               CAST(COALESCE(f.total, 0) AS DECIMAL(14,2)) AS TOTAL
+          FROM facturas f
+         INNER JOIN estados e ON e.id_estado = f.id_estado
+          LEFT JOIN clientes c ON c.id_cliente = f.id_cliente
+          LEFT JOIN usuarios u ON u.id_usuario = f.id_usuario
+         WHERE e.estado = 'ANULADO' AND f.fecha >= $P{FECHA_INICIO} AND f.fecha < $P{FECHA_FIN_EXCLUSIVA}
+        UNION ALL
+        SELECT 'Notas de crédito', CONCAT('NC-', n.id_nota_credito), n.fecha_creacion,
+               COALESCE(c.nombre, ''),
+               TRIM(CONCAT(COALESCE(u.primer_nombre, ''), ' ', COALESCE(u.apellido, ''))),
+               CAST(COALESCE(n.total, 0) AS DECIMAL(14,2))
+          FROM notas_credito n
+         INNER JOIN estados e ON e.id_estado = n.id_estado
+          LEFT JOIN clientes c ON c.id_cliente = n.id_cliente
+          LEFT JOIN usuarios u ON u.id_usuario = n.id_usuario
+         WHERE e.estado = 'ANULADO' AND n.fecha_creacion >= $P{FECHA_INICIO} AND n.fecha_creacion < $P{FECHA_FIN_EXCLUSIVA}
+        UNION ALL
+        SELECT 'Compras', COALESCE(co.no_comprobante, ''), CAST(co.fecha_compra AS DATETIME),
+               COALESCE(pr.nombre, ''),
+               TRIM(CONCAT(COALESCE(u.primer_nombre, ''), ' ', COALESCE(u.apellido, ''))),
+               CAST(COALESCE(co.total_compra, 0) AS DECIMAL(14,2))
+          FROM compras co
+         INNER JOIN estados e ON e.id_estado = co.id_estado
+          LEFT JOIN proveedores pr ON pr.id_proveedor = co.id_proveedor
+          LEFT JOIN usuarios u ON u.id_usuario = co.id_usuario
+         WHERE e.estado = 'ANULADO' AND co.fecha_compra >= $P{FECHA_INICIO} AND co.fecha_compra < $P{FECHA_FIN_EXCLUSIVA}
+       ) x
+ ORDER BY FIELD(x.DOCUMENTO, 'Facturas', 'Notas de crédito', 'Compras'), x.fecha]]></queryString>
+	<field name="DOCUMENTO" class="java.lang.String"/>
+	<field name="NUMERO" class="java.lang.String"/>
+	<field name="FECHA" class="java.lang.String"/>
+	<field name="TERCERO" class="java.lang.String"/>
+	<field name="USUARIO" class="java.lang.String"/>
+	<field name="TOTAL" class="java.math.BigDecimal"/>
+	<variable name="totAnulado" class="java.math.BigDecimal" calculation="Sum"><variableExpression><![CDATA[$F{TOTAL}]]></variableExpression></variable>
+	<variable name="subTipo" class="java.math.BigDecimal" calculation="Sum" resetType="Group" resetGroup="g_tipo"><variableExpression><![CDATA[$F{TOTAL}]]></variableExpression></variable>
+	<group name="g_tipo"><groupExpression><![CDATA[$F{DOCUMENTO}]]></groupExpression>
+<groupHeader><band height="22" splitType="Prevent">
+<rectangle><reportElement x="0" y="3" width="572" height="19" forecolor="#FDECEC" backcolor="#FDECEC" uuid="f6bd79fc-8553-49d9-8214-a141835324d8"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
+<textField isBlankWhenNull="true"><reportElement x="8" y="3" width="556" height="19" forecolor="#C62828" uuid="b21e8b52-0160-448b-89c0-1a70a50b9709"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$F{DOCUMENTO}]]></textFieldExpression></textField>
+</band></groupHeader>
+<groupFooter><band height="26" splitType="Prevent">
+<textField isBlankWhenNull="true"><reportElement x="8" y="2" width="300" height="18" forecolor="#2B2B2B" uuid="410d1f31-88b2-4688-888d-cd6682bf5098"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><textFieldExpression><![CDATA["Subtotal · " + $V{g_tipo_COUNT} + ($V{g_tipo_COUNT} == 1 ? " documento" : " documentos")]]></textFieldExpression></textField>
+<textField pattern="#,##0.00" isBlankWhenNull="true"><reportElement x="478" y="2" width="90" height="18" forecolor="#2B2B2B" uuid="4fcf563e-42b4-4f9d-8d84-a8e734e16db6"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><textFieldExpression><![CDATA[$V{subTipo}]]></textFieldExpression></textField>
+<line><reportElement x="0" y="22" width="572" height="1" forecolor="#C62828" uuid="39127a5a-50be-44f8-8b98-c1257501b3e7"/></line>
+</band></groupFooter>
+	</group>
+	<title>
+<band height="84" splitType="Stretch">
+<rectangle><reportElement x="0" y="0" width="572" height="6" forecolor="#C62828" backcolor="#C62828" uuid="e6db9109-b46c-4c22-80e3-30c2c6f7904a"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
+<image scaleImage="RetainShape" hAlign="Left" vAlign="Middle"><reportElement x="0" y="14" width="64" height="56" uuid="ed90d1aa-b8bc-44e0-8dab-f4d95d557543"/><imageExpression><![CDATA[this.getClass().getResourceAsStream("/static/images/reports-image/ferremas-log.png")]]></imageExpression></image>
+<staticText><reportElement x="72" y="14" width="260" height="26" forecolor="#2B2B2B" uuid="995f3a2e-dd21-41ff-89f7-d0cfdc9059d3"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="20" isBold="true"/></textElement><text><![CDATA[FERREMAS]]></text></staticText>
+<staticText><reportElement x="72" y="42" width="280" height="20" forecolor="#C62828" uuid="e5eba307-4e90-4d5d-8bb7-aa8108f76043"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="12" isBold="true"/></textElement><text><![CDATA[Documentos anulados]]></text></staticText>
+<staticText><reportElement x="372" y="16" width="200" height="12" forecolor="#7A7A7A" uuid="8b9c340e-831e-4552-8707-228e43438452"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[PERÍODO]]></text></staticText>
+<textField isBlankWhenNull="true"><reportElement x="332" y="28" width="240" height="18" forecolor="#2B2B2B" uuid="438e74ce-082d-42c0-8bb0-3292296beebb"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="12" isBold="true"/></textElement><textFieldExpression><![CDATA[$P{RANGO}]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement x="302" y="46" width="270" height="12" forecolor="#7A7A7A" uuid="e14cadf3-17bd-4c18-8957-9b88f7399fe7"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><textFieldExpression><![CDATA["Impreso el " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date())]]></textFieldExpression></textField>
+<line><reportElement x="0" y="78" width="572" height="1" forecolor="#D9D9D9" uuid="cfc23776-d512-4ca5-895b-194313e67248"/></line>
+</band>
+	</title>
+	<columnHeader>
+<band height="22" splitType="Stretch">
+<rectangle><reportElement x="0" y="2" width="572" height="20" forecolor="#2B2B2B" backcolor="#2B2B2B" uuid="9ba754de-fd0a-4184-8728-edca9ebba44e"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
+<staticText><reportElement x="8" y="2" width="84" height="20" forecolor="#FFFFFF" uuid="2e1d39f3-c8b2-4de3-83be-f6dc1f0b2d81"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[FECHA]]></text></staticText>
+<staticText><reportElement x="96" y="2" width="90" height="20" forecolor="#FFFFFF" uuid="1fe0b4bd-05d1-489e-8822-9f319d5e11cc"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[NÚMERO]]></text></staticText>
+<staticText><reportElement x="190" y="2" width="160" height="20" forecolor="#FFFFFF" uuid="a937ca8b-be39-43f2-867d-417b1cd57a98"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[CLIENTE / PROVEEDOR]]></text></staticText>
+<staticText><reportElement x="354" y="2" width="120" height="20" forecolor="#FFFFFF" uuid="3192b7d1-cc40-48f5-8164-cc46d20388cd"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[REGISTRÓ]]></text></staticText>
+<staticText><reportElement x="478" y="2" width="90" height="20" forecolor="#FFFFFF" uuid="ade37d47-8376-4aa2-8c74-67217086e6f0"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[TOTAL]]></text></staticText>
+</band>
+	</columnHeader>
+	<detail>
+<band height="18" splitType="Prevent">
+<textField isBlankWhenNull="true"><reportElement style="fila" x="0" y="0" width="572" height="18" uuid="67747021-f3d7-41b9-8774-a6d2d51b0b71"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><textFieldExpression><![CDATA[""]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement style="fila" x="8" y="0" width="84" height="18" uuid="474f3865-f739-4421-8c8d-84d961dffab4"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{FECHA}]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement style="fila" x="96" y="0" width="90" height="18" uuid="8dd4ecef-94c6-4ef4-87ad-c8ba9c547e25"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><textFieldExpression><![CDATA[$F{NUMERO}]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement style="fila" x="190" y="0" width="160" height="18" uuid="6db79aff-3256-43e2-81fd-68c1fab70bd5"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{TERCERO}]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement style="fila" x="354" y="0" width="120" height="18" uuid="fc45c431-24fb-49ef-8696-b48e6363ad71"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{USUARIO}]]></textFieldExpression></textField>
+<textField pattern="#,##0.00" isBlankWhenNull="true"><reportElement style="fila" x="478" y="0" width="90" height="18" uuid="f5684417-2c80-413e-84ac-7ab4cbf619b3"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><textFieldExpression><![CDATA[$F{TOTAL}]]></textFieldExpression></textField>
+<line><reportElement x="0" y="17" width="572" height="1" forecolor="#EEEEEE" uuid="899823b2-2cee-44b4-89d8-1d1b208f628b"/></line>
+</band>
+	</detail>
+	<pageFooter>
+<band height="26" splitType="Stretch">
+<line><reportElement x="0" y="4" width="572" height="1" forecolor="#D9D9D9" uuid="53d85c92-6d7e-48f6-89d4-ba2ab099ea0f"/></line>
+<staticText><reportElement x="0" y="8" width="300" height="14" forecolor="#7A7A7A" uuid="d8052683-4789-4900-88ac-6670f9c6f403"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><text><![CDATA[FERREMAS · Documentos anulados]]></text></staticText>
+<textField isBlankWhenNull="true"><reportElement x="412" y="8" width="100" height="14" forecolor="#7A7A7A" uuid="3ae9f120-a590-4c8c-88b9-38d20a9f8534"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER}]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true" evaluationTime="Report"><reportElement x="512" y="8" width="60" height="14" forecolor="#7A7A7A" uuid="505e067e-5b2e-416e-808e-40a80ffad91d"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><textFieldExpression><![CDATA[" de " + $V{PAGE_NUMBER}]]></textFieldExpression></textField>
+</band>
+	</pageFooter>
+	<summary>
+<band height="74" splitType="Prevent">
+<rectangle><reportElement x="0" y="8" width="572" height="28" forecolor="#C62828" backcolor="#FDECEC" uuid="2a5a0ebd-4791-425c-899a-baeb29971b32"/><graphicElement><pen lineWidth="0.75"/></graphicElement></rectangle>
+<textField isBlankWhenNull="true"><reportElement x="8" y="8" width="300" height="28" forecolor="#2B2B2B" uuid="b754469e-c3ef-4653-866f-2f178b037bf1"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement><textFieldExpression><![CDATA["TOTAL ANULADO · " + $V{REPORT_COUNT} + ($V{REPORT_COUNT} == 1 ? " documento" : " documentos")]]></textFieldExpression></textField>
+<textField pattern="#,##0.00" isBlankWhenNull="true"><reportElement x="410" y="8" width="158" height="28" forecolor="#2B2B2B" uuid="682bddf7-6f6e-4ed4-8624-cbfbf38557a1"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="11" isBold="true"/></textElement><textFieldExpression><![CDATA[$V{totAnulado}]]></textFieldExpression></textField>
+<staticText><reportElement x="0" y="54" width="572" height="14" forecolor="#7A7A7A" uuid="16e6866b-9eac-411a-888b-4e86fb481407"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><text><![CDATA[La fecha y el usuario son los del documento original; el sistema no registra quién ni cuándo lo anuló.]]></text></staticText>
+</band>
+	</summary>
+	<noData>
+<band height="60">
+<staticText><reportElement x="0" y="20" width="572" height="24" forecolor="#7A7A7A" uuid="80bc142f-1f79-4106-8857-ae230ae82b49"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[No hay documentos anulados en el período seleccionado.]]></text></staticText>
+</band>
+	</noData>
+</jasperReport>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="kardex" whenNoDataType="AllSectionsNoDetail" pageWidth="612" pageHeight="792" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="24" bottomMargin="24" uuid="407c29d4-07b9-438e-8747-2833ce8579fa">
+	<style name="fila" mode="Transparent" fontName="SansSerif" fontSize="8" vAlign="Middle">
+		<conditionalStyle><conditionExpression><![CDATA[$V{REPORT_COUNT} % 2 == 0]]></conditionExpression><style mode="Opaque" backcolor="#ECEEF9"/></conditionalStyle>
+	</style>
+	<parameter name="FECHA_INICIO" class="java.sql.Timestamp"/>
+	<parameter name="FECHA_FIN_EXCLUSIVA" class="java.sql.Timestamp"/>
+	<parameter name="ID_PRODUCTO" class="java.lang.Integer"/>
+	<parameter name="PRODUCTO_TXT" class="java.lang.String"/>
+	<parameter name="APERTURA" class="java.lang.Integer"/>
+	<parameter name="TIPOS_ENTRADA_TXT" class="java.lang.String"/>
+	<parameter name="RANGO" class="java.lang.String"/>
+	<queryString language="SQL"><![CDATA[SELECT DATE_FORMAT(m.fecha_movimiento, '%d/%m/%Y %H:%i') AS FECHA,
+       COALESCE(t.tipo_movimiento, '') AS TIPO,
+       TRIM(CONCAT(COALESCE(u.primer_nombre, ''), ' ', COALESCE(u.apellido, ''))) AS USUARIO,
+       CAST(CASE WHEN UPPER(t.tipo_movimiento) IN ($P!{TIPOS_ENTRADA_TXT}) THEN m.cantidad ELSE 0 END AS SIGNED) AS ENTRADA,
+       CAST(CASE WHEN UPPER(t.tipo_movimiento) IN ($P!{TIPOS_ENTRADA_TXT}) THEN 0 ELSE m.cantidad END AS SIGNED) AS SALIDA
+  FROM movimientos_producto m
+  LEFT JOIN tipos_movimiento t ON t.id_tipo_movimiento = m.id_tipo_movimiento
+  LEFT JOIN usuarios u ON u.id_usuario = m.id_usuario
+ WHERE m.id_producto = $P{ID_PRODUCTO}
+   AND m.fecha_movimiento >= $P{FECHA_INICIO} AND m.fecha_movimiento < $P{FECHA_FIN_EXCLUSIVA}
+ ORDER BY m.fecha_movimiento, m.id_movimiento]]></queryString>
+	<field name="FECHA" class="java.lang.String"/>
+	<field name="TIPO" class="java.lang.String"/>
+	<field name="USUARIO" class="java.lang.String"/>
+	<field name="ENTRADA" class="java.lang.Long"/>
+	<field name="SALIDA" class="java.lang.Long"/>
+	<variable name="totEntradas" class="java.lang.Long" calculation="Sum"><variableExpression><![CDATA[$F{ENTRADA}]]></variableExpression></variable>
+	<variable name="totSalidas" class="java.lang.Long" calculation="Sum"><variableExpression><![CDATA[$F{SALIDA}]]></variableExpression></variable>
+	<title>
+<band height="114" splitType="Stretch">
+<rectangle><reportElement x="0" y="0" width="572" height="6" forecolor="#3F51B5" backcolor="#3F51B5" uuid="97f08632-3154-4faf-8cd2-95babf985c67"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
+<image scaleImage="RetainShape" hAlign="Left" vAlign="Middle"><reportElement x="0" y="14" width="64" height="56" uuid="218aee57-d16e-4399-8cf6-7828959fffd7"/><imageExpression><![CDATA[this.getClass().getResourceAsStream("/static/images/reports-image/ferremas-log.png")]]></imageExpression></image>
+<staticText><reportElement x="72" y="14" width="260" height="26" forecolor="#2B2B2B" uuid="458952f7-4289-408f-8d69-1e6581e479ec"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="20" isBold="true"/></textElement><text><![CDATA[FERREMAS]]></text></staticText>
+<staticText><reportElement x="72" y="42" width="280" height="20" forecolor="#3F51B5" uuid="076a9020-01e9-45d3-890f-027e50551f76"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="12" isBold="true"/></textElement><text><![CDATA[Kardex de producto]]></text></staticText>
+<staticText><reportElement x="372" y="16" width="200" height="12" forecolor="#7A7A7A" uuid="a3802fca-e5ff-41af-8b68-46c23ae73a45"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[PERÍODO]]></text></staticText>
+<textField isBlankWhenNull="true"><reportElement x="332" y="28" width="240" height="18" forecolor="#2B2B2B" uuid="bec8097f-7b46-40c5-8817-30e073233b22"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="12" isBold="true"/></textElement><textFieldExpression><![CDATA[$P{RANGO}]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement x="302" y="46" width="270" height="12" forecolor="#7A7A7A" uuid="97f94e7e-dd05-4dc7-8cc6-a09e9523742d"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><textFieldExpression><![CDATA["Impreso el " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date())]]></textFieldExpression></textField>
+<line><reportElement x="0" y="78" width="572" height="1" forecolor="#D9D9D9" uuid="17a635d5-772c-491c-8f99-4c8ed2808a2e"/></line>
+<rectangle><reportElement x="0" y="86" width="572" height="26" forecolor="#D9D9D9" backcolor="#ECEEF9" uuid="faaa30de-588c-4df1-8fac-b71ab1b2a38c"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
+<textField isBlankWhenNull="true"><reportElement x="8" y="86" width="420" height="26" forecolor="#2B2B2B" uuid="f6bfc4de-2665-4a90-8ba9-2b793475fa77"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement><textFieldExpression><![CDATA["PRODUCTO:  " + $P{PRODUCTO_TXT}]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement x="430" y="86" width="138" height="26" forecolor="#3F51B5" uuid="6a9836a2-0176-4bb1-84db-ebf6b993880e"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement><textFieldExpression><![CDATA["Saldo inicial:  " + $P{APERTURA}]]></textFieldExpression></textField>
+</band>
+	</title>
+	<columnHeader>
+<band height="22" splitType="Stretch">
+<rectangle><reportElement x="0" y="2" width="572" height="20" forecolor="#2B2B2B" backcolor="#2B2B2B" uuid="69c8fb8f-d4bf-47a8-82c9-51d85fa1d6a1"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
+<staticText><reportElement x="8" y="2" width="86" height="20" forecolor="#FFFFFF" uuid="4d8a6002-5ed7-4a3e-8f48-674745fc52e3"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[FECHA]]></text></staticText>
+<staticText><reportElement x="98" y="2" width="112" height="20" forecolor="#FFFFFF" uuid="f61c2592-9402-4ee5-8d5a-94df6748c486"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[MOVIMIENTO]]></text></staticText>
+<staticText><reportElement x="214" y="2" width="140" height="20" forecolor="#FFFFFF" uuid="a166e960-5766-4e4f-822f-3f67ba98a054"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[REGISTRÓ]]></text></staticText>
+<staticText><reportElement x="356" y="2" width="60" height="20" forecolor="#FFFFFF" uuid="63d3561c-ba8f-43d1-8304-246f49d2c813"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[ENTRADA]]></text></staticText>
+<staticText><reportElement x="418" y="2" width="60" height="20" forecolor="#FFFFFF" uuid="ced3a8aa-2564-44e9-8c28-cad4f14a7932"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[SALIDA]]></text></staticText>
+<staticText><reportElement x="482" y="2" width="86" height="20" forecolor="#FFFFFF" uuid="0786b14e-1fab-4e2b-8aa0-00b30050744b"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[SALDO]]></text></staticText>
+</band>
+	</columnHeader>
+	<detail>
+<band height="18" splitType="Prevent">
+<textField isBlankWhenNull="true"><reportElement style="fila" x="0" y="0" width="572" height="18" uuid="c815864a-21d3-436b-87c9-00c279660d7e"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><textFieldExpression><![CDATA[""]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement style="fila" x="8" y="0" width="86" height="18" uuid="5d258e41-251b-461b-8e11-033baac34eb1"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{FECHA}]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement style="fila" x="98" y="0" width="112" height="18" uuid="423ca851-c325-4588-88bc-d7883293ede6"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><textFieldExpression><![CDATA[$F{TIPO}]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement style="fila" x="214" y="0" width="140" height="18" uuid="356ec206-16bf-471d-899c-5b4df8ddd5d5"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{USUARIO}]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement style="fila" x="356" y="0" width="60" height="18" forecolor="#2E7D32" uuid="0da5672d-566a-4de5-850a-5da68a1a2f9e"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{ENTRADA} == 0 ? "·" : String.valueOf($F{ENTRADA})]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement style="fila" x="418" y="0" width="60" height="18" forecolor="#C62828" uuid="286ce77e-a456-442e-8353-0f0877113129"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{SALIDA} == 0 ? "·" : String.valueOf($F{SALIDA})]]></textFieldExpression></textField>
+<textField pattern="#,##0" isBlankWhenNull="true"><reportElement style="fila" x="482" y="0" width="86" height="18" uuid="04a92a3e-8572-49ca-89fa-8cab1f023e85"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><textFieldExpression><![CDATA[$P{APERTURA} + $V{totEntradas} - $V{totSalidas}]]></textFieldExpression></textField>
+<line><reportElement x="0" y="17" width="572" height="1" forecolor="#EEEEEE" uuid="b7b29893-2d48-4244-818d-6b89ea7c2403"/></line>
+</band>
+	</detail>
+	<pageFooter>
+<band height="26" splitType="Stretch">
+<line><reportElement x="0" y="4" width="572" height="1" forecolor="#D9D9D9" uuid="41531468-a2ae-4422-8803-e96b12af43a8"/></line>
+<staticText><reportElement x="0" y="8" width="300" height="14" forecolor="#7A7A7A" uuid="01cc70bd-bdd5-4b7f-8223-85082e73a537"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><text><![CDATA[FERREMAS · Kardex de producto]]></text></staticText>
+<textField isBlankWhenNull="true"><reportElement x="412" y="8" width="100" height="14" forecolor="#7A7A7A" uuid="4ae99a8a-9913-4edd-8183-7e2e950b6d2f"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER}]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true" evaluationTime="Report"><reportElement x="512" y="8" width="60" height="14" forecolor="#7A7A7A" uuid="a7c37d76-b288-4395-8774-aef64d48b6b7"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><textFieldExpression><![CDATA[" de " + $V{PAGE_NUMBER}]]></textFieldExpression></textField>
+</band>
+	</pageFooter>
+	<summary>
+<band height="74" splitType="Prevent">
+<rectangle><reportElement x="0" y="8" width="572" height="28" forecolor="#3F51B5" backcolor="#ECEEF9" uuid="c48135fb-a98e-4410-8e23-ddc7bf604028"/><graphicElement><pen lineWidth="0.75"/></graphicElement></rectangle>
+<textField isBlankWhenNull="true"><reportElement x="8" y="8" width="200" height="28" forecolor="#2B2B2B" uuid="8feddb60-3e3e-4696-8831-8813ca76d597"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement><textFieldExpression><![CDATA["MOVIMIENTOS DEL PERÍODO · " + $V{REPORT_COUNT}]]></textFieldExpression></textField>
+<textField pattern="#,##0" isBlankWhenNull="true"><reportElement x="356" y="8" width="60" height="28" forecolor="#2E7D32" uuid="b0de3ec3-d79c-4e22-8370-7034a9c05ec8"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$V{totEntradas}]]></textFieldExpression></textField>
+<textField pattern="#,##0" isBlankWhenNull="true"><reportElement x="418" y="8" width="60" height="28" forecolor="#C62828" uuid="a8b33806-d700-4430-8cc9-281eb62c33ed"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$V{totSalidas}]]></textFieldExpression></textField>
+<textField pattern="#,##0" isBlankWhenNull="true"><reportElement x="482" y="8" width="86" height="28" forecolor="#2B2B2B" uuid="357a9ade-1fb9-4954-8a82-12430c02923d"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="10" isBold="true"/></textElement><textFieldExpression><![CDATA[$P{APERTURA} + $V{totEntradas} - $V{totSalidas}]]></textFieldExpression></textField>
+<staticText><reportElement x="0" y="54" width="572" height="14" forecolor="#7A7A7A" uuid="b324769f-45f3-40c0-8d44-8858b3503c4a"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><text><![CDATA[El saldo se reconstruye desde la existencia actual del producto; ENTRADA, COMPRA y anulaciones suman, el resto resta.]]></text></staticText>
+</band>
+	</summary>
+</jasperReport>

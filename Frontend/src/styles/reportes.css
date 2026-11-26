@@ -28,6 +28,21 @@
 }
 .rp-head__lead { margin: 0; max-width: 60ch; color: var(--tm-muted); }
 
+/* seccion del catalogo: titulo pequeno + rejilla de tarjetas */
+.rp-section { margin: 0 0 1.6rem; }
+.rp-section__title {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin: 0 0 .75rem;
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--tm-muted);
+}
+.rp-section__title::after { content: ""; flex: 1; height: 1px; background: var(--tm-edge); }
+
 .rp-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
@@ -62,6 +77,11 @@
 .rp-card--inv { --t: 217, 119, 6; }
 .rp-card--conv { --t: 28, 128, 74; }
 .rp-card--mes { --t: 34, 122, 153; }
+.rp-card--inv2 { --t: 194, 65, 12; }
+.rp-card--buy { --t: 109, 40, 217; }
+.rp-card--void { --t: 198, 40, 40; }
+.rp-card--cxc { --t: 15, 118, 110; }
+.rp-card--kdx { --t: 63, 81, 181; }
 .rp-card--soon { --t: 107, 114, 128; background: #fafbfc; }
 .rp-card--soon .rp-card__icon, .rp-card--soon h2 { opacity: .6; }
 
@@ -103,3 +123,41 @@
   .rp-card { animation: none; transition: none; }
   .rp-card--ok:hover { transform: none; }
 }
+
+/* ---- modal del kardex: buscador de producto ---- */
+.rp-selected {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: .5rem .75rem;
+  border: 1px solid rgba(var(--bt-accent), .35);
+  border-radius: 10px;
+  background: rgba(var(--bt-accent), .07);
+  font-size: .9rem;
+  color: var(--tm-ink);
+}
+.rp-results {
+  margin-top: .4rem;
+  border: 1px solid var(--tm-edge);
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 12px 24px -16px rgba(16, 24, 40, .35);
+}
+.rp-results__item, .rp-results__empty {
+  display: flex;
+  align-items: baseline;
+  gap: .6rem;
+  width: 100%;
+  padding: .5rem .75rem;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font-size: .88rem;
+  color: var(--tm-ink);
+}
+.rp-results__item + .rp-results__item { border-top: 1px solid var(--tm-line); }
+.rp-results__item:hover, .rp-results__item:focus-visible { background: var(--tm-hover); outline: 0; }
+.rp-results__item strong { flex: 0 0 auto; font-size: .8rem; color: var(--tm-muted); }
+.rp-results__empty { color: var(--tm-muted); }

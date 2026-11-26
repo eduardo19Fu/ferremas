@@ -1,0 +1,75 @@
+<div class="modal fade" id="modal-kardex">
+    <div class="modal-dialog">
+        <div class="modal-content tm-form">
+            <div class="modal-header">
+                <h4 class="modal-title">{{title}}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="tm-lead">Historial de entradas y salidas de un producto, con el saldo después de cada movimiento.</p>
+
+                <form #formKardex="ngForm" (ngSubmit)="onSubmit()">
+                    <div class="tm-grid">
+                        <div class="tm-field tm-span-all">
+                            <label for="kdx-buscar">Producto</label>
+
+                            <div class="rp-selected" *ngIf="producto; else buscador">
+                                <span><strong>{{producto.codProducto}}</strong> · {{producto.nombre}}</span>
+                                <button type="button" class="btn btn-sm" (click)="quitar()" aria-label="Cambiar producto">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+
+                            <ng-template #buscador>
+                                <input type="search" class="form-control" id="kdx-buscar" name="busqueda" autocomplete="off"
+                                    placeholder="Escriba el código o nombre del producto"
+                                    [ngModel]="busqueda" (ngModelChange)="onBuscar($event)">
+                                <div class="rp-results" *ngIf="resultados.length || buscando">
+                                    <div class="rp-results__empty" *ngIf="buscando && !resultados.length">Buscando…</div>
+                                    <button type="button" class="rp-results__item" *ngFor="let p of resultados" (click)="seleccionar(p)">
+                                        <strong>{{p.codProducto}}</strong>
+                                        <span>{{p.nombre}}</span>
+                                    </button>
+                                </div>
+                            </ng-template>
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="kdx-fecha-ini">Fecha inicio</label>
+                            <input type="date" class="form-control" name="fechaIni" id="kdx-fecha-ini" [(ngModel)]="fechaIni" required>
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="kdx-fecha-fin">Fecha fin</label>
+                            <input type="date" class="form-control" name="fechaFin" id="kdx-fecha-fin" [(ngModel)]="fechaFin" required>
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="kdx-formato">Formato</label>
+                            <select class="form-control custom-select" name="formato" id="kdx-formato" [(ngModel)]="formato">
+                                <option value="PDF">PDF</option>
+                                <option value="XLSX">Excel</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <p class="tm-hint text-danger" *ngIf="fechaIni && fechaFin && !rangoValido">
+                        La fecha final no puede ser anterior a la fecha de inicio.
+                    </p>
+
+                    <button type="submit" class="btn btn-block bg-gradient-warning" [disabled]="!producto || !rangoValido || generando"
+                        [class.is-loading]="generando" [attr.aria-busy]="generando">
+                        <span class="tm-spinner tm-spinner--btn" *ngIf="generando; else icono" role="status"></span>
+                        <ng-template #icono><i class="fas" [ngClass]="formato === 'PDF' ? 'fa-print' : 'fa-file-excel'"></i></ng-template>
+                        {{ generando ? 'Generando…' : (formato === 'PDF' ? 'Imprimir' : 'Descargar Excel') }}
+                    </button>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
