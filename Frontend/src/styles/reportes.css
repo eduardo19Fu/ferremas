@@ -1,0 +1,104 @@
+/* ==========================================================================
+   MODULO DE REPORTES — catalogo de informes en tarjetas.
+   Prefijo .rp-  ·  usa tokens.css y el mismo lenguaje que el inicio (.hm-):
+   bordes finos, radios 14px y tintes suaves. El tono de cada tarjeta se fija
+   con la variable --t (rgb sin rgb()) en su modificador.
+
+   Estructura:  .rp > .rp-head  ·  .rp-grid > .rp-card (--ok | --soon)
+                .rp-card__icon · __body (h2, p) · __tags > .rp-tag · __action
+   ========================================================================== */
+
+.rp { padding: .25rem 0 2rem; }
+
+.rp-head { margin: 0 0 1.25rem; }
+.rp-head__eyebrow {
+  display: block;
+  font-size: .74rem;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--tm-muted);
+}
+.rp-head__title {
+  margin: .25rem 0 .3rem;
+  font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+  font-weight: 800;
+  letter-spacing: -.03em;
+  color: var(--tm-ink);
+}
+.rp-head__lead { margin: 0; max-width: 60ch; color: var(--tm-muted); }
+
+.rp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 1rem;
+}
+
+.rp-card {
+  --t: var(--bt-accent);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: .9rem;
+  padding: 1.15rem 1.2rem 1.2rem;
+  border: 1px solid var(--tm-edge);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--tm-ink);
+  transition: border-color .15s ease, box-shadow .2s ease, transform .12s ease;
+  animation: rp-rise .45s cubic-bezier(.2, .7, .2, 1) both;
+}
+.rp-card:nth-child(2) { animation-delay: .05s; }
+.rp-card:nth-child(3) { animation-delay: .1s; }
+.rp-card:nth-child(4) { animation-delay: .15s; }
+@keyframes rp-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.rp-card--ok:hover {
+  border-color: rgba(var(--t), .45);
+  box-shadow: 0 14px 28px -18px rgba(var(--t), .55);
+  transform: translateY(-2px);
+}
+
+.rp-card--inv { --t: 217, 119, 6; }
+.rp-card--conv { --t: 28, 128, 74; }
+.rp-card--soon { --t: 107, 114, 128; background: #fafbfc; }
+.rp-card--soon .rp-card__icon, .rp-card--soon h2 { opacity: .6; }
+
+.rp-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
+
+.rp-card__icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  font-size: 1.15rem;
+  background: rgba(var(--t), .12);
+  color: rgb(var(--t));
+}
+
+.rp-card__body h2 { margin: 0 0 .3rem; font-size: 1.05rem; font-weight: 700; color: var(--tm-ink); }
+.rp-card__body p { margin: 0; font-size: .88rem; line-height: 1.45; color: var(--tm-muted); }
+
+.rp-card__tags { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0; padding: 0; list-style: none; }
+.rp-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .2rem .55rem;
+  border-radius: 999px;
+  border: 1px solid var(--tm-edge);
+  background: var(--tm-head);
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--tm-muted);
+}
+.rp-tag--soon { background: rgba(var(--t), .1); border-color: rgba(var(--t), .25); color: rgb(var(--t)); }
+
+.rp-card__action { margin-top: auto; }
+.rp-card__action .btn { width: 100%; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rp-card { animation: none; transition: none; }
+  .rp-card--ok:hover { transform: none; }
+}

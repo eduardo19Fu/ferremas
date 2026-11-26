@@ -15,6 +15,7 @@
  *   modals         marco de los modales
  *   dashboard      inicio (home): portada, indicadores, accesos y actividad
  *   sidebar        menu lateral (prefijo .fm-)
+ *   reportes       catalogo de informes (prefijo .rp-)
  */
 @import 'styles/tokens.css';
 @import 'styles/base.css';
@@ -32,3 +33,4 @@
 @import 'styles/modals.css';
 @import 'styles/dashboard.css';
 @import 'styles/sidebar.css';
+@import 'styles/reportes.css';
