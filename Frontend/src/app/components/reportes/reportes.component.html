@@ -1,94 +1,225 @@
-<!-- MODAL PARA GENERAR INFORME DE VENTAS MENSUALES -->
-<app-modal-ventas-mensuales></app-modal-ventas-mensuales>
-
-<!-- MODAL PARA GENERAR INFORME DE VENTAS DIARIAS -->
-<app-modal-ventas-diarias></app-modal-ventas-diarias>
-
-<!-- MODAL PARA GENERAR INFORME DE ENVIOS REALIZADOS -->
-<app-modal-envios-realizados></app-modal-envios-realizados>
-
-<!-- MODAL PARA GENERAR INFORME DE INVENTARIO -->
+<!-- MODALES DE LOS INFORMES -->
 <app-modal-productos-inventario></app-modal-productos-inventario>
-
-<!-- MODAL PARA GENERAR INFORME DE CONVERSION DE PROFORMAS -->
+<app-modal-rotacion-productos></app-modal-rotacion-productos>
+<app-modal-kardex></app-modal-kardex>
+<app-modal-ventas-diarias></app-modal-ventas-diarias>
+<app-modal-ventas-mensuales></app-modal-ventas-mensuales>
 <app-modal-conversion-proformas></app-modal-conversion-proformas>
+<app-modal-compras-periodo></app-modal-compras-periodo>
+<app-modal-cuentas-por-cobrar></app-modal-cuentas-por-cobrar>
+<app-modal-anulaciones></app-modal-anulaciones>
 
 <section class="content-header">
     <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1>{{title}}</h1>
-            </div>
+        <div class="rp">
+            <header class="rp-head">
+                <span class="rp-head__eyebrow">Administración</span>
+                <h1 class="rp-head__title">{{title}}</h1>
+                <p class="rp-head__lead">Genere informes en PDF o Excel para revisar existencias, ventas, compras, cobranza y desempeño del equipo.</p>
+            </header>
+
+            <!-- INVENTARIO -->
+            <section class="rp-section">
+                <h2 class="rp-section__title">Inventario</h2>
+                <div class="rp-grid">
+                    <article class="rp-card rp-card--ok rp-card--inv">
+                        <div class="rp-card__top">
+                            <span class="rp-card__icon"><i class="fas fa-boxes"></i></span>
+                        </div>
+                        <div class="rp-card__body">
+                            <h2>Inventario</h2>
+                            <p>Existencias valorizadas de todos los productos, con las entradas y salidas del día elegido.</p>
+                        </div>
+                        <ul class="rp-card__tags">
+                            <li class="rp-tag"><i class="far fa-file-pdf"></i> PDF</li>
+                            <li class="rp-tag"><i class="far fa-calendar"></i> Por día</li>
+                        </ul>
+                        <div class="rp-card__action">
+                            <button type="button" class="btn bg-gradient-warning" data-toggle="modal" data-target="#modal-productos-inventario">
+                                <i class="far fa-paper-plane"></i> Generar informe
+                            </button>
+                        </div>
+                    </article>
+
+                    <article class="rp-card rp-card--ok rp-card--inv2">
+                        <div class="rp-card__top">
+                            <span class="rp-card__icon"><i class="fas fa-ranking-star"></i></span>
+                        </div>
+                        <div class="rp-card__body">
+                            <h2>Rotación de productos</h2>
+                            <p>Los productos que más se venden y los que tienen dinero parado en bodega sin moverse.</p>
+                        </div>
+                        <ul class="rp-card__tags">
+                            <li class="rp-tag"><i class="far fa-file-pdf"></i> PDF</li>
+                            <li class="rp-tag"><i class="far fa-file-excel"></i> Excel</li>
+                            <li class="rp-tag"><i class="far fa-calendar-alt"></i> Rango de fechas</li>
+                        </ul>
+                        <div class="rp-card__action">
+                            <button type="button" class="btn bg-gradient-warning" data-toggle="modal" data-target="#modal-rotacion-productos">
+                                <i class="far fa-paper-plane"></i> Generar informe
+                            </button>
+                        </div>
+                    </article>
+
+                    <article class="rp-card rp-card--ok rp-card--kdx">
+                        <div class="rp-card__top">
+                            <span class="rp-card__icon"><i class="fas fa-clipboard-list"></i></span>
+                        </div>
+                        <div class="rp-card__body">
+                            <h2>Kardex de producto</h2>
+                            <p>Entradas y salidas de un producto con el saldo acumulado después de cada movimiento.</p>
+                        </div>
+                        <ul class="rp-card__tags">
+                            <li class="rp-tag"><i class="far fa-file-pdf"></i> PDF</li>
+                            <li class="rp-tag"><i class="far fa-file-excel"></i> Excel</li>
+                            <li class="rp-tag"><i class="far fa-calendar-alt"></i> Rango de fechas</li>
+                        </ul>
+                        <div class="rp-card__action">
+                            <button type="button" class="btn bg-gradient-info" data-toggle="modal" data-target="#modal-kardex">
+                                <i class="far fa-paper-plane"></i> Generar informe
+                            </button>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- VENTAS -->
+            <section class="rp-section">
+                <h2 class="rp-section__title">Ventas</h2>
+                <div class="rp-grid">
+                    <article class="rp-card rp-card--ok rp-card--conv">
+                        <div class="rp-card__top">
+                            <span class="rp-card__icon"><i class="fas fa-cash-register"></i></span>
+                        </div>
+                        <div class="rp-card__body">
+                            <h2>Ventas diarias</h2>
+                            <p>Facturas vigentes de un día con su cliente, vendedor y total, de todo el equipo o de un vendedor.</p>
+                        </div>
+                        <ul class="rp-card__tags">
+                            <li class="rp-tag"><i class="far fa-file-pdf"></i> PDF</li>
+                            <li class="rp-tag"><i class="far fa-file-excel"></i> Excel</li>
+                            <li class="rp-tag"><i class="far fa-calendar"></i> Por día</li>
+                        </ul>
+                        <div class="rp-card__action">
+                            <button type="button" class="btn bg-gradient-success" data-toggle="modal" data-target="#modal-ventas-diarias">
+                                <i class="far fa-paper-plane"></i> Generar informe
+                            </button>
+                        </div>
+                    </article>
+
+                    <article class="rp-card rp-card--ok rp-card--mes">
+                        <div class="rp-card__top">
+                            <span class="rp-card__icon"><i class="fas fa-calendar-alt"></i></span>
+                        </div>
+                        <div class="rp-card__body">
+                            <h2>Ventas mensuales</h2>
+                            <p>Facturas, total vendido y promedio de cada mes del año, con la participación de cada mes.</p>
+                        </div>
+                        <ul class="rp-card__tags">
+                            <li class="rp-tag"><i class="far fa-file-pdf"></i> PDF</li>
+                            <li class="rp-tag"><i class="far fa-file-excel"></i> Excel</li>
+                            <li class="rp-tag"><i class="far fa-calendar"></i> Por año</li>
+                        </ul>
+                        <div class="rp-card__action">
+                            <button type="button" class="btn bg-gradient-info" data-toggle="modal" data-target="#modal-ventas-mensuales">
+                                <i class="far fa-paper-plane"></i> Generar informe
+                            </button>
+                        </div>
+                    </article>
+
+                    <article class="rp-card rp-card--ok rp-card--conv">
+                        <div class="rp-card__top">
+                            <span class="rp-card__icon"><i class="fas fa-file-signature"></i></span>
+                        </div>
+                        <div class="rp-card__body">
+                            <h2>Conversión de proformas</h2>
+                            <p>Proformas emitidas y cuántas se convirtieron en factura, por vendedor.</p>
+                        </div>
+                        <ul class="rp-card__tags">
+                            <li class="rp-tag"><i class="far fa-file-pdf"></i> PDF</li>
+                            <li class="rp-tag"><i class="far fa-file-excel"></i> Excel</li>
+                            <li class="rp-tag"><i class="far fa-calendar-alt"></i> Rango de fechas</li>
+                        </ul>
+                        <div class="rp-card__action">
+                            <button type="button" class="btn bg-gradient-success" data-toggle="modal" data-target="#modal-conversion-proformas">
+                                <i class="far fa-paper-plane"></i> Generar informe
+                            </button>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- COMPRAS Y COBRANZA -->
+            <section class="rp-section">
+                <h2 class="rp-section__title">Compras y cobranza</h2>
+                <div class="rp-grid">
+                    <article class="rp-card rp-card--ok rp-card--buy">
+                        <div class="rp-card__top">
+                            <span class="rp-card__icon"><i class="fas fa-truck-loading"></i></span>
+                        </div>
+                        <div class="rp-card__body">
+                            <h2>Compras por proveedor</h2>
+                            <p>Compras vigentes del período agrupadas por proveedor, con subtotales y total comprado.</p>
+                        </div>
+                        <ul class="rp-card__tags">
+                            <li class="rp-tag"><i class="far fa-file-pdf"></i> PDF</li>
+                            <li class="rp-tag"><i class="far fa-file-excel"></i> Excel</li>
+                            <li class="rp-tag"><i class="far fa-calendar-alt"></i> Rango de fechas</li>
+                        </ul>
+                        <div class="rp-card__action">
+                            <button type="button" class="btn bg-gradient-info" data-toggle="modal" data-target="#modal-compras-periodo">
+                                <i class="far fa-paper-plane"></i> Generar informe
+                            </button>
+                        </div>
+                    </article>
+
+                    <article class="rp-card rp-card--ok rp-card--cxc">
+                        <div class="rp-card__top">
+                            <span class="rp-card__icon"><i class="fas fa-hand-holding-usd"></i></span>
+                        </div>
+                        <div class="rp-card__body">
+                            <h2>Cuentas por cobrar</h2>
+                            <p>Saldos pendientes de las notas de crédito por cliente, con días de atraso y lo vencido.</p>
+                        </div>
+                        <ul class="rp-card__tags">
+                            <li class="rp-tag"><i class="far fa-file-pdf"></i> PDF</li>
+                            <li class="rp-tag"><i class="far fa-file-excel"></i> Excel</li>
+                            <li class="rp-tag"><i class="far fa-clock"></i> A la fecha de hoy</li>
+                        </ul>
+                        <div class="rp-card__action">
+                            <button type="button" class="btn bg-gradient-success" data-toggle="modal" data-target="#modal-cuentas-por-cobrar">
+                                <i class="far fa-paper-plane"></i> Generar informe
+                            </button>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- CONTROL -->
+            <section class="rp-section">
+                <h2 class="rp-section__title">Control</h2>
+                <div class="rp-grid">
+                    <article class="rp-card rp-card--ok rp-card--void">
+                        <div class="rp-card__top">
+                            <span class="rp-card__icon"><i class="fas fa-ban"></i></span>
+                        </div>
+                        <div class="rp-card__body">
+                            <h2>Documentos anulados</h2>
+                            <p>Facturas, notas de crédito y compras anuladas, para revisar quién las generó y por cuánto.</p>
+                        </div>
+                        <ul class="rp-card__tags">
+                            <li class="rp-tag"><i class="far fa-file-pdf"></i> PDF</li>
+                            <li class="rp-tag"><i class="far fa-file-excel"></i> Excel</li>
+                            <li class="rp-tag"><i class="far fa-calendar-alt"></i> Rango de fechas</li>
+                        </ul>
+                        <div class="rp-card__action">
+                            <button type="button" class="btn bg-gradient-danger" data-toggle="modal" data-target="#modal-anulaciones">
+                                <i class="far fa-paper-plane"></i> Generar informe
+                            </button>
+                        </div>
+                    </article>
+                </div>
+            </section>
         </div>
     </div>
 </section>
-
-
-<div class="row">
-    <div class="col-md-3 col-sm-6 col-12">
-        <div class="info-box">
-            <span class="info-box-icon bg-success">
-                <i class="fas fa-calendar-alt"></i>
-            </span>
-            <div class="info-box-content">
-                <span class="info-box-text">Ventas Mensuales</span>
-                <button type="button" class="btn btn-outline-info" placement="top" ngbTooltip="Generar Informe"
-                    data-toggle="modal" data-target="#modal-ventas-mensuales">
-                    <i class="far fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3 col-sm-6 col-12">
-        <div class="info-box">
-            <span class="info-box-icon bg-success"><i class="far fa-flag"></i></span>
-            <div class="info-box-content">
-                <span class="info-box-text">Ventas Diarias</span>
-                <button type="button" class="btn btn-outline-info" placement="top" ngbTooltip="Generar Informe"
-                    data-toggle="modal" data-target="#modal-ventas-diarias">
-                    <i class="far fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3 col-sm-6 col-12">
-        <div class="info-box">
-            <span class="info-box-icon bg-success"><i class="far fa-flag"></i></span>
-            <div class="info-box-content">
-                <span class="info-box-text">Envíos Realizados</span>
-                <button type="button" class="btn btn-outline-info" placement="top" ngbTooltip="Generar Informe"
-                    data-toggle="modal" data-target="#modal-envios-realizados">
-                    <i class="far fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3 col-sm-6 col-12">
-        <div class="info-box">
-            <span class="info-box-icon bg-success"><i class="far fa-flag"></i></span>
-            <div class="info-box-content">
-                <span class="info-box-text">Inventario</span>
-                <button type="button" class="btn btn-outline-info" placement="top" ngbTooltip="Generar Informe"
-                    data-toggle="modal" data-target="#modal-productos-inventario">
-                    <i class="far fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3 col-sm-6 col-12">
-        <div class="info-box">
-            <span class="info-box-icon bg-success"><i class="fas fa-file-signature"></i></span>
-            <div class="info-box-content">
-                <span class="info-box-text">Conversión de Proformas</span>
-                <button type="button" class="btn btn-outline-info" placement="top" ngbTooltip="Generar Informe"
-                    data-toggle="modal" data-target="#modal-conversion-proformas">
-                    <i class="far fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>

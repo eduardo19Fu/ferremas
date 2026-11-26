@@ -147,24 +147,12 @@ export class ProductoService {
 
   /******** SERVICIO DE REPORTES **********/
 
-  printInventarioReport(fecha: Date): Observable<any> {
-    const headers = new HttpHeaders();
-    headers.append('Accept', 'application/pdf');
-    const requestOptions: any = {headers, responseType: 'blob'};
-
-    return this.http.get<any>(`${this.url}/productos/reports/inventario?fecha=${fecha.toString()}`, requestOptions).pipe(
-      map((response: any) => {
-        return {
-          filename: 'inventario.pdf',
-          data: new Blob([response], {type: 'application/pdf'})
-        };
-      }),
-      catchError(e => {
-        swal.fire('Error al Imprimir', 'Error al generar el inventario en formato PDF', 'error');
-        console.log(e);
-        return throwError(e);
-      })
-    );
+  /** Inventario valorizado con los movimientos del dia indicado (yyyy-MM-dd). Devuelve el PDF. */
+  printInventarioReport(fecha: string): Observable<Blob> {
+    return this.http.get(`${this.url}/productos/reports/inventario`, {
+      params: { fecha },
+      responseType: 'blob'
+    });
   }
 
 

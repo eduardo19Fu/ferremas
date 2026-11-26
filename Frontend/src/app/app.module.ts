@@ -59,8 +59,12 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ReportesComponent } from './components/reportes/reportes.component';
 import { ModalVentasMensualesComponent } from './components/reportes/modales/modal-ventas-mensuales/modal-ventas-mensuales.component';
 import { ModalVentasDiariasComponent } from './components/reportes/modales/modal-ventas-diarias/modal-ventas-diarias.component';
+import { ModalRotacionProductosComponent } from './components/reportes/modales/modal-rotacion-productos/modal-rotacion-productos.component';
+import { ModalComprasPeriodoComponent } from './components/reportes/modales/modal-compras-periodo/modal-compras-periodo.component';
+import { ModalAnulacionesComponent } from './components/reportes/modales/modal-anulaciones/modal-anulaciones.component';
+import { ModalCuentasPorCobrarComponent } from './components/reportes/modales/modal-cuentas-por-cobrar/modal-cuentas-por-cobrar.component';
+import { ModalKardexComponent } from './components/reportes/modales/modal-kardex/modal-kardex.component';
 import { ModalConversionProformasComponent } from './components/reportes/modales/modal-conversion-proformas/modal-conversion-proformas.component';
-import { ModalEnviosRealizadosComponent } from './components/reportes/modales/modal-envios-realizados/modal-envios-realizados.component';
 import { ModalProductosInventarioComponent } from './components/reportes/modales/modal-productos-inventario/modal-productos-inventario.component';
 import { NotasCreditoComponent } from './components/notas-credito/notas-credito.component';
 import { DetailNotaCreditoComponent } from './components/notas-credito/detail/detail.component';
@@ -136,7 +140,11 @@ import { LogoComponent } from './components/shared/logo/logo.component';
     ModalVentasMensualesComponent,
     ModalVentasDiariasComponent,
     ModalConversionProformasComponent,
-    ModalEnviosRealizadosComponent,
+    ModalRotacionProductosComponent,
+    ModalComprasPeriodoComponent,
+    ModalAnulacionesComponent,
+    ModalCuentasPorCobrarComponent,
+    ModalKardexComponent,
     ModalProductosInventarioComponent,
     NotasCreditoComponent,
     DetailNotaCreditoComponent,

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="cuentas_por_cobrar" whenNoDataType="NoDataSection" pageWidth="612" pageHeight="792" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="24" bottomMargin="24" uuid="09ca718f-a4a4-4bc0-8f63-50f90f89f161">
+	<style name="fila" mode="Transparent" fontName="SansSerif" fontSize="8" vAlign="Middle">
+		<conditionalStyle><conditionExpression><![CDATA[$V{REPORT_COUNT} % 2 == 0]]></conditionExpression><style mode="Opaque" backcolor="#E6F4F2"/></conditionalStyle>
+	</style>
+	<parameter name="ID_CLIENTE" class="java.lang.Integer"/>
+	<parameter name="SOLO_VENCIDAS" class="java.lang.Integer"/>
+	<parameter name="CLIENTE_TXT" class="java.lang.String"/>
+	<parameter name="HOY_TXT" class="java.lang.String"/>
+	<queryString language="SQL"><![CDATA[SELECT COALESCE(c.nombre, 'Sin cliente') AS CLIENTE,
+       CAST(n.id_nota_credito AS SIGNED) AS NOTA,
+       DATE_FORMAT(n.fecha_creacion, '%d/%m/%Y') AS EMISION,
+       COALESCE(DATE_FORMAT(n.fecha_pago_limite, '%d/%m/%Y'), '—') AS LIMITE,
+       CAST(COALESCE(n.total, 0) AS DECIMAL(14,2)) AS TOTAL,
+       CAST(COALESCE(n.total, 0) - COALESCE(n.restante, 0) AS DECIMAL(14,2)) AS ABONADO,
+       CAST(COALESCE(n.restante, 0) AS DECIMAL(14,2)) AS SALDO,
+       CAST(CASE WHEN n.fecha_pago_limite IS NULL THEN 0 ELSE GREATEST(DATEDIFF(CURDATE(), n.fecha_pago_limite), 0) END AS SIGNED) AS DIAS
+  FROM notas_credito n
+ INNER JOIN estados e ON e.id_estado = n.id_estado
+  LEFT JOIN clientes c ON c.id_cliente = n.id_cliente
+ WHERE e.estado <> 'ANULADO' AND COALESCE(n.restante, 0) > 0.004
+   AND ($P{ID_CLIENTE} = 0 OR n.id_cliente = $P{ID_CLIENTE})
+   AND ($P{SOLO_VENCIDAS} = 0 OR n.fecha_pago_limite < CURDATE())
+ ORDER BY CLIENTE, n.fecha_pago_limite, n.id_nota_credito]]></queryString>
+	<field name="CLIENTE" class="java.lang.String"/>
+	<field name="NOTA" class="java.lang.Long"/>
+	<field name="EMISION" class="java.lang.String"/>
+	<field name="LIMITE" class="java.lang.String"/>
+	<field name="TOTAL" class="java.math.BigDecimal"/>
+	<field name="ABONADO" class="java.math.BigDecimal"/>
+	<field name="SALDO" class="java.math.BigDecimal"/>
+	<field name="DIAS" class="java.lang.Long"/>
+	<variable name="totSaldo" class="java.math.BigDecimal" calculation="Sum"><variableExpression><![CDATA[$F{SALDO}]]></variableExpression></variable>
+	<variable name="totVencido" class="java.math.BigDecimal" calculation="Sum"><variableExpression><![CDATA[$F{DIAS} > 0 ? $F{SALDO} : java.math.BigDecimal.ZERO]]></variableExpression></variable>
+	<variable name="totVigente" class="java.math.BigDecimal" calculation="Sum"><variableExpression><![CDATA[$F{DIAS} > 0 ? java.math.BigDecimal.ZERO : $F{SALDO}]]></variableExpression></variable>
+	<variable name="subCliente" class="java.math.BigDecimal" calculation="Sum" resetType="Group" resetGroup="g_cliente"><variableExpression><![CDATA[$F{SALDO}]]></variableExpression></variable>
+	<group name="g_cliente"><groupExpression><![CDATA[$F{CLIENTE}]]></groupExpression>
+<groupHeader><band height="22" splitType="Prevent">
+<rectangle><reportElement x="0" y="3" width="572" height="19" forecolor="#E6F4F2" backcolor="#E6F4F2" uuid="617b8981-0b7d-40be-8a80-722bbf2855f3"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
+<textField isBlankWhenNull="true"><reportElement x="8" y="3" width="556" height="19" forecolor="#0F766E" uuid="e694b8bb-3604-4a51-882c-14d674d226ea"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$F{CLIENTE}]]></textFieldExpression></textField>
+</band></groupHeader>
+<groupFooter><band height="26" splitType="Prevent">
+<textField isBlankWhenNull="true"><reportElement x="8" y="2" width="170" height="18" forecolor="#2B2B2B" uuid="24a9d6f4-d814-4f5e-8d41-66e9ff9a8165"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><textFieldExpression><![CDATA["Saldo del cliente · " + $V{g_cliente_COUNT} + ($V{g_cliente_COUNT} == 1 ? " nota" : " notas")]]></textFieldExpression></textField>
+<textField pattern="#,##0.00" isBlankWhenNull="true"><reportElement x="338" y="2" width="84" height="18" forecolor="#2B2B2B" uuid="5bd7ddb6-de0f-404d-8e4f-98017ef94b65"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><textFieldExpression><![CDATA[$V{subCliente}]]></textFieldExpression></textField>
+<line><reportElement x="0" y="22" width="572" height="1" forecolor="#0F766E" uuid="2ddc41d6-e3e3-48e7-8171-2439da879ee6"/></line>
+</band></groupFooter>
+	</group>
+	<title>
+<band height="84" splitType="Stretch">
+<rectangle><reportElement x="0" y="0" width="572" height="6" forecolor="#0F766E" backcolor="#0F766E" uuid="4ff9e7b7-cf2e-4fb6-81bf-b28de30577a1"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
+<image scaleImage="RetainShape" hAlign="Left" vAlign="Middle"><reportElement x="0" y="14" width="64" height="56" uuid="377d949e-9871-4e7c-8d36-9fd02151ff51"/><imageExpression><![CDATA[this.getClass().getResourceAsStream("/static/images/reports-image/ferremas-log.png")]]></imageExpression></image>
+<staticText><reportElement x="72" y="14" width="260" height="26" forecolor="#2B2B2B" uuid="e3635594-5bdc-4569-8897-040292020d87"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="20" isBold="true"/></textElement><text><![CDATA[FERREMAS]]></text></staticText>
+<staticText><reportElement x="72" y="42" width="280" height="20" forecolor="#0F766E" uuid="fd65c9b3-a8c8-4fb5-8e82-3c836a5a5573"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="12" isBold="true"/></textElement><text><![CDATA[Cuentas por cobrar]]></text></staticText>
+<staticText><reportElement x="372" y="16" width="200" height="12" forecolor="#7A7A7A" uuid="e5bd2265-950e-4043-80d1-88677c3cdc58"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[SALDOS AL]]></text></staticText>
+<textField isBlankWhenNull="true"><reportElement x="332" y="28" width="240" height="18" forecolor="#2B2B2B" uuid="82465989-8b35-46d7-834f-e0b0a881c56b"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="12" isBold="true"/></textElement><textFieldExpression><![CDATA[$P{HOY_TXT}]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement x="302" y="46" width="270" height="12" forecolor="#2B2B2B" uuid="fba47f98-f392-44cf-8b6f-55e7e96e8b05"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><textFieldExpression><![CDATA["Cliente: " + $P{CLIENTE_TXT}]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement x="302" y="59" width="270" height="12" forecolor="#7A7A7A" uuid="e8d7b8bc-6d41-4ee2-83dd-47e3b6bf8222"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><textFieldExpression><![CDATA[$P{SOLO_VENCIDAS}.intValue() == 1 ? "Solo cuentas vencidas" : "Vencidas y vigentes"]]></textFieldExpression></textField>
+<line><reportElement x="0" y="78" width="572" height="1" forecolor="#D9D9D9" uuid="8d69e380-3c59-484a-8d99-24c6e965c89d"/></line>
+</band>
+	</title>
+	<columnHeader>
+<band height="22" splitType="Stretch">
+<rectangle><reportElement x="0" y="2" width="572" height="20" forecolor="#2B2B2B" backcolor="#2B2B2B" uuid="31da7f61-abfb-4975-894c-f3744ddb299e"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
+<staticText><reportElement x="8" y="2" width="44" height="20" forecolor="#FFFFFF" uuid="de5c3a1c-098a-4773-8186-04537eb38226"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[NOTA]]></text></staticText>
+<staticText><reportElement x="54" y="2" width="58" height="20" forecolor="#FFFFFF" uuid="f91ea495-4d80-4301-8d83-1e1e03929a65"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[EMISIÓN]]></text></staticText>
+<staticText><reportElement x="114" y="2" width="66" height="20" forecolor="#FFFFFF" uuid="fb0e58d9-6856-49c1-8835-7529ba5551dc"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[LÍMITE DE PAGO]]></text></staticText>
+<staticText><reportElement x="182" y="2" width="76" height="20" forecolor="#FFFFFF" uuid="3f5f14ab-56f7-408b-80f1-012909568b12"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[TOTAL]]></text></staticText>
+<staticText><reportElement x="260" y="2" width="76" height="20" forecolor="#FFFFFF" uuid="2c3ef5b3-3794-4a9d-8b08-d38e8874f400"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[ABONADO]]></text></staticText>
+<staticText><reportElement x="338" y="2" width="84" height="20" forecolor="#FFFFFF" uuid="f4cb60ef-88b4-49a0-82c9-8c65f4b0ccc0"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[SALDO]]></text></staticText>
+<staticText><reportElement x="426" y="2" width="64" height="20" forecolor="#FFFFFF" uuid="a12003ea-5e22-4a58-8b20-c250d1086a3d"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[ATRASO (DÍAS)]]></text></staticText>
+<staticText><reportElement x="492" y="2" width="76" height="20" forecolor="#FFFFFF" uuid="48791093-b8db-46b6-81e6-edf9f7158278"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><text><![CDATA[ESTADO]]></text></staticText>
+</band>
+	</columnHeader>
+	<detail>
+<band height="18" splitType="Prevent">
+<textField isBlankWhenNull="true"><reportElement style="fila" x="0" y="0" width="572" height="18" uuid="faa101ee-c772-43e8-8493-f6db9004803f"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><textFieldExpression><![CDATA[""]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement style="fila" x="8" y="0" width="44" height="18" uuid="a0fc0657-cd33-40f3-88ba-e66e0c4292f0"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><textFieldExpression><![CDATA["NC-" + $F{NOTA}]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement style="fila" x="54" y="0" width="58" height="18" uuid="d1f0d819-a93b-422f-8833-f7dba632a9f6"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{EMISION}]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement style="fila" x="114" y="0" width="66" height="18" uuid="4a1bd866-03e4-4d3a-8899-0b64f2b73a1c"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{LIMITE}]]></textFieldExpression></textField>
+<textField pattern="#,##0.00" isBlankWhenNull="true"><reportElement style="fila" x="182" y="0" width="76" height="18" uuid="25c76ec5-234e-421f-88a7-0a87d3af1398"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{TOTAL}]]></textFieldExpression></textField>
+<textField pattern="#,##0.00" isBlankWhenNull="true"><reportElement style="fila" x="260" y="0" width="76" height="18" uuid="bfaac7a7-f260-4bfa-8312-cd9e1e0d33dc"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{ABONADO}]]></textFieldExpression></textField>
+<textField pattern="#,##0.00" isBlankWhenNull="true"><reportElement style="fila" x="338" y="0" width="84" height="18" uuid="bbb336df-25ef-442c-82ae-1756788221f1"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><textFieldExpression><![CDATA[$F{SALDO}]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement style="fila" x="426" y="0" width="64" height="18" uuid="9b309c46-ea64-43b5-8cf4-a7f6ad02a7a7"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{DIAS} > 0 ? String.valueOf($F{DIAS}) : "·"]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement style="fila" x="492" y="0" width="76" height="18" uuid="f126eab2-f1fa-46da-8440-faa99f90d9b0"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[""]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement style="fila" x="492" y="0" width="76" height="18" forecolor="#C62828" uuid="49b67765-6ef8-45d4-8457-335132a6be37">
+<printWhenExpression><![CDATA[$F{DIAS} > 0]]></printWhenExpression></reportElement><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><textFieldExpression><![CDATA["VENCIDA"]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement style="fila" x="492" y="0" width="76" height="18" forecolor="#2E7D32" uuid="a15923b1-f457-499a-823f-693d070a3411">
+<printWhenExpression><![CDATA[$F{DIAS} <= 0]]></printWhenExpression></reportElement><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><textFieldExpression><![CDATA["VIGENTE"]]></textFieldExpression></textField>
+<line><reportElement x="0" y="17" width="572" height="1" forecolor="#EEEEEE" uuid="08b0a7f0-3494-485f-869b-3c9d75625197"/></line>
+</band>
+	</detail>
+	<pageFooter>
+<band height="26" splitType="Stretch">
+<line><reportElement x="0" y="4" width="572" height="1" forecolor="#D9D9D9" uuid="7b4ece76-505a-46d3-8e06-1793b0672bde"/></line>
+<staticText><reportElement x="0" y="8" width="300" height="14" forecolor="#7A7A7A" uuid="c26c84e1-45bc-46f7-8711-648ed5c1b892"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><text><![CDATA[FERREMAS · Cuentas por cobrar]]></text></staticText>
+<textField isBlankWhenNull="true"><reportElement x="412" y="8" width="100" height="14" forecolor="#7A7A7A" uuid="7532b580-d9e2-4608-8b1a-169124a7d7fd"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER}]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true" evaluationTime="Report"><reportElement x="512" y="8" width="60" height="14" forecolor="#7A7A7A" uuid="6e8837a2-cb52-4b05-8c66-df51530d203d"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><textFieldExpression><![CDATA[" de " + $V{PAGE_NUMBER}]]></textFieldExpression></textField>
+</band>
+	</pageFooter>
+	<summary>
+<band height="96" splitType="Prevent">
+<rectangle><reportElement x="0" y="8" width="572" height="28" forecolor="#0F766E" backcolor="#E6F4F2" uuid="95369e6a-64ea-4148-8878-a9746be11f76"/><graphicElement><pen lineWidth="0.75"/></graphicElement></rectangle>
+<textField isBlankWhenNull="true"><reportElement x="8" y="8" width="120" height="28" forecolor="#2B2B2B" uuid="ccae5113-0196-4fb8-8959-c793d5c27430"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement><textFieldExpression><![CDATA["POR COBRAR"]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement x="182" y="8" width="76" height="28" forecolor="#7A7A7A" uuid="d2248400-715d-4cfc-8eaf-b2f8e9e8ab08"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><textFieldExpression><![CDATA["Vigente"]]></textFieldExpression></textField>
+<textField pattern="#,##0.00" isBlankWhenNull="true"><reportElement x="260" y="8" width="76" height="28" forecolor="#2E7D32" uuid="886be3d3-55c8-4751-8f75-e65c6ae8701a"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$V{totVigente}]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement x="338" y="8" width="84" height="28" forecolor="#7A7A7A" uuid="272b35b5-af44-450e-8a91-692df9b48f6f"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement><textFieldExpression><![CDATA["Vencido"]]></textFieldExpression></textField>
+<textField pattern="#,##0.00" isBlankWhenNull="true"><reportElement x="424" y="8" width="144" height="28" forecolor="#C62828" uuid="5ed7bd3e-f085-4481-8ff2-10bbc05b6488"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$V{totVencido}]]></textFieldExpression></textField>
+<textField isBlankWhenNull="true"><reportElement x="8" y="40" width="560" height="22" forecolor="#2B2B2B" uuid="1706b811-d6e8-4bcf-8bbe-ed27a3528340"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="11" isBold="true"/></textElement><textFieldExpression><![CDATA["TOTAL POR COBRAR:  Q " + new java.text.DecimalFormat("#,##0.00").format($V{totSaldo})]]></textFieldExpression></textField>
+<staticText><reportElement x="0" y="76" width="572" height="14" forecolor="#7A7A7A" uuid="7b507572-6d41-458d-8497-542033c371f3"/><textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><text><![CDATA[Saldo = total de la nota menos abonos y pagos parciales. Vencida: la fecha límite de pago ya pasó.]]></text></staticText>
+</band>
+	</summary>
+	<noData>
+<band height="60">
+<staticText><reportElement x="0" y="20" width="572" height="24" forecolor="#7A7A7A" uuid="3a55bef3-2b7a-4cff-8668-d1fcd9c69c41"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[No hay saldos pendientes con los filtros seleccionados.]]></text></staticText>
+</band>
+	</noData>
+</jasperReport>
