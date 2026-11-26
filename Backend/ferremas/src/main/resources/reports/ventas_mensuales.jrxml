@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ventas_mensuales" whenNoDataType="AllSectionsNoDetail" pageWidth="612" pageHeight="792" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="24" bottomMargin="24" uuid="f4b8e2a1-6c3d-4d22-8b1e-9a7c5d3e1f20">
+	<!-- Ventas vigentes (facturas no anuladas) por mes de un anio, de todos los vendedores o de uno. Siempre lista los 12 meses. -->
+	<style name="fila" mode="Transparent" fontName="SansSerif" fontSize="9" vAlign="Middle">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT} % 2 == 0]]></conditionExpression>
+			<style mode="Opaque" backcolor="#EAF4F8"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="FECHA_INICIO" class="java.sql.Timestamp"/>
+	<parameter name="FECHA_FIN_EXCLUSIVA" class="java.sql.Timestamp"/>
+	<parameter name="ID_USUARIO" class="java.lang.Integer"/>
+	<parameter name="ANIO" class="java.lang.Integer"/>
+	<parameter name="VENDEDOR_TXT" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT CAST(m.mes AS SIGNED) AS MES,
+       CAST(COALESCE(x.n, 0) AS SIGNED) AS FACTURAS,
+       CAST(COALESCE(x.t, 0) AS DECIMAL(14,2)) AS TOTAL,
+       CAST(CASE WHEN COALESCE(x.n, 0) = 0 THEN 0 ELSE x.t / x.n END AS DECIMAL(14,2)) AS PROMEDIO,
+       CAST(CASE WHEN a.total = 0 THEN 0 ELSE COALESCE(x.t, 0) * 100 / a.total END AS DECIMAL(6,2)) AS PARTICIPACION,
+       CAST(CASE WHEN a.maximo = 0 THEN 0 ELSE COALESCE(x.t, 0) * 100 / a.maximo END AS DECIMAL(6,2)) AS BARRA
+  FROM (SELECT 1 AS mes UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6
+        UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10 UNION ALL SELECT 11 UNION ALL SELECT 12) m
+  LEFT JOIN (SELECT MONTH(f1.fecha) AS mes, COUNT(*) AS n, SUM(f1.total) AS t
+               FROM facturas f1
+              INNER JOIN estados e1 ON e1.id_estado = f1.id_estado
+              WHERE e1.estado <> 'ANULADO'
+                AND f1.fecha >= $P{FECHA_INICIO} AND f1.fecha < $P{FECHA_FIN_EXCLUSIVA}
+                AND ($P{ID_USUARIO} = 0 OR f1.id_usuario = $P{ID_USUARIO})
+              GROUP BY MONTH(f1.fecha)) x ON x.mes = m.mes
+ CROSS JOIN (SELECT COALESCE(SUM(s.t), 0) AS total, COALESCE(MAX(s.t), 0) AS maximo
+               FROM (SELECT SUM(f2.total) AS t
+                       FROM facturas f2
+                      INNER JOIN estados e2 ON e2.id_estado = f2.id_estado
+                      WHERE e2.estado <> 'ANULADO'
+                        AND f2.fecha >= $P{FECHA_INICIO} AND f2.fecha < $P{FECHA_FIN_EXCLUSIVA}
+                        AND ($P{ID_USUARIO} = 0 OR f2.id_usuario = $P{ID_USUARIO})
+                      GROUP BY MONTH(f2.fecha)) s) a
+ ORDER BY m.mes]]>
+	</queryString>
+	<field name="MES" class="java.lang.Long"/>
+	<field name="FACTURAS" class="java.lang.Long"/>
+	<field name="TOTAL" class="java.math.BigDecimal"/>
+	<field name="PROMEDIO" class="java.math.BigDecimal"/>
+	<field name="PARTICIPACION" class="java.math.BigDecimal"/>
+	<field name="BARRA" class="java.math.BigDecimal"/>
+	<variable name="totFacturas" class="java.lang.Long" calculation="Sum">
+		<variableExpression><![CDATA[$F{FACTURAS}]]></variableExpression>
+	</variable>
+	<variable name="totVentas" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{TOTAL}]]></variableExpression>
+	</variable>
+	<title>
+		<band height="84" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="0" width="572" height="6" forecolor="#227A99" backcolor="#227A99" uuid="e0000000-0000-4000-8000-000000000021"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<image scaleImage="RetainShape" hAlign="Left" vAlign="Middle">
+				<reportElement x="0" y="14" width="64" height="56" uuid="e0000000-0000-4000-8000-000000000022"/>
+				<imageExpression><![CDATA[this.getClass().getResourceAsStream("/static/images/reports-image/ferremas-log.png")]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="72" y="14" width="260" height="26" forecolor="#2B2B2B" uuid="e0000000-0000-4000-8000-000000000023"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FERREMAS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="72" y="42" width="260" height="20" forecolor="#227A99" uuid="e0000000-0000-4000-8000-000000000024"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Reporte de ventas mensuales]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="372" y="16" width="200" height="12" forecolor="#7A7A7A" uuid="e0000000-0000-4000-8000-000000000025"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[VENTAS DEL AÑO]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="372" y="28" width="200" height="18" forecolor="#2B2B2B" uuid="e0000000-0000-4000-8000-000000000026"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[String.valueOf($P{ANIO})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="302" y="48" width="270" height="12" forecolor="#2B2B2B" uuid="e0000000-0000-4000-8000-000000000027"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Vendedor: " + $P{VENDEDOR_TXT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="302" y="61" width="270" height="12" forecolor="#7A7A7A" uuid="e0000000-0000-4000-8000-000000000028"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Impreso el " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="78" width="572" height="1" forecolor="#D9D9D9" uuid="e0000000-0000-4000-8000-000000000029"/>
+			</line>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="22" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="2" width="572" height="20" forecolor="#2B2B2B" backcolor="#2B2B2B" uuid="e0000000-0000-4000-8000-000000000030"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="8" y="2" width="120" height="20" forecolor="#FFFFFF" uuid="e0000000-0000-4000-8000-000000000031"/>
+				<textElement verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement>
+				<text><![CDATA[MES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="140" y="2" width="70" height="20" forecolor="#FFFFFF" uuid="e0000000-0000-4000-8000-000000000032"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement>
+				<text><![CDATA[FACTURAS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="214" y="2" width="104" height="20" forecolor="#FFFFFF" uuid="e0000000-0000-4000-8000-000000000033"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement>
+				<text><![CDATA[TOTAL VENDIDO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="322" y="2" width="96" height="20" forecolor="#FFFFFF" uuid="e0000000-0000-4000-8000-000000000034"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement>
+				<text><![CDATA[PROMEDIO / FACTURA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="430" y="2" width="138" height="20" forecolor="#FFFFFF" uuid="e0000000-0000-4000-8000-000000000035"/>
+				<textElement verticalAlignment="Middle"><font fontName="SansSerif" size="7" isBold="true"/></textElement>
+				<text><![CDATA[PARTICIPACIÓN EN EL AÑO]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="18" splitType="Prevent">
+			<textField>
+				<reportElement style="fila" x="0" y="0" width="572" height="18" uuid="e0000000-0000-4000-8000-000000000036"/>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="fila" x="8" y="0" width="120" height="18" uuid="e0000000-0000-4000-8000-000000000037"/>
+				<textElement verticalAlignment="Middle"><font isBold="true"/></textElement>
+				<textFieldExpression><![CDATA[new String[]{"Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"}[$F{MES}.intValue() - 1]]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement style="fila" x="140" y="0" width="70" height="18" uuid="e0000000-0000-4000-8000-000000000038"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{FACTURAS}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement style="fila" x="214" y="0" width="104" height="18" uuid="e0000000-0000-4000-8000-000000000039"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"><font isBold="true"/></textElement>
+				<textFieldExpression><![CDATA[$F{TOTAL}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement style="fila" x="322" y="0" width="96" height="18" uuid="e0000000-0000-4000-8000-000000000040"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{PROMEDIO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="0.0 '%'">
+				<reportElement style="fila" x="430" y="0" width="42" height="18" uuid="e0000000-0000-4000-8000-000000000041"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{PARTICIPACION}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="476" y="5" width="8" height="8" forecolor="#E3E7EC" backcolor="#E3E7EC" uuid="e0000000-0000-4000-8000-000000000001"/>
+				<graphicElement><pen lineWidth="0.0"/></graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="485" y="5" width="8" height="8" forecolor="#E3E7EC" backcolor="#E3E7EC" uuid="e0000000-0000-4000-8000-000000000003"/>
+				<graphicElement><pen lineWidth="0.0"/></graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="494" y="5" width="8" height="8" forecolor="#E3E7EC" backcolor="#E3E7EC" uuid="e0000000-0000-4000-8000-000000000005"/>
+				<graphicElement><pen lineWidth="0.0"/></graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="503" y="5" width="8" height="8" forecolor="#E3E7EC" backcolor="#E3E7EC" uuid="e0000000-0000-4000-8000-000000000007"/>
+				<graphicElement><pen lineWidth="0.0"/></graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="512" y="5" width="8" height="8" forecolor="#E3E7EC" backcolor="#E3E7EC" uuid="e0000000-0000-4000-8000-000000000009"/>
+				<graphicElement><pen lineWidth="0.0"/></graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="521" y="5" width="8" height="8" forecolor="#E3E7EC" backcolor="#E3E7EC" uuid="e0000000-0000-4000-8000-000000000011"/>
+				<graphicElement><pen lineWidth="0.0"/></graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="530" y="5" width="8" height="8" forecolor="#E3E7EC" backcolor="#E3E7EC" uuid="e0000000-0000-4000-8000-000000000013"/>
+				<graphicElement><pen lineWidth="0.0"/></graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="539" y="5" width="8" height="8" forecolor="#E3E7EC" backcolor="#E3E7EC" uuid="e0000000-0000-4000-8000-000000000015"/>
+				<graphicElement><pen lineWidth="0.0"/></graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="548" y="5" width="8" height="8" forecolor="#E3E7EC" backcolor="#E3E7EC" uuid="e0000000-0000-4000-8000-000000000017"/>
+				<graphicElement><pen lineWidth="0.0"/></graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="557" y="5" width="8" height="8" forecolor="#E3E7EC" backcolor="#E3E7EC" uuid="e0000000-0000-4000-8000-000000000019"/>
+				<graphicElement><pen lineWidth="0.0"/></graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="476" y="5" width="8" height="8" forecolor="#227A99" backcolor="#227A99" uuid="e0000000-0000-4000-8000-000000000002">
+					<printWhenExpression><![CDATA[$F{BARRA}.doubleValue() >= 5]]></printWhenExpression>
+				</reportElement>
+				<graphicElement><pen lineWidth="0.0"/></graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="485" y="5" width="8" height="8" forecolor="#227A99" backcolor="#227A99" uuid="e0000000-0000-4000-8000-000000000004">
+					<printWhenExpression><![CDATA[$F{BARRA}.doubleValue() >= 15]]></printWhenExpression>
+				</reportElement>
+				<graphicElement><pen lineWidth="0.0"/></graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="494" y="5" width="8" height="8" forecolor="#227A99" backcolor="#227A99" uuid="e0000000-0000-4000-8000-000000000006">
+					<printWhenExpression><![CDATA[$F{BARRA}.doubleValue() >= 25]]></printWhenExpression>
+				</reportElement>
+				<graphicElement><pen lineWidth="0.0"/></graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="503" y="5" width="8" height="8" forecolor="#227A99" backcolor="#227A99" uuid="e0000000-0000-4000-8000-000000000008">
+					<printWhenExpression><![CDATA[$F{BARRA}.doubleValue() >= 35]]></printWhenExpression>
+				</reportElement>
+				<graphicElement><pen lineWidth="0.0"/></graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="512" y="5" width="8" height="8" forecolor="#227A99" backcolor="#227A99" uuid="e0000000-0000-4000-8000-000000000010">
+					<printWhenExpression><![CDATA[$F{BARRA}.doubleValue() >= 45]]></printWhenExpression>
+				</reportElement>
+				<graphicElement><pen lineWidth="0.0"/></graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="521" y="5" width="8" height="8" forecolor="#227A99" backcolor="#227A99" uuid="e0000000-0000-4000-8000-000000000012">
+					<printWhenExpression><![CDATA[$F{BARRA}.doubleValue() >= 55]]></printWhenExpression>
+				</reportElement>
+				<graphicElement><pen lineWidth="0.0"/></graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="530" y="5" width="8" height="8" forecolor="#227A99" backcolor="#227A99" uuid="e0000000-0000-4000-8000-000000000014">
+					<printWhenExpression><![CDATA[$F{BARRA}.doubleValue() >= 65]]></printWhenExpression>
+				</reportElement>
+				<graphicElement><pen lineWidth="0.0"/></graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="539" y="5" width="8" height="8" forecolor="#227A99" backcolor="#227A99" uuid="e0000000-0000-4000-8000-000000000016">
+					<printWhenExpression><![CDATA[$F{BARRA}.doubleValue() >= 75]]></printWhenExpression>
+				</reportElement>
+				<graphicElement><pen lineWidth="0.0"/></graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="548" y="5" width="8" height="8" forecolor="#227A99" backcolor="#227A99" uuid="e0000000-0000-4000-8000-000000000018">
+					<printWhenExpression><![CDATA[$F{BARRA}.doubleValue() >= 85]]></printWhenExpression>
+				</reportElement>
+				<graphicElement><pen lineWidth="0.0"/></graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="557" y="5" width="8" height="8" forecolor="#227A99" backcolor="#227A99" uuid="e0000000-0000-4000-8000-000000000020">
+					<printWhenExpression><![CDATA[$F{BARRA}.doubleValue() >= 95]]></printWhenExpression>
+				</reportElement>
+				<graphicElement><pen lineWidth="0.0"/></graphicElement>
+			</rectangle>
+			<line>
+				<reportElement x="0" y="17" width="572" height="1" forecolor="#EEEEEE" uuid="e0000000-0000-4000-8000-000000000042"/>
+			</line>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="26" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="4" width="572" height="1" forecolor="#D9D9D9" uuid="e0000000-0000-4000-8000-000000000043"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="8" width="300" height="14" forecolor="#7A7A7A" uuid="e0000000-0000-4000-8000-000000000044"/>
+				<textElement verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement>
+				<text><![CDATA[FERREMAS · Reporte de ventas mensuales]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="412" y="8" width="100" height="14" forecolor="#7A7A7A" uuid="e0000000-0000-4000-8000-000000000045"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement>
+				<textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="512" y="8" width="60" height="14" forecolor="#7A7A7A" uuid="e0000000-0000-4000-8000-000000000046"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement>
+				<textFieldExpression><![CDATA[" de " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="74" splitType="Prevent">
+			<rectangle>
+				<reportElement x="0" y="8" width="572" height="28" forecolor="#227A99" backcolor="#EAF4F8" uuid="e0000000-0000-4000-8000-000000000047"/>
+				<graphicElement>
+					<pen lineWidth="0.75"/>
+				</graphicElement>
+			</rectangle>
+			<textField>
+				<reportElement x="8" y="8" width="120" height="28" forecolor="#2B2B2B" uuid="e0000000-0000-4000-8000-000000000048"/>
+				<textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement>
+				<textFieldExpression><![CDATA["TOTAL " + $P{ANIO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="140" y="8" width="70" height="28" uuid="e0000000-0000-4000-8000-000000000049"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement>
+				<textFieldExpression><![CDATA[$V{totFacturas}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="214" y="8" width="104" height="28" uuid="e0000000-0000-4000-8000-000000000050"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="10" isBold="true"/></textElement>
+				<textFieldExpression><![CDATA[$V{totVentas}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="322" y="8" width="96" height="28" uuid="e0000000-0000-4000-8000-000000000051"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement>
+				<textFieldExpression><![CDATA[$V{totFacturas} == 0L ? java.math.BigDecimal.ZERO : $V{totVentas}.divide(new java.math.BigDecimal($V{totFacturas}), 2, java.math.RoundingMode.HALF_UP)]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="44" width="572" height="14" forecolor="#7A7A7A" uuid="e0000000-0000-4000-8000-000000000052"/>
+				<textElement verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement>
+				<text><![CDATA[Incluye únicamente facturas vigentes; las anuladas no se consideran. La barra compara cada mes con el mejor mes del año.]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

@@ -3,44 +3,50 @@
         <div class="modal-content tm-form">
             <div class="modal-header">
                 <h4 class="modal-title">{{title}}</h4>
-                <button id="button-x" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p class="tm-lead">Ingrese datos requeridos</p>
-                <form #formBusqueda="ngForm" id="form-busqueda">
+                <p class="tm-lead">Facturas vigentes, facturado y promedio de cada mes del año elegido.</p>
 
+                <form #formMensual="ngForm" (ngSubmit)="onSubmit()">
                     <div class="tm-grid">
-                        <div class="tm-cell">
-                            <div class="tm-field">
-                                <label for="fecha-ini">Fecha Inicial</label>
-                                <input type="date" class="form-control" name="fecha-ini" id="fecha-ini" [(ngModel)]="fechaIni">
-                            </div>
+                        <div class="tm-field">
+                            <label for="vm-anio">Año</label>
+                            <select class="form-control custom-select" name="anio" id="vm-anio" [(ngModel)]="anio" required>
+                                <option *ngFor="let a of anios" [ngValue]="a">{{a}}</option>
+                            </select>
                         </div>
 
-                        <div class="tm-cell">
-                            <div class="tm-field">
-                                <label for="fecha-fin">Fecha Final</label>
-                                <input type="date" class="form-control" name="fecha-fin" id="fecha-fin" [(ngModel)]="fechaFin">
-                            </div>
+                        <div class="tm-field">
+                            <label for="vm-usuario">Vendedor</label>
+                            <select class="form-control custom-select" name="idUsuario" id="vm-usuario" [(ngModel)]="idUsuario">
+                                <option [ngValue]="0">Todos</option>
+                                <option *ngFor="let u of usuarios" [ngValue]="u.idUsuario">{{u.primerNombre}} {{u.apellido}} ({{u.usuario}})</option>
+                            </select>
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="vm-formato">Formato</label>
+                            <select class="form-control custom-select" name="formato" id="vm-formato" [(ngModel)]="formato">
+                                <option value="PDF">PDF</option>
+                                <option value="XLSX">Excel</option>
+                            </select>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-block bg-gradient-warning"
-                        [disabled]="!formBusqueda.form.valid" (click)="onSubmit()">
-                        <i class="fas fa-print"></i>
-                        Imprimir
+                    <button type="submit" class="btn btn-block bg-gradient-warning" [disabled]="!anio || generando"
+                        [class.is-loading]="generando" [attr.aria-busy]="generando">
+                        <span class="tm-spinner tm-spinner--btn" *ngIf="generando; else icono" role="status"></span>
+                        <ng-template #icono><i class="fas" [ngClass]="formato === 'PDF' ? 'fa-print' : 'fa-file-excel'"></i></ng-template>
+                        {{ generando ? 'Generando…' : (formato === 'PDF' ? 'Imprimir' : 'Descargar Excel') }}
                     </button>
-
                 </form>
             </div>
             <div class="modal-footer justify-content-between">
-                <button type="button" class="btn btn-default" id="cerrar-modal" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
             </div>
         </div>
-        <!-- /.modal-content -->
     </div>
-    <!-- /.modal-dialog -->
 </div>
-<!-- /.modal -->

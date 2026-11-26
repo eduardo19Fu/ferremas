@@ -1,0 +1,52 @@
+<div class="modal fade" id="modal-cuentas-por-cobrar">
+    <div class="modal-dialog">
+        <div class="modal-content tm-form">
+            <div class="modal-header">
+                <h4 class="modal-title">{{title}}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="tm-lead">Saldos pendientes de las notas de crédito a hoy, por cliente, con los días de atraso.</p>
+
+                <form #formCobrar="ngForm" (ngSubmit)="onSubmit()">
+                    <div class="tm-grid">
+                        <div class="tm-field">
+                            <label for="cxc-cliente">Cliente</label>
+                            <select class="form-control custom-select" name="idCliente" id="cxc-cliente" [(ngModel)]="idCliente">
+                                <option [ngValue]="0">Todos</option>
+                                <option *ngFor="let c of clientes" [ngValue]="c.idCliente">{{c.nombre}}</option>
+                            </select>
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="cxc-formato">Formato</label>
+                            <select class="form-control custom-select" name="formato" id="cxc-formato" [(ngModel)]="formato">
+                                <option value="PDF">PDF</option>
+                                <option value="XLSX">Excel</option>
+                            </select>
+                        </div>
+
+                        <div class="tm-field tm-span-all">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" name="soloVencidas" id="cxc-vencidas" [(ngModel)]="soloVencidas">
+                                <label class="custom-control-label" for="cxc-vencidas">Solo cuentas vencidas</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-block bg-gradient-warning" [disabled]="generando"
+                        [class.is-loading]="generando" [attr.aria-busy]="generando">
+                        <span class="tm-spinner tm-spinner--btn" *ngIf="generando; else icono" role="status"></span>
+                        <ng-template #icono><i class="fas" [ngClass]="formato === 'PDF' ? 'fa-print' : 'fa-file-excel'"></i></ng-template>
+                        {{ generando ? 'Generando…' : (formato === 'PDF' ? 'Imprimir' : 'Descargar Excel') }}
+                    </button>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

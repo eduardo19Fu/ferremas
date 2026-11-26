@@ -3,37 +3,32 @@
         <div class="modal-content tm-form">
             <div class="modal-header">
                 <h4 class="modal-title">{{title}}</h4>
-                <button id="button-x" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p class="tm-lead">Ingrese datos requeridos</p>
-                <form #formBusqueda="ngForm" id="form-busqueda">
+                <p class="tm-lead">Existencias valorizadas de todos los productos, con las entradas y salidas del día elegido.</p>
 
+                <form #formInventario="ngForm" (ngSubmit)="onSubmit()">
                     <div class="tm-grid">
-                        <div class="tm-cell">
-                            <div class="tm-field">
-                                <label for="fecha-ini">Fecha</label>
-                                <input type="date" class="form-control" name="fecha" id="fecha-ini" [(ngModel)]="fecha">
-                            </div>
+                        <div class="tm-field">
+                            <label for="inv-fecha">Fecha de movimientos</label>
+                            <input type="date" class="form-control" name="fecha" id="inv-fecha" [(ngModel)]="fecha" required>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-block bg-gradient-warning"
-                        [disabled]="!formBusqueda.form.valid" (click)="onSubmit()">
-                        <i class="fas fa-print"></i>
-                        Imprimir
+                    <button type="submit" class="btn btn-block bg-gradient-warning" [disabled]="!fecha || generando"
+                        [class.is-loading]="generando" [attr.aria-busy]="generando">
+                        <span class="tm-spinner tm-spinner--btn" *ngIf="generando; else icono" role="status"></span>
+                        <ng-template #icono><i class="fas fa-print"></i></ng-template>
+                        {{ generando ? 'Generando…' : 'Imprimir' }}
                     </button>
-
                 </form>
             </div>
             <div class="modal-footer justify-content-between">
-                <button type="button" class="btn btn-default" id="cerrar-modal" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
             </div>
         </div>
-        <!-- /.modal-content -->
     </div>
-    <!-- /.modal-dialog -->
 </div>
-<!-- /.modal -->

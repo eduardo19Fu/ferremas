@@ -1,30 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
-import { ProductoService } from '../../services/producto.service';
-import { FacturaService } from '../../services/facturas/factura.service';
-import { EnvioService } from '../../services/envios/envio.service';
-
-import Swal from 'sweetalert2';
-
+/** Catalogo de informes: cada tarjeta abre el modal del informe correspondiente. */
 @Component({
   selector: 'app-reportes',
-  templateUrl: './reportes.component.html',
-  styles: [
-  ]
+  templateUrl: './reportes.component.html'
 })
-export class ReportesComponent implements OnInit {
+export class ReportesComponent {
 
-  title: string;
-
-  constructor(
-    private productoService: ProductoService,
-    private facturaService: FacturaService,
-    private envioService: EnvioService
-  ) {
-    this.title = 'Módulo de Reportes';
-  }
-
-  ngOnInit(): void {
-  }
+  title = 'Módulo de Reportes';
 
 }

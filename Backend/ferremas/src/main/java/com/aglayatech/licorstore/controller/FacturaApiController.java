@@ -372,6 +372,44 @@ public class FacturaApiController {
 
     }
 
+    /** Reporte de ventas diarias (facturas vigentes de un dia) en PDF o Excel. */
+    @Secured(value = {"ROLE_ADMIN"})
+    @GetMapping(value = "/facturas/ventas-diarias")
+    public ResponseEntity<byte[]> ventasDiarias(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date fecha,
+            @RequestParam(defaultValue = "0") int idUsuario,
+            @RequestParam(defaultValue = "PDF") String formato) {
+        boolean xlsx = "XLSX".equalsIgnoreCase(formato);
+        byte[] archivo = serviceFactura.reporteVentasDiarias(fecha, idUsuario, xlsx ? "XLSX" : "PDF");
+
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION,
+                        (xlsx ? "attachment" : "inline") + "; filename=ventas_diarias." + (xlsx ? "xlsx" : "pdf"))
+                .contentType(xlsx
+                        ? org.springframework.http.MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                        : org.springframework.http.MediaType.APPLICATION_PDF)
+                .body(archivo);
+    }
+
+    /** Reporte de ventas por mes de un anio, en PDF o Excel. */
+    @Secured(value = {"ROLE_ADMIN"})
+    @GetMapping(value = "/facturas/ventas-mensuales")
+    public ResponseEntity<byte[]> ventasMensuales(
+            @RequestParam int anio,
+            @RequestParam(defaultValue = "0") int idUsuario,
+            @RequestParam(defaultValue = "PDF") String formato) {
+        boolean xlsx = "XLSX".equalsIgnoreCase(formato);
+        byte[] archivo = serviceFactura.reporteVentasMensuales(anio, idUsuario, xlsx ? "XLSX" : "PDF");
+
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION,
+                        (xlsx ? "attachment" : "inline") + "; filename=ventas_mensuales_" + anio + "." + (xlsx ? "xlsx" : "pdf"))
+                .contentType(xlsx
+                        ? org.springframework.http.MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                        : org.springframework.http.MediaType.APPLICATION_PDF)
+                .body(archivo);
+    }
+
     private boolean updateExistencias(Producto producto, int cantidad, String tipoMovimiento) {
         Producto productoUpdated = new Producto();
 
