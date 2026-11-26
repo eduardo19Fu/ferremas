@@ -1,6 +1,7 @@
 package com.aglayatech.licorstore.controller;
 
 import com.aglayatech.licorstore.generics.ErroresHandler;
+import com.aglayatech.licorstore.generics.ReglaNegocioException;
 import com.aglayatech.licorstore.model.Estado;
 import com.aglayatech.licorstore.model.MovimientoProducto;
 import com.aglayatech.licorstore.model.NotaCredito;
@@ -104,6 +105,39 @@ public class NotaCreditoApiController {
         }
 
         return new ResponseEntity<List<NotaCredito>>(notasCreditoActivas, HttpStatus.OK);
+    }
+
+    /**
+     * Anula una nota de credito y devuelve sus productos al inventario. El usuario que anula se toma del token,
+     * no de la peticion, para que no pueda suplantarse.
+     */
+    @org.springframework.security.access.annotation.Secured("ROLE_ADMIN")
+    @org.springframework.web.bind.annotation.PutMapping(value = "/notas-credito/{id}/anular")
+    public ResponseEntity<?> anular(@PathVariable("id") Integer idnota,
+            @org.springframework.security.core.annotation.AuthenticationPrincipal org.springframework.security.oauth2.jwt.Jwt jwt) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Object claim = jwt == null ? null : jwt.getClaim("id_usuario");
+            com.aglayatech.licorstore.model.Usuario usuario = claim instanceof Number ? usuarioService.findById(((Number) claim).intValue()) : null;
+
+            NotaCredito anulada = notaCreditoService.anular(idnota, usuario);
+            logger.info("Nota de credito {} anulada por {}", idnota, usuario == null ? "desconocido" : usuario.getUsuario());
+
+            response.put("mensaje", "¡Nota de crédito anulada!");
+            response.put("notaCredito", anulada);
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+        } catch (ReglaNegocioException e) {
+            response.put("mensaje", "No se pudo anular la nota de crédito");
+            response.put("error", e.getMessage());
+            return new ResponseEntity<Map<String, Object>>(response, e.getStatus());
+        } catch (DataAccessException e) {
+            logger.error("Error durante el consumo del API => {}", e.getMessage());
+            response.put("mensaje", "¡Ha ocurrido un error en la base de datos!");
+            response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping(value = "/notas-credito")

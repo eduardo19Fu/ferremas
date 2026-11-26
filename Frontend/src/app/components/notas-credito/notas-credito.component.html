@@ -88,10 +88,12 @@
                         </button> -->
 
                         <!-- Aquí va el botón de eliminar -->
-                        <button class="btn bg-gradient-danger margin" name="cancel" type="button" placement="top" ngbTooltip="Anular Factura"
+                        <button class="btn bg-gradient-danger margin" name="cancel" type="button" placement="top" ngbTooltip="Anular nota de crédito"
                             (click)="cancel(nota)" *ngIf="auth.hasRole('ROLE_ADMIN')"
-                            [disabled]="nota.estado.idEstado === 4">
-                            <i class="fas fa-ban"></i>
+                            [disabled]="nota.estado?.idEstado !== 1"
+                            [class.is-loading]="anulando.has(nota.idNotaCredito)" [attr.aria-busy]="anulando.has(nota.idNotaCredito)">
+                            <span class="tm-spinner tm-spinner--btn" *ngIf="anulando.has(nota.idNotaCredito); else iconoAnular" role="status" aria-label="Anulando"></span>
+                            <ng-template #iconoAnular><i class="fas fa-ban"></i></ng-template>
                         </button>
                     </td>
                 </tr>

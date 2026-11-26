@@ -72,6 +72,16 @@ export class NotasCreditoService {
     return this.httpClient.get<Page<NotaCredito>>(`${this.url}/notas-credito/paginado`, { params });
   }
 
+  /** Anula la nota (devuelve sus productos al inventario). El usuario que anula lo determina el servidor por el token. */
+  anular(idNota: number): Observable<any> {
+    return this.httpClient.put<any>(`${this.url}/notas-credito/${idNota}/anular`, {}).pipe(
+      catchError(e => {
+        Swal.fire(e.error?.mensaje || 'No se pudo anular la nota de crédito', e.error?.error || 'Intente de nuevo.', 'error');
+        return throwError(e);
+      })
+    );
+  }
+
   /** Detalle (productos) de una nota de credito, paginado desde el backend. */
   getDetallePaginado(idNota: number, page: number, size: number, sort: string = ''): Observable<Page<DetalleNotaCreditoItem>> {
     const params: any = { page: String(page), size: String(size) };
