@@ -1,6 +1,7 @@
 <!-- MODALES DE LOS INFORMES DISPONIBLES -->
 <app-modal-productos-inventario></app-modal-productos-inventario>
 <app-modal-conversion-proformas></app-modal-conversion-proformas>
+<app-modal-ventas-diarias></app-modal-ventas-diarias>
 
 <section class="content-header">
     <div class="container-fluid">
@@ -65,17 +66,23 @@
                     </div>
                 </article>
 
-                <article class="rp-card rp-card--soon" aria-disabled="true">
+                <article class="rp-card rp-card--ok rp-card--conv">
                     <div class="rp-card__top">
                         <span class="rp-card__icon"><i class="fas fa-cash-register"></i></span>
-                        <span class="rp-tag rp-tag--soon">Próximamente</span>
                     </div>
                     <div class="rp-card__body">
                         <h2>Ventas diarias</h2>
-                        <p>Detalle de las ventas de un día, por cajero.</p>
+                        <p>Facturas vigentes de un día con su cliente, vendedor y total, de todo el equipo o de un vendedor.</p>
                     </div>
+                    <ul class="rp-card__tags">
+                        <li class="rp-tag"><i class="far fa-file-pdf"></i> PDF</li>
+                        <li class="rp-tag"><i class="far fa-file-excel"></i> Excel</li>
+                        <li class="rp-tag"><i class="far fa-calendar"></i> Por día</li>
+                    </ul>
                     <div class="rp-card__action">
-                        <button type="button" class="btn" disabled><i class="far fa-clock"></i> No disponible</button>
+                        <button type="button" class="btn bg-gradient-success" data-toggle="modal" data-target="#modal-ventas-diarias">
+                            <i class="far fa-paper-plane"></i> Generar informe
+                        </button>
                     </div>
                 </article>
             </div>

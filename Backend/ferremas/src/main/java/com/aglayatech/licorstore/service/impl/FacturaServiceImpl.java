@@ -145,6 +145,67 @@ public class FacturaServiceImpl implements IFacturaService {
 		return byteArrayOutputStream.toByteArray();
 	}
 
+	@Override
+	public byte[] reporteVentasDiarias(Date fecha, int idUsuario, String formato) {
+		boolean xlsx = "XLSX".equalsIgnoreCase(formato);
+
+		java.util.Calendar c = java.util.Calendar.getInstance();
+		c.setTime(fecha);
+		c.set(java.util.Calendar.HOUR_OF_DAY, 0);
+		c.set(java.util.Calendar.MINUTE, 0);
+		c.set(java.util.Calendar.SECOND, 0);
+		c.set(java.util.Calendar.MILLISECOND, 0);
+		java.sql.Timestamp inicio = new java.sql.Timestamp(c.getTimeInMillis());
+		c.add(java.util.Calendar.DAY_OF_MONTH, 1);
+		java.sql.Timestamp finExclusivo = new java.sql.Timestamp(c.getTimeInMillis());
+
+		try (Connection con = localDataSource.getConnection();
+				InputStream plantilla = getClass().getResourceAsStream("/reports/ventas_diarias.jrxml")) {
+			Map<String, Object> params = new HashMap<>();
+			params.put(net.sf.jasperreports.engine.JRParameter.IS_IGNORE_PAGINATION, xlsx);
+			params.put("ID_USUARIO", idUsuario);
+			params.put("FECHA_INICIO", inicio);
+			params.put("FECHA_FIN_EXCLUSIVA", finExclusivo);
+			params.put("FECHA_TXT", new java.text.SimpleDateFormat("dd/MM/yyyy").format(inicio));
+			params.put("VENDEDOR_TXT", nombreVendedor(con, idUsuario));
+
+			JasperReport reporte = JasperCompileManager.compileReport(plantilla);
+			JasperPrint impresion = JasperFillManager.fillReport(reporte, params, con);
+			if (!xlsx) {
+				return JasperExportManager.exportReportToPdf(impresion);
+			}
+			ByteArrayOutputStream salida = new ByteArrayOutputStream();
+			net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter exportador = new net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter();
+			exportador.setExporterInput(new net.sf.jasperreports.export.SimpleExporterInput(impresion));
+			exportador.setExporterOutput(new net.sf.jasperreports.export.SimpleOutputStreamExporterOutput(salida));
+			net.sf.jasperreports.export.SimpleXlsxReportConfiguration configuracion = new net.sf.jasperreports.export.SimpleXlsxReportConfiguration();
+			configuracion.setDetectCellType(true);
+			configuracion.setRemoveEmptySpaceBetweenRows(true);
+			configuracion.setWhitePageBackground(false);
+			configuracion.setSheetNames(new String[] { "Ventas diarias" });
+			exportador.setConfiguration(configuracion);
+			exportador.exportReport();
+			return salida.toByteArray();
+		} catch (Exception e) {
+			throw new com.aglayatech.licorstore.generics.ReglaNegocioException(
+					org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR,
+					"No se pudo generar el reporte de ventas diarias: " + e.getMessage());
+		}
+	}
+
+	private String nombreVendedor(Connection con, int idUsuario) throws SQLException {
+		if (idUsuario == 0) {
+			return "Todos";
+		}
+		try (java.sql.PreparedStatement ps = con.prepareStatement(
+				"SELECT TRIM(CONCAT(COALESCE(primer_nombre, ''), ' ', COALESCE(apellido, ''))) FROM usuarios WHERE id_usuario = ?")) {
+			ps.setInt(1, idUsuario);
+			try (java.sql.ResultSet rs = ps.executeQuery()) {
+				return rs.next() ? rs.getString(1) : "Desconocido";
+			}
+		}
+	}
+
 	protected ByteArrayOutputStream getByteArrayOutputStream(JasperPrint jasperPrint) throws JRException {
 	    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 	    JasperExportManager.exportReportToPdfStream(jasperPrint, byteArrayOutputStream);

@@ -38,6 +38,9 @@ public interface IFacturaService {
 	
 	public byte[] resportDailySales(Integer usuario, Date fecha) throws JRException, FileNotFoundException, SQLException;
 	
+	/** Facturas vigentes de un dia (idUsuario 0 = todos los vendedores) en PDF o XLSX. */
+	public byte[] reporteVentasDiarias(Date fecha, int idUsuario, String formato);
+
 	public byte[] showBill(Long idfactura) throws JRException, FileNotFoundException, SQLException;
 
 	public byte[] showBill2(Long idfactura) throws JRException, FileNotFoundException, SQLException;

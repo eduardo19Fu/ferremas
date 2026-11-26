@@ -117,6 +117,15 @@ export class FacturaService {
     );
   }
 
+  /** Facturas vigentes de un dia (fecha yyyy-MM-dd). idUsuario 0 = todos los vendedores. */
+  getVentasDiarias(fecha: string, idUsuario: number, formato: 'PDF' | 'XLSX'): Observable<Blob> {
+    const params: any = { fecha, formato };
+    if (idUsuario) {
+      params.idUsuario = String(idUsuario);
+    }
+    return this.http.get(`${this.url}/facturas/ventas-diarias`, { params, responseType: 'blob' });
+  }
+
   getSellsDaillyReportPDF(cajero: number, fecha: Date): Observable<any>{
     const headers = new HttpHeaders();
     headers.append('Accept', 'application/pdf');
