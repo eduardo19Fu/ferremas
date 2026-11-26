@@ -1,0 +1,109 @@
+<div *ngIf="detailService.modal" class="df-fondo" (click)="cerrarModal()">
+    <div class="modal" tabindex="-1" style="display: block; overflow-y: auto;" role="dialog" aria-modal="true"
+        aria-labelledby="dp-titulo">
+        <div class="modal-dialog modal-lg modal-dialog-centered" (click)="$event.stopPropagation()">
+            <div class="modal-content tm-form df" *ngIf="proforma">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="dp-titulo">{{title}}</h5>
+                    <button (click)="cerrarModal()" id="close" type="button" class="close" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body df-cuerpo">
+
+                    <!-- portada: numero, estado y total -->
+                    <div class="df-hero">
+                        <div class="df-hero__id">
+                            <span class="df-hero__tipo">Cotización</span>
+                            <h3 class="df-numero">
+                                Proforma No. {{proforma.noProforma}}
+                                <span class="df-estado" [ngClass]="facturada ? 'df-estado--ok' : 'df-estado--pendiente'">
+                                    {{facturada ? 'FACTURADA' : 'PENDIENTE'}}
+                                </span>
+                            </h3>
+                        </div>
+                        <div class="df-total">
+                            <small>Total</small>
+                            <strong>{{proforma.total | currency: "Q" : "symbol"}}</strong>
+                        </div>
+                    </div>
+
+                    <!-- datos agrupados por categoria -->
+                    <div class="df-grupos">
+                        <section class="df-card df-card--cliente">
+                            <h5><i class="fas fa-user" aria-hidden="true"></i> Cliente</h5>
+                            <dl>
+                                <div><dt>Nombre</dt><dd>{{proforma.cliente || '—'}}</dd></div>
+                                <div><dt>NIT</dt><dd>{{proforma.nit || 'CF'}}</dd></div>
+                            </dl>
+                        </section>
+
+                        <section class="df-card df-card--venta">
+                            <h5><i class="fas fa-calendar-alt" aria-hidden="true"></i> Emisión</h5>
+                            <dl>
+                                <div><dt>Fecha</dt><dd>{{proforma.fechaEmision | date: 'dd/MM/yyyy · hh:mm a'}}</dd></div>
+                                <div><dt>Vendedor</dt><dd>{{proforma.vendedor || '—'}}</dd></div>
+                            </dl>
+                        </section>
+
+                        <section class="df-card df-card--documento">
+                            <h5><i class="fas fa-file-invoice-dollar" aria-hidden="true"></i> Conversión</h5>
+                            <dl>
+                                <div><dt>Estado</dt><dd>{{facturada ? 'Convertida en factura' : 'Sin facturar'}}</dd></div>
+                                <div><dt>Factura</dt><dd>{{facturada ? ('No. ' + proforma.noFactura) : '—'}}</dd></div>
+                            </dl>
+                        </section>
+                    </div>
+
+                    <!-- productos (paginado desde el backend) -->
+                    <div class="df-seccion">
+                        <h4>Productos <span class="df-cuenta" *ngIf="totalElements">{{totalElements}}</span></h4>
+                    </div>
+
+                    <div class="df-tabla">
+                        <div class="tabla-wrap">
+                            <div class="tabla-progreso" *ngIf="cargando && items.length"></div>
+                            <app-tabla-skeleton *ngIf="cargando && !items.length" [columnas]="5" [filas]="size"></app-tabla-skeleton>
+
+                            <table class="table table-modern" [class.cargando]="cargando" *ngIf="items.length > 0">
+                                <thead>
+                                    <tr>
+                                        <th tmSortable="cantidad" [sort]="sort" (tmSort)="onSort($event)">Cant.</th>
+                                        <th tmSortable="nombreProducto" [sort]="sort" (tmSort)="onSort($event)">Producto</th>
+                                        <th tmSortable="precioUnitario" [sort]="sort" (tmSort)="onSort($event)">Precio</th>
+                                        <th tmSortable="descuento" [sort]="sort" (tmSort)="onSort($event)">Desc.</th>
+                                        <th tmSortable="subTotalDescuento" [sort]="sort" (tmSort)="onSort($event)">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of items">
+                                        <td data-label="Cant.">{{item.cantidad}}</td>
+                                        <td data-label="Producto">
+                                            {{item.nombreProducto || "Producto no disponible"}}
+                                            <small class="df-codigo" *ngIf="item.codProducto">{{item.codProducto}}</small>
+                                        </td>
+                                        <td data-label="Precio">{{item.precioUnitario | currency: "Q" : "symbol"}}</td>
+                                        <td data-label="Desc.">{{item.descuento ? (item.descuento + '%') : '—'}}</td>
+                                        <td data-label="Subtotal">{{item.subTotalDescuento | currency: "Q" : "symbol"}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <p class="df-vacio" *ngIf="!cargando && !items.length">Esta proforma no tiene productos registrados.</p>
+                        </div>
+                    </div>
+
+                    <app-paginacion *ngIf="totalElements > 0" [siempreNav]="true" [sizes]="tamanios" [page]="page" [size]="size"
+                        [totalElements]="totalElements" [totalPages]="totalPages"
+                        (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
+                </div>
+
+                <div class="modal-footer">
+                    <button (click)="cerrarModal()" type="button" class="btn btn-secondary">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

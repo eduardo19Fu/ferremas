@@ -52,6 +52,9 @@ public class FacturaApiController {
     private IProductoService serviceProducto;
 
     @Autowired
+    private com.aglayatech.licorstore.service.ICotizacionService serviceProforma;
+
+    @Autowired
     private IEstadoService serviceEstado;
 
     @Autowired
@@ -154,6 +157,19 @@ public class FacturaApiController {
 
         if (result.hasErrors()) {
             return new ResponseEntity<Map<String, Object>>(ErroresHandler.bingingResultErrorsHandler(result), HttpStatus.BAD_REQUEST);
+        }
+
+        // Factura que convierte una proforma: la proforma debe existir y no tener ya una factura vigente
+        if (factura.getIdProformaOrigen() != null) {
+            if (serviceProforma.findProforma(factura.getIdProformaOrigen()) == null) {
+                response.put("mensaje", "La proforma de origen no existe.");
+                return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+            }
+            if (serviceProforma.estaFacturada(factura.getIdProformaOrigen())) {
+                response.put("mensaje", "La proforma ya fue convertida en una factura vigente.");
+                response.put("error", "Anule esa factura si desea volver a facturar la proforma.");
+                return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CONFLICT);
+            }
         }
 
         try {
