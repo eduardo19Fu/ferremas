@@ -13,6 +13,10 @@ import java.util.List;
 
 public interface IFacturaRepository extends JpaRepository<Factura, Long> {
 
+    /** Verdadero si la proforma ya tiene una factura vigente (no anulada). */
+    @Query("select count(f) > 0 from Factura f where f.idProformaOrigen = :idProforma and f.estado.estado <> 'ANULADO'")
+    boolean existeFacturaVigenteDeProforma(@Param("idProforma") Long idProforma);
+
     /**
      * Detalle de una factura, paginado. La relacion factura -> detalle es unidireccional, por eso se filtra con
      * una subconsulta; la proyeccion trae solo las columnas necesarias (sin cargar el producto completo).

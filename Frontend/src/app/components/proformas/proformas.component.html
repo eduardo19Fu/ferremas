@@ -1,0 +1,165 @@
+<!-- MODAL DE DETALLE PARA LA PROFORMA SELECCIONADA -->
+<app-detail-proforma *ngIf="proformaSeleccionada" [proforma]="proformaSeleccionada"></app-detail-proforma>
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-8">
+                <h1>{{title}}</h1>
+                <br>
+                <a [routerLink]="['/proformas/create']" class="btn bg-gradient-success">
+                    <i class="fas fa-plus-circle"></i>
+                    Nueva
+                </a>&nbsp;
+
+                <button type="button" class="btn btn-outline-success" (click)="exportar()"
+                    [class.is-loading]="exportando" [attr.aria-busy]="exportando" [disabled]="!totalElements"
+                    ngbTooltip="Exportar a Excel todo el listado filtrado" placement="bottom">
+                    <span class="tm-spinner tm-spinner--btn" *ngIf="exportando; else iconoExcel" role="status"></span>
+                    <ng-template #iconoExcel><i class="fas fa-file-excel"></i></ng-template>
+                    {{ exportando ? 'Generando…' : 'Excel' }}
+                </button>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<div class="card tm-form">
+    <div class="card-header">
+        <h3 class="card-title">Filtros</h3>
+    </div>
+
+    <form #filtrosForm="ngForm" (ngSubmit)="aplicarFiltros()">
+        <div class="card-body">
+            <div class="tm-grid">
+                <div class="tm-field">
+                    <label for="fecha-inicio">Fecha inicio</label>
+                    <input type="date" name="fecha-inicio" id="fecha-inicio" class="form-control" [(ngModel)]="fechaIni">
+                </div>
+
+                <div class="tm-field">
+                    <label for="fecha-fin">Fecha fin</label>
+                    <input type="date" name="fecha-fin" id="fecha-fin" class="form-control" [(ngModel)]="fechaFin">
+                </div>
+
+                <div class="tm-field" *ngIf="auth.hasRole('ROLE_ADMIN')">
+                    <label for="filtro-usuario">Vendedor</label>
+                    <select name="filtro-usuario" id="filtro-usuario" class="form-control custom-select" [(ngModel)]="idUsuario">
+                        <option [ngValue]="0">Todos</option>
+                        <option *ngFor="let u of usuarios" [ngValue]="u.idUsuario">{{u.primerNombre}} {{u.apellido}} ({{u.usuario}})</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer">
+            <button type="button" class="btn bg-gradient-warning" (click)="limpiarFiltros()">
+                <i class="fas fa-brush"></i>
+                Limpiar
+            </button>
+
+            <button type="submit" class="btn bg-gradient-info">
+                <i class="fas fa-search"></i>
+                Buscar
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+<div class="card-body table-responsive">
+
+        <div class="row mb-2">
+            <div class="col-md-auto tm-toolbar-size">
+                <app-tamanio-pagina [size]="size" (sizeChange)="onSizeChange($event)"></app-tamanio-pagina>
+            </div>
+            <div class="col-md-4 ml-md-auto tm-buscador">
+                <i class="fas fa-search"></i>
+                <input type="search" class="form-control form-control-sm" placeholder="Buscar por cliente, NIT o No. proforma..."
+                    [ngModel]="search" (ngModelChange)="onBuscar($event)">
+                <span class="tm-spinner" *ngIf="cargando"></span>
+            </div>
+        </div>
+
+        <app-sin-registros *ngIf="proformas?.length == 0 && !cargando" entidad="proformas" [busqueda]="search"
+            (limpiar)="onBuscar('')"></app-sin-registros>
+
+        <div class="tabla-wrap">
+            <div class="tabla-progreso" *ngIf="cargando && proformas?.length"></div>
+            <app-tabla-skeleton *ngIf="cargando && !proformas?.length" [columnas]="7"></app-tabla-skeleton>
+            <table class="table table-modern" [class.cargando]="cargando" *ngIf="proformas?.length > 0">
+                <thead>
+                    <tr>
+                        <th tmSortable="noProforma" [sort]="sort" (tmSort)="onSort($event)">No.</th>
+                        <th tmSortable="fecha" [sort]="sort" (tmSort)="onSort($event)">Fecha</th>
+                        <th tmSortable="cliente" [sort]="sort" (tmSort)="onSort($event)">Cliente</th>
+                        <th tmSortable="vendedor" [sort]="sort" (tmSort)="onSort($event)">Vendedor</th>
+                        <th tmSortable="total" [sort]="sort" (tmSort)="onSort($event)">Total</th>
+                        <th>Estado</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let proforma of proformas">
+                        <td data-label="No.">{{proforma.noProforma}}</td>
+                        <td data-label="Fecha">{{proforma.fechaEmision | date: 'dd/MM/yyyy - hh:mm'}}</td>
+                        <td data-label="Cliente">
+                            {{proforma.cliente || '—'}}
+                            <small class="text-muted d-block" *ngIf="proforma.nit">NIT {{proforma.nit}}</small>
+                        </td>
+                        <td data-label="Vendedor">{{proforma.vendedor || '—'}}</td>
+                        <td data-label="Total">{{proforma.total | currency: 'Q' : 'symbol'}}</td>
+                        <td data-label="Estado">
+                            <span class="badge badge-success" *ngIf="proforma.noFactura; else pendiente"
+                                [ngbTooltip]="'Convertida en la factura No. ' + proforma.noFactura" placement="top">
+                                FACTURADA · {{proforma.noFactura}}
+                            </span>
+                            <ng-template #pendiente><span class="badge badge-info">PENDIENTE</span></ng-template>
+                        </td>
+                        <td data-label="Opciones" class="center-options">
+
+                            <button class="btn bg-gradient-success margin" name="detail" type="button" placement="top" ngbTooltip="Detalle"
+                                (click)="abrirDetalle(proforma)">
+                                <i class="fas fa-asterisk"></i>
+                            </button>
+
+                            <button class="btn bg-gradient-warning margin" name="print" type="button" placement="top" ngbTooltip="Imprimir proforma"
+                                (click)="imprimir(proforma)"
+                                [class.is-loading]="imprimiendo.has(proforma.idProforma)"
+                                [attr.aria-busy]="imprimiendo.has(proforma.idProforma)">
+                                <span class="tm-spinner tm-spinner--btn" *ngIf="imprimiendo.has(proforma.idProforma); else iconoImprimir"
+                                    role="status" aria-label="Generando proforma"></span>
+                                <ng-template #iconoImprimir><i class="fas fa-print"></i></ng-template>
+                            </button>
+
+                            <a class="btn bg-gradient-info margin" name="edit" placement="top" ngbTooltip="Editar"
+                                [routerLink]="['/proformas/create', proforma.idProforma]"
+                                [class.disabled]="proforma.noFactura" [attr.aria-disabled]="!!proforma.noFactura"
+                                [attr.tabindex]="proforma.noFactura ? -1 : null">
+                                <i class="fas fa-edit"></i>
+                            </a>
+
+                            <a class="btn bg-gradient-primary margin" name="facturar" placement="top" ngbTooltip="Convertir en factura"
+                                [routerLink]="['/facturas/create']" [queryParams]="{proforma: proforma.idProforma}"
+                                [class.disabled]="proforma.noFactura" [attr.aria-disabled]="!!proforma.noFactura"
+                                [attr.tabindex]="proforma.noFactura ? -1 : null">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </a>
+
+                            <button class="btn bg-gradient-danger margin" name="delete" type="button" placement="top" ngbTooltip="Eliminar"
+                                (click)="eliminar(proforma)" *ngIf="auth.hasRole('ROLE_ADMIN')"
+                                [disabled]="proforma.noFactura">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <app-paginacion [mostrarTamanio]="false" [page]="page" [size]="size" [totalElements]="totalElements" [totalPages]="totalPages"
+            (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)"></app-paginacion>
+    </div>
+</div>

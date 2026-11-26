@@ -119,8 +119,8 @@ public class NotaCreditoApiController {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            Object claim = jwt == null ? null : jwt.getClaim("id_usuario");
-            com.aglayatech.licorstore.model.Usuario usuario = claim instanceof Number ? usuarioService.findById(((Number) claim).intValue()) : null;
+            Integer idUsuario = com.aglayatech.licorstore.auth.TokenUsuario.idUsuario(jwt);
+            com.aglayatech.licorstore.model.Usuario usuario = idUsuario == null ? null : usuarioService.findById(idUsuario);
 
             NotaCredito anulada = notaCreditoService.anular(idnota, usuario);
             logger.info("Nota de credito {} anulada por {}", idnota, usuario == null ? "desconocido" : usuario.getUsuario());

@@ -19,7 +19,9 @@ import swal from 'sweetalert2';
 import { ModalCambioService } from '../../../services/facturas/modal-cambio.service';
 import { EnvioService } from '../../../services/envios/envio.service';
 import { Envio } from '../../../models/envio';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ProformaService } from '../../../services/proformas/proforma.service';
+import { Proforma } from '../../../models/proforma';
 import { DetalleEnvio } from '../../../models/detalle-envio';
 import { TipoFactura } from '../../../models/tipo-factura';
 
@@ -55,6 +57,10 @@ export class CreateFacturaComponent implements OnInit {
   efectivo: number;
   cambio = 0.00;
 
+  /** Proforma que se esta convirtiendo en factura (llega por ?proforma=ID). */
+  proformaOrigen: Proforma | null = null;
+  idProformaOrigen: number | null = null;
+
   constructor(
     private facturaService: FacturaService,
     private productoService: ProductoService,
@@ -64,7 +70,9 @@ export class CreateFacturaComponent implements OnInit {
     private correlativoService: CorrelativoService,
     private envioService: EnvioService,
     private activatedRoute: ActivatedRoute,
-    public authService: AuthService
+    public authService: AuthService,
+    private proformaService: ProformaService,
+    private router: Router
   ) {
     this.title = 'Crear Factura';
     this.cliente = new Cliente();
@@ -77,6 +85,62 @@ export class CreateFacturaComponent implements OnInit {
   ngOnInit(): void {
     this.loadUsuario();
     this.loadEnvio();
+    this.loadProforma();
+  }
+
+  /**
+   * Si la ruta trae ?proforma=ID, prepara la venta con el cliente y los productos de esa proforma.
+   * Una proforma que ya tiene una factura vigente no se puede volver a facturar.
+   */
+  loadProforma(): void {
+    const id = Number(this.activatedRoute.snapshot.queryParamMap.get('proforma'));
+    if (!id) {
+      return;
+    }
+
+    this.proformaService.estaFacturada(id).subscribe(facturada => {
+      if (facturada) {
+        swal.fire('Proforma ya facturada', 'Esta proforma ya fue convertida en una factura vigente. Anule esa factura si desea volver a facturarla.', 'info')
+          .then(() => this.router.navigate(['/proformas/index']));
+        return;
+      }
+
+      this.proformaService.getProforma(id).subscribe(datos => {
+        const proforma = Proforma.desde(datos);
+        this.proformaOrigen = proforma;
+        this.idProformaOrigen = proforma.idProforma;
+        this.cliente = proforma.cliente || new Cliente();
+        this.factura = new Factura();
+        this.factura.idProformaOrigen = proforma.idProforma;
+
+        proforma.itemsProforma.forEach(linea => {
+          if (!linea.producto) {
+            return;                                       // linea sin producto asociado: no se puede facturar
+          }
+          const item = new DetalleFactura();
+          item.producto = linea.producto;
+          item.cantidad = linea.cantidad;
+          item.descuento = linea.descuento || 0;
+          item.precioUnitario = linea.producto.precioVenta;
+          item.subTotal = item.calcularImporte();
+          item.subTotalDescuento = item.calcularImporteDescuento();
+          this.factura.itemsFactura.push(item);
+        });
+
+        if (this.lineasSinStock.length) {
+          swal.fire('Existencias insuficientes',
+            'Algunos productos de la proforma ya no tienen existencias suficientes. Ajuste las cantidades para poder cobrar:<br><b>'
+            + this.lineasSinStock.map(l => l.producto.nombre).join('<br>') + '</b>', 'warning');
+        }
+      }, () => {
+        swal.fire('No se pudo cargar la proforma', 'La proforma no existe o no tiene permisos para verla.', 'error');
+      });
+    });
+  }
+
+  /** Lineas cuya cantidad supera las existencias actuales del producto. */
+  get lineasSinStock(): DetalleFactura[] {
+    return this.factura.itemsFactura.filter(item => item.cantidad > item.producto.stock);
   }
 
   loadUsuario(): void {
@@ -324,6 +388,7 @@ export class CreateFacturaComponent implements OnInit {
         this.factura.envio = this.envio;
         this.factura.total = this.factura.calcularTotal();
         this.factura.tipoFactura = this.validarTipoFactura();
+        this.factura.idProformaOrigen = this.idProformaOrigen;
 
         this.facturaService.create(this.factura).subscribe(
           response => {
@@ -355,6 +420,7 @@ export class CreateFacturaComponent implements OnInit {
       this.factura.envio = this.envio;
       this.factura.total = this.factura.calcularTotal();
       this.factura.tipoFactura = this.validarTipoFactura();
+      this.factura.idProformaOrigen = this.idProformaOrigen;
 
       this.facturaService.create(this.factura).subscribe(
         response => {
@@ -395,7 +461,11 @@ export class CreateFacturaComponent implements OnInit {
       window.open(a.toString(), '_blank');
       window.URL.revokeObjectURL(url);
       a.remove();
-      location.reload();
+      if (this.idProformaOrigen) {
+        this.router.navigate(['/proformas/index']);        // la proforma ya quedo facturada
+      } else {
+        location.reload();
+      }
     },
       error => {
         this.generando = false;

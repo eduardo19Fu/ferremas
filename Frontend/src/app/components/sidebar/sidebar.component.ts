@@ -57,6 +57,13 @@ const MENU: SeccionMenu[] = [
           { etiqueta: 'Facturas emitidas', ruta: '/facturas/index' },
           { etiqueta: 'Correlativos', ruta: '/facturas/correlativos/index', roles: [ADMIN] }
         ]
+      },
+      {
+        etiqueta: 'Proformas', icono: 'fa-file-signature', prefijo: '/proformas', roles: [COBRADOR, ADMIN],
+        hijos: [
+          { etiqueta: 'Listado', ruta: '/proformas/index' },
+          { etiqueta: 'Nueva', ruta: '/proformas/create' }
+        ]
       }
     ]
   },
@@ -115,9 +122,9 @@ const MENU: SeccionMenu[] = [
     ]
   },
   {
-    titulo: 'Reportes',
+    titulo: 'Reportes', rolesTitulo: [ADMIN],
     items: [
-      { etiqueta: 'Reportes', icono: 'fa-chart-line', ruta: '/reportes/main' }
+      { etiqueta: 'Reportes', icono: 'fa-chart-line', ruta: '/reportes/main', roles: [ADMIN] }
     ]
   }
 ];

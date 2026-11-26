@@ -49,6 +49,9 @@ import { ModalPaisComponent } from './components/paises/modal-pais/modal-pais.co
 import { ComprasComponent } from './components/compras/compras.component';
 import { CreateCompraComponent } from './components/compras/create-compra/create-compra.component';
 import { ModalDetalleCompraComponent } from './components/compras/modal-detalle-compra/modal-detalle-compra.component';
+import { ProformasComponent } from './components/proformas/proformas.component';
+import { CreateProformaComponent } from './components/proformas/create-proforma/create-proforma.component';
+import { DetailProformaComponent } from './components/proformas/detail-proforma/detail-proforma.component';
 import { EnviosComponent } from './components/envios/envios.component';
 import { CreateEnvioComponent } from './components/envios/create-envio/create-envio.component';
 import { DetailEnvioComponent } from './components/envios/detail-envio/detail-envio.component';
@@ -56,6 +59,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ReportesComponent } from './components/reportes/reportes.component';
 import { ModalVentasMensualesComponent } from './components/reportes/modales/modal-ventas-mensuales/modal-ventas-mensuales.component';
 import { ModalVentasDiariasComponent } from './components/reportes/modales/modal-ventas-diarias/modal-ventas-diarias.component';
+import { ModalConversionProformasComponent } from './components/reportes/modales/modal-conversion-proformas/modal-conversion-proformas.component';
 import { ModalEnviosRealizadosComponent } from './components/reportes/modales/modal-envios-realizados/modal-envios-realizados.component';
 import { ModalProductosInventarioComponent } from './components/reportes/modales/modal-productos-inventario/modal-productos-inventario.component';
 import { NotasCreditoComponent } from './components/notas-credito/notas-credito.component';
@@ -122,12 +126,16 @@ import { LogoComponent } from './components/shared/logo/logo.component';
     ComprasComponent,
     CreateCompraComponent,
     ModalDetalleCompraComponent,
+    ProformasComponent,
+    CreateProformaComponent,
+    DetailProformaComponent,
     EnviosComponent,
     CreateEnvioComponent,
     DetailEnvioComponent,
     ReportesComponent,
     ModalVentasMensualesComponent,
     ModalVentasDiariasComponent,
+    ModalConversionProformasComponent,
     ModalEnviosRealizadosComponent,
     ModalProductosInventarioComponent,
     NotasCreditoComponent,
