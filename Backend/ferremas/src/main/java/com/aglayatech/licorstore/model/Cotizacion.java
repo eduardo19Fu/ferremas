@@ -4,16 +4,24 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Proforma (cotizacion). No mueve inventario: el stock se descuenta cuando se convierte en factura.
+ */
 @Entity
 @Table(name = "proformas")
 public class Cotizacion implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idproforma;
+    private Long idProforma;
+
+    /** Numero visible de la proforma; se asigna igual al id al registrarla. */
     private Long noProforma;
     private Double total;
 
@@ -22,7 +30,7 @@ public class Cotizacion implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @JsonIgnoreProperties({ "password", "roles", "hibernateLazyInitializer", "handler" })
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,22 +43,24 @@ public class Cotizacion implements Serializable {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private Cliente cliente;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "id_proforma")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private List<DetalleCotizacion> itemsProforma;
+    private List<DetalleCotizacion> itemsProforma = new ArrayList<>();
 
     @PrePersist
-    public void prepersist(){
-        this.fechaEmision = new Date();
+    public void prepersist() {
+        if (this.fechaEmision == null) {
+            this.fechaEmision = new Date();
+        }
     }
 
-    public Long getIdproforma() {
-        return idproforma;
+    public Long getIdProforma() {
+        return idProforma;
     }
 
-    public void setIdproforma(Long idproforma) {
-        this.idproforma = idproforma;
+    public void setIdProforma(Long idProforma) {
+        this.idProforma = idProforma;
     }
 
     public Long getNoProforma() {
@@ -108,20 +118,4 @@ public class Cotizacion implements Serializable {
     public void setItemsProforma(List<DetalleCotizacion> itemsProforma) {
         this.itemsProforma = itemsProforma;
     }
-
-    @Override
-    public String toString() {
-        return "Proforma{" +
-                "idproforma=" + idproforma +
-                ", noProforma=" + noProforma +
-                ", total=" + total +
-                ", fechaEmision=" + fechaEmision +
-                ", usuario=" + usuario +
-                ", estado=" + estado +
-                ", cliente=" + cliente +
-                ", itemsProforma=" + itemsProforma +
-                '}';
-    }
-
-    private static final long serialVersionUID = 1L;
 }

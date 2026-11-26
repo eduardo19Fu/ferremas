@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Conversion de proformas a facturas, por usuario. Carta horizontal; PDF o Excel (sin paginacion). -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="conversion_proformas" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<parameter name="ID_USUARIO" class="java.lang.Integer"/>
+	<parameter name="FECHA_INICIO" class="java.sql.Timestamp"/>
+	<parameter name="FECHA_FIN_EXCLUSIVA" class="java.sql.Timestamp"/>
+	<parameter name="RANGO" class="java.lang.String"/>
+	<parameter name="FORMATO" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT TRIM(CONCAT(COALESCE(u.primer_nombre, ''), ' ', COALESCE(u.apellido, ''))) AS usuario,
+       COUNT(DISTINCT p.id_proforma) AS proformas_emitidas,
+       COUNT(DISTINCT CASE WHEN f.id_factura IS NOT NULL THEN p.id_proforma END) AS proformas_convertidas,
+       COALESCE((SELECT SUM(p2.total) FROM proformas p2
+                  WHERE p2.id_usuario = u.id_usuario
+                    AND p2.fecha_emision >= $P{FECHA_INICIO} AND p2.fecha_emision < $P{FECHA_FIN_EXCLUSIVA}), 0) AS valor_proformado,
+       COALESCE((SELECT SUM(f2.total) FROM facturas f2
+                  INNER JOIN proformas p3 ON p3.id_proforma = f2.id_proforma_origen
+                  INNER JOIN estados e2 ON e2.id_estado = f2.id_estado
+                  WHERE p3.id_usuario = u.id_usuario AND e2.estado <> 'ANULADO'
+                    AND p3.fecha_emision >= $P{FECHA_INICIO} AND p3.fecha_emision < $P{FECHA_FIN_EXCLUSIVA}), 0) AS valor_convertido
+  FROM proformas p
+  INNER JOIN usuarios u ON u.id_usuario = p.id_usuario
+  LEFT JOIN (SELECT f1.id_factura, f1.id_proforma_origen FROM facturas f1
+              INNER JOIN estados e1 ON e1.id_estado = f1.id_estado
+              WHERE e1.estado <> 'ANULADO') f ON f.id_proforma_origen = p.id_proforma
+ WHERE p.fecha_emision >= $P{FECHA_INICIO}
+   AND p.fecha_emision < $P{FECHA_FIN_EXCLUSIVA}
+   AND ($P{ID_USUARIO} = 0 OR p.id_usuario = $P{ID_USUARIO})
+ GROUP BY u.id_usuario, u.primer_nombre, u.apellido
+ ORDER BY usuario]]>
+	</queryString>
+	<field name="usuario" class="java.lang.String"/>
+	<field name="proformas_emitidas" class="java.lang.Long"/>
+	<field name="proformas_convertidas" class="java.lang.Long"/>
+	<field name="valor_proformado" class="java.math.BigDecimal"/>
+	<field name="valor_convertido" class="java.math.BigDecimal"/>
+
+	<variable name="totalEmitidas" class="java.lang.Long" calculation="Sum">
+		<variableExpression><![CDATA[$F{proformas_emitidas}]]></variableExpression>
+	</variable>
+	<variable name="totalConvertidas" class="java.lang.Long" calculation="Sum">
+		<variableExpression><![CDATA[$F{proformas_convertidas}]]></variableExpression>
+	</variable>
+	<variable name="totalProformado" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{valor_proformado}]]></variableExpression>
+	</variable>
+	<variable name="totalConvertido" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{valor_convertido}]]></variableExpression>
+	</variable>
+
+	<title>
+		<band height="86">
+			<image scaleImage="RetainShape" hAlign="Left" vAlign="Top">
+				<reportElement x="0" y="0" width="170" height="44"/>
+				<imageExpression><![CDATA[this.getClass().getResourceAsStream("/static/images/reports-image/logo-ferremas.png")]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="190" y="2" width="562" height="22" forecolor="#10303D"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="17" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Conversión de proformas]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="190" y="26" width="562" height="16" forecolor="#6B7280"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{RANGO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH:mm">
+				<reportElement x="190" y="42" width="562" height="12" forecolor="#9AA5B1"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Generado el " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="60" width="752" height="22" forecolor="#6B7280"/>
+				<textElement verticalAlignment="Top">
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Se consideran convertidas las proformas vinculadas a una factura vigente (no anulada). Los valores son los de la proforma y los de la factura que la convirtió.]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="82" width="752" height="1" forecolor="#E3E7EC"/>
+				<graphicElement>
+					<pen lineWidth="0.75" lineColor="#E3E7EC"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="0" y="82" width="64" height="1" forecolor="#F4BE4A"/>
+				<graphicElement>
+					<pen lineWidth="2.0" lineColor="#F4BE4A"/>
+				</graphicElement>
+			</line>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="26">
+			<rectangle radius="3">
+				<reportElement x="0" y="0" width="752" height="26" forecolor="#10303D" backcolor="#10303D"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="10" y="0" width="230" height="26" forecolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[USUARIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="240" y="0" width="100" height="26" forecolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[EMITIDAS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="340" y="0" width="100" height="26" forecolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CONVERTIDAS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="440" y="0" width="90" height="26" forecolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CONVERSIÓN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="530" y="0" width="108" height="26" forecolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[VALOR PROFORMADO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="638" y="0" width="106" height="26" forecolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[VALOR CONVERTIDO]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="24">
+			<textField isBlankWhenNull="true">
+				<reportElement x="10" y="0" width="230" height="23" forecolor="#10303D"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9.5" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{usuario}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="240" y="0" width="100" height="23" forecolor="#10303D"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9.5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{proformas_emitidas}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="340" y="0" width="100" height="23" forecolor="#10303D"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9.5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{proformas_convertidas}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.0%">
+				<reportElement x="440" y="0" width="90" height="23" forecolor="#227A99"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9.5" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{proformas_emitidas}.longValue() == 0L ? 0d : $F{proformas_convertidas}.doubleValue() / $F{proformas_emitidas}.doubleValue()]]></textFieldExpression>
+			</textField>
+			<textField pattern="Q #,##0.00">
+				<reportElement x="530" y="0" width="108" height="23" forecolor="#10303D"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9.5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_proformado}]]></textFieldExpression>
+			</textField>
+			<textField pattern="Q #,##0.00">
+				<reportElement x="638" y="0" width="106" height="23" forecolor="#10303D"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9.5" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_convertido}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="23" width="752" height="1" forecolor="#EEF0F3"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#EEF0F3"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="18">
+			<textField>
+				<reportElement x="620" y="3" width="100" height="12" forecolor="#7B8798">
+					<printWhenExpression><![CDATA["PDF".equals($P{FORMATO})]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="720" y="3" width="32" height="12" forecolor="#7B8798">
+					<printWhenExpression><![CDATA["PDF".equals($P{FORMATO})]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" de " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="58">
+			<staticText>
+				<reportElement x="0" y="14" width="752" height="24" forecolor="#6B7280">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT}.intValue() == 0]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[No se encontraron proformas para los filtros seleccionados.]]></text>
+			</staticText>
+			<rectangle radius="4">
+				<reportElement x="0" y="8" width="752" height="28" forecolor="#DFE6EA" backcolor="#F4F8FA">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT}.intValue() > 0]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.75" lineColor="#DFE6EA"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="10" y="8" width="230" height="28" forecolor="#10303D">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT}.intValue() > 0]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="9.5" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL]]></text>
+			</staticText>
+			<textField pattern="#,##0">
+				<reportElement x="240" y="8" width="100" height="28" forecolor="#10303D">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT}.intValue() > 0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9.5" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalEmitidas}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="340" y="8" width="100" height="28" forecolor="#10303D">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT}.intValue() > 0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9.5" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalConvertidas}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.0%">
+				<reportElement x="440" y="8" width="90" height="28" forecolor="#227A99">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT}.intValue() > 0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9.5" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalEmitidas}.longValue() == 0L ? 0d : $V{totalConvertidas}.doubleValue() / $V{totalEmitidas}.doubleValue()]]></textFieldExpression>
+			</textField>
+			<textField pattern="Q #,##0.00">
+				<reportElement x="530" y="8" width="108" height="28" forecolor="#10303D">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT}.intValue() > 0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9.5" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalProformado}]]></textFieldExpression>
+			</textField>
+			<textField pattern="Q #,##0.00">
+				<reportElement x="638" y="8" width="106" height="28" forecolor="#10303D">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT}.intValue() > 0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9.5" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalConvertido}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

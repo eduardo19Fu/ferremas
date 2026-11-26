@@ -33,6 +33,16 @@
         <form>
             <div class="card-body">
 
+                <!-- aviso: la venta proviene de una proforma -->
+                <p class="tm-hint" *ngIf="proformaOrigen">
+                    <i class="fas fa-file-signature"></i>
+                    Esta venta convierte la <b>proforma No. {{proformaOrigen.noProforma}}</b>. Al cobrar, la proforma quedará facturada.
+                </p>
+                <p class="tm-hint text-danger" *ngIf="lineasSinStock.length">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Hay productos sin existencias suficientes: ajuste las cantidades para poder cobrar.
+                </p>
+
                 <!-- VENDEDOR Y CORRELATIVO -->
                 <section class="tm-section">
                     <h4 class="tm-section-title">Venta</h4>
@@ -235,7 +245,7 @@
 
             <div class="card-footer">
                 <button type="submit" role="button" class="btn btn-primary btn-lg"
-                    [disabled]="!cliente.idCliente && (factura.itemsFactura.length <= 0)" (click)="createFactura()"
+                    [disabled]="(!cliente.idCliente && (factura.itemsFactura.length <= 0)) || lineasSinStock.length > 0" (click)="createFactura()"
                     [class.is-loading]="generando" [attr.aria-busy]="generando">
                     <span class="tm-spinner tm-spinner--btn" *ngIf="generando" role="status"></span>
                     {{ generando ? 'Generando comprobante…' : 'Pagar' }}

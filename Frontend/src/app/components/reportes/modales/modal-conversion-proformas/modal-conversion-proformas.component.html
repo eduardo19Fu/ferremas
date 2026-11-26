@@ -1,0 +1,59 @@
+<div class="modal fade" id="modal-conversion-proformas">
+    <div class="modal-dialog">
+        <div class="modal-content tm-form">
+            <div class="modal-header">
+                <h4 class="modal-title">{{title}}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="tm-lead">Proformas emitidas y cuántas se convirtieron en factura, por vendedor.</p>
+
+                <form #formConversion="ngForm" (ngSubmit)="generar()">
+                    <div class="tm-grid">
+                        <div class="tm-field">
+                            <label for="conv-fecha-ini">Fecha inicio</label>
+                            <input type="date" class="form-control" name="fechaIni" id="conv-fecha-ini" [(ngModel)]="fechaIni" required>
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="conv-fecha-fin">Fecha fin</label>
+                            <input type="date" class="form-control" name="fechaFin" id="conv-fecha-fin" [(ngModel)]="fechaFin" required>
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="conv-usuario">Vendedor</label>
+                            <select class="form-control custom-select" name="idUsuario" id="conv-usuario" [(ngModel)]="idUsuario">
+                                <option [ngValue]="0">Todos</option>
+                                <option *ngFor="let u of usuarios" [ngValue]="u.idUsuario">{{u.primerNombre}} {{u.apellido}} ({{u.usuario}})</option>
+                            </select>
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="conv-formato">Formato</label>
+                            <select class="form-control custom-select" name="formato" id="conv-formato" [(ngModel)]="formato">
+                                <option value="PDF">PDF</option>
+                                <option value="XLSX">Excel</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <p class="tm-hint text-danger" *ngIf="fechaIni && fechaFin && !rangoValido">
+                        La fecha final no puede ser anterior a la fecha de inicio.
+                    </p>
+
+                    <button type="submit" class="btn btn-block bg-gradient-warning" [disabled]="!rangoValido || generando"
+                        [class.is-loading]="generando" [attr.aria-busy]="generando">
+                        <span class="tm-spinner tm-spinner--btn" *ngIf="generando; else icono" role="status"></span>
+                        <ng-template #icono><i class="fas" [ngClass]="formato === 'PDF' ? 'fa-print' : 'fa-file-excel'"></i></ng-template>
+                        {{ generando ? 'Generando…' : (formato === 'PDF' ? 'Imprimir' : 'Descargar Excel') }}
+                    </button>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

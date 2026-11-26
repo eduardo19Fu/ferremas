@@ -23,6 +23,8 @@ export class Factura {
     cliente: Cliente;
     tipoFactura: TipoFactura;
     envio: Envio;
+    /** Proforma que origino esta factura (null en las ventas directas). */
+    idProformaOrigen: number;
     itemsFactura: DetalleFactura[] = [];
 
     calcularTotal(): number{

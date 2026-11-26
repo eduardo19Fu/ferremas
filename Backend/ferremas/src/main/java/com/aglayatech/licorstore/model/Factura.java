@@ -62,6 +62,9 @@ public class Factura implements Serializable {
 	@JsonIgnoreProperties(value = {"factura", "hibernateLazyInitializer", "handler" }, allowSetters = true)
 	private Envio envio;
 
+	/** Proforma que origino esta factura (null en las ventas directas). */
+	private Long idProformaOrigen;
+
 	public Factura() {
 		itemsFactura = new ArrayList<>();
 	}
@@ -197,6 +200,14 @@ public class Factura implements Serializable {
 
 	public void setTipoFactura(TipoFactura tipoFactura) {
 		this.tipoFactura = tipoFactura;
+	}
+
+	public Long getIdProformaOrigen() {
+		return idProformaOrigen;
+	}
+
+	public void setIdProformaOrigen(Long idProformaOrigen) {
+		this.idProformaOrigen = idProformaOrigen;
 	}
 
 	public Envio getEnvio() {

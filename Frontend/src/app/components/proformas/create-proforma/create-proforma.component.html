@@ -1,0 +1,216 @@
+<!-- MODAL DE REGISTRO PARA CLIENTES (NIT que no existe) -->
+<app-modal-create *ngIf="nitIngresado" [nit]="nitIngresado" (clienteCreado)="clienteCreado($event)"></app-modal-create>
+
+<!-- MODAL PARA BUSCAR PRODUCTOS -->
+<app-modal-buscar-producto (producto)="elegirProducto($event)"></app-modal-buscar-producto>
+
+<!-- MODAL PARA BUSCAR CLIENTES -->
+<app-modal-buscar-cliente (cliente)="elegirCliente($event)"></app-modal-buscar-cliente>
+
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-8">
+                <h1 class="m-0 text-dark">{{title}}</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="tm-layout tm-layout--main-aside">
+
+    <!-- DATOS DE LA PROFORMA -->
+    <div class="card tm-form">
+        <div class="card-header">
+            <h3 class="card-title">Datos de la proforma</h3>
+        </div>
+
+        <form (ngSubmit)="agregarLinea()" autocomplete="off">
+            <div class="card-body">
+
+                <!-- CLIENTE -->
+                <section class="tm-section">
+                    <h4 class="tm-section-title">Cliente</h4>
+
+                    <div class="tm-grid">
+                        <div class="tm-field">
+                            <label for="buscar-cliente">Buscar cliente (NIT)</label>
+                            <div class="tm-input-action">
+                                <input type="text" id="buscar-cliente" name="buscar-cliente" class="form-control"
+                                    [(ngModel)]="nitBusqueda" (keydown.enter)="$event.preventDefault(); buscarCliente()">
+
+                                <button type="button" class="btn btn-outline-primary" data-toggle="modal"
+                                    data-target="#modal-buscar-cliente" aria-label="Buscar cliente en el listado">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="cliente-nit">NIT</label>
+                            <input type="text" class="form-control" id="cliente-nit" name="cliente-nit"
+                                [(ngModel)]="cliente.nit">
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="cliente-identificacion">Identificaci&oacute;n</label>
+                            <input type="text" class="form-control" id="cliente-identificacion" name="cliente-identificacion"
+                                [(ngModel)]="cliente.identificacion">
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="cliente-nombre">Nombre</label>
+                            <input type="text" class="form-control" id="cliente-nombre" name="cliente-nombre"
+                                [(ngModel)]="cliente.nombre">
+                        </div>
+
+                        <div class="tm-field tm-span-all">
+                            <label for="cliente-direccion">Dirección</label>
+                            <input type="text" class="form-control" id="cliente-direccion" name="cliente-direccion"
+                                [(ngModel)]="cliente.direccion">
+                        </div>
+                    </div>
+
+                    <p class="tm-hint mb-0" *ngIf="!cliente.idCliente">
+                        El cliente es opcional. Si escribe sus datos y aún no está registrado, se registrará al guardar la proforma.
+                    </p>
+                </section>
+
+                <!-- PRODUCTO A AGREGAR -->
+                <section class="tm-section">
+                    <h4 class="tm-section-title">Agregar producto</h4>
+
+                    <div class="tm-grid">
+                        <div class="tm-field">
+                            <label for="codigo-producto">Código</label>
+                            <div class="tm-input-action">
+                                <input type="text" class="form-control" id="codigo-producto" name="codigo-producto"
+                                    [(ngModel)]="codigoProducto" (keydown.enter)="$event.preventDefault(); buscarProducto()">
+
+                                <button type="button" class="btn btn-outline-primary" data-toggle="modal"
+                                    data-target="#modal-buscar-producto" aria-label="Buscar producto en el listado">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="producto-nombre">Producto</label>
+                            <input type="text" class="form-control" id="producto-nombre" name="producto-nombre"
+                                [value]="producto.nombre || ''" disabled>
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="producto-precio">Precio</label>
+                            <input type="text" class="form-control" id="producto-precio" name="producto-precio"
+                                [value]="producto.precioVenta != null ? (producto.precioVenta | currency: 'Q' : 'symbol') : ''" disabled>
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="producto-stock">Existencias</label>
+                            <input type="text" class="form-control" id="producto-stock" name="producto-stock"
+                                [value]="producto.idProducto ? producto.stock : ''" disabled>
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="cantidad-producto">Cantidad</label>
+                            <input type="number" min="1" step="1" class="form-control" id="cantidad-producto" name="cantidad-producto"
+                                [(ngModel)]="cantidad">
+                        </div>
+
+                        <div class="tm-field">
+                            <label for="descuento-producto">Descuento (%)</label>
+                            <div class="tm-input-action">
+                                <input type="number" min="0" max="100" step="0.5" class="form-control" id="descuento-producto"
+                                    name="descuento-producto" [(ngModel)]="descuento">
+
+                                <button type="submit" class="btn btn-primary" aria-label="Agregar producto a la proforma">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- LISTADO DE PRODUCTOS AGREGADOS -->
+            <div class="card-body table-responsive">
+                <h4 class="tm-section-title">Productos de la proforma</h4>
+
+                <p class="tm-hint" *ngIf="lineas.length === 0">
+                    Aún no se han agregado productos a esta proforma.
+                </p>
+
+                <table class="table table-modern" *ngIf="lineas.length > 0">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Precio</th>
+                            <th>Cantidad</th>
+                            <th>Desc. (%)</th>
+                            <th>Subtotal</th>
+                            <th>Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let linea of lineas; let i = index">
+                            <td data-label="Producto">
+                                {{linea.producto.nombre}}
+                                <small class="text-muted d-block">{{linea.producto.codProducto}} · {{linea.producto.stock}} en existencia</small>
+                            </td>
+                            <td data-label="Precio">{{linea.producto.precioVenta | currency: "Q" : "symbol"}}</td>
+                            <td data-label="Cantidad">
+                                <input type="number" min="1" step="1" class="form-control tm-qty" [name]="'cant-' + i"
+                                    [ngModel]="linea.cantidad" (ngModelChange)="cambiarCantidad(linea, $event)"
+                                    [attr.aria-label]="'Cantidad de ' + linea.producto.nombre">
+                            </td>
+                            <td data-label="Desc. (%)">
+                                <input type="number" min="0" max="100" step="0.5" class="form-control tm-qty" [name]="'desc-' + i"
+                                    [ngModel]="linea.descuento" (ngModelChange)="cambiarDescuento(linea, $event)"
+                                    [attr.aria-label]="'Descuento de ' + linea.producto.nombre">
+                            </td>
+                            <td data-label="Subtotal">{{linea.calcularImporteDescuento() | currency: "Q" : "symbol"}}</td>
+                            <td data-label="Opciones" class="center-options">
+                                <button type="button" class="btn bg-gradient-danger" (click)="quitarLinea(i)"
+                                    aria-label="Quitar producto">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+
+    <!-- TOTAL Y GUARDADO -->
+    <div class="tm-aside">
+        <div class="card tm-form">
+            <div class="card-header">
+                <h3 class="card-title">Total</h3>
+            </div>
+
+            <div class="card-body tm-stack">
+                <div class="tm-total">
+                    <span class="tm-total-label">Total</span>
+                    <span class="tm-total-amount">{{total | currency: "Q" : "symbol"}}</span>
+                </div>
+
+                <p class="tm-hint mb-0">
+                    Una proforma es una cotización: no descuenta inventario. Se convierte en venta desde el listado.
+                </p>
+            </div>
+
+            <div class="card-footer">
+                <a [routerLink]="['/proformas/index']" class="btn btn-secondary">Cancelar</a>
+
+                <button type="button" class="btn btn-primary btn-lg" [disabled]="!puedeGuardar" (click)="guardar()"
+                    [class.is-loading]="guardando" [attr.aria-busy]="guardando">
+                    <span class="tm-spinner tm-spinner--btn" *ngIf="guardando" role="status"></span>
+                    {{ guardando ? 'Guardando…' : (editando ? 'Guardar cambios' : 'Guardar proforma') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
