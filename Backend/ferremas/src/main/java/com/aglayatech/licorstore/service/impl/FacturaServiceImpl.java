@@ -171,26 +171,58 @@ public class FacturaServiceImpl implements IFacturaService {
 
 			JasperReport reporte = JasperCompileManager.compileReport(plantilla);
 			JasperPrint impresion = JasperFillManager.fillReport(reporte, params, con);
-			if (!xlsx) {
-				return JasperExportManager.exportReportToPdf(impresion);
-			}
-			ByteArrayOutputStream salida = new ByteArrayOutputStream();
-			net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter exportador = new net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter();
-			exportador.setExporterInput(new net.sf.jasperreports.export.SimpleExporterInput(impresion));
-			exportador.setExporterOutput(new net.sf.jasperreports.export.SimpleOutputStreamExporterOutput(salida));
-			net.sf.jasperreports.export.SimpleXlsxReportConfiguration configuracion = new net.sf.jasperreports.export.SimpleXlsxReportConfiguration();
-			configuracion.setDetectCellType(true);
-			configuracion.setRemoveEmptySpaceBetweenRows(true);
-			configuracion.setWhitePageBackground(false);
-			configuracion.setSheetNames(new String[] { "Ventas diarias" });
-			exportador.setConfiguration(configuracion);
-			exportador.exportReport();
-			return salida.toByteArray();
+			return xlsx ? exportarXlsx(impresion, "Ventas diarias") : JasperExportManager.exportReportToPdf(impresion);
 		} catch (Exception e) {
 			throw new com.aglayatech.licorstore.generics.ReglaNegocioException(
 					org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR,
 					"No se pudo generar el reporte de ventas diarias: " + e.getMessage());
 		}
+	}
+
+	@Override
+	public byte[] reporteVentasMensuales(int anio, int idUsuario, String formato) {
+		if (anio < 2000 || anio > 2100) {
+			throw new com.aglayatech.licorstore.generics.ReglaNegocioException(
+					org.springframework.http.HttpStatus.BAD_REQUEST, "El año debe estar entre 2000 y 2100.");
+		}
+		boolean xlsx = "XLSX".equalsIgnoreCase(formato);
+
+		java.sql.Timestamp inicio = java.sql.Timestamp.valueOf(java.time.LocalDate.of(anio, 1, 1).atStartOfDay());
+		java.sql.Timestamp finExclusivo = java.sql.Timestamp.valueOf(java.time.LocalDate.of(anio + 1, 1, 1).atStartOfDay());
+
+		try (Connection con = localDataSource.getConnection();
+				InputStream plantilla = getClass().getResourceAsStream("/reports/ventas_mensuales.jrxml")) {
+			Map<String, Object> params = new HashMap<>();
+			params.put(net.sf.jasperreports.engine.JRParameter.IS_IGNORE_PAGINATION, xlsx);
+			params.put("ID_USUARIO", idUsuario);
+			params.put("FECHA_INICIO", inicio);
+			params.put("FECHA_FIN_EXCLUSIVA", finExclusivo);
+			params.put("ANIO", anio);
+			params.put("VENDEDOR_TXT", nombreVendedor(con, idUsuario));
+
+			JasperReport reporte = JasperCompileManager.compileReport(plantilla);
+			JasperPrint impresion = JasperFillManager.fillReport(reporte, params, con);
+			return xlsx ? exportarXlsx(impresion, "Ventas " + anio) : JasperExportManager.exportReportToPdf(impresion);
+		} catch (Exception e) {
+			throw new com.aglayatech.licorstore.generics.ReglaNegocioException(
+					org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR,
+					"No se pudo generar el reporte de ventas mensuales: " + e.getMessage());
+		}
+	}
+
+	private byte[] exportarXlsx(JasperPrint impresion, String hoja) throws JRException {
+		ByteArrayOutputStream salida = new ByteArrayOutputStream();
+		net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter exportador = new net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter();
+		exportador.setExporterInput(new net.sf.jasperreports.export.SimpleExporterInput(impresion));
+		exportador.setExporterOutput(new net.sf.jasperreports.export.SimpleOutputStreamExporterOutput(salida));
+		net.sf.jasperreports.export.SimpleXlsxReportConfiguration configuracion = new net.sf.jasperreports.export.SimpleXlsxReportConfiguration();
+		configuracion.setDetectCellType(true);
+		configuracion.setRemoveEmptySpaceBetweenRows(true);
+		configuracion.setWhitePageBackground(false);
+		configuracion.setSheetNames(new String[] { hoja });
+		exportador.setConfiguration(configuracion);
+		exportador.exportReport();
+		return salida.toByteArray();
 	}
 
 	private String nombreVendedor(Connection con, int idUsuario) throws SQLException {

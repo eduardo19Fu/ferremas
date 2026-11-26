@@ -126,6 +126,15 @@ export class FacturaService {
     return this.http.get(`${this.url}/facturas/ventas-diarias`, { params, responseType: 'blob' });
   }
 
+  /** Ventas por mes de un anio. idUsuario 0 = todos los vendedores. */
+  getVentasMensuales(anio: number, idUsuario: number, formato: 'PDF' | 'XLSX'): Observable<Blob> {
+    const params: any = { anio: String(anio), formato };
+    if (idUsuario) {
+      params.idUsuario = String(idUsuario);
+    }
+    return this.http.get(`${this.url}/facturas/ventas-mensuales`, { params, responseType: 'blob' });
+  }
+
   getSellsDaillyReportPDF(cajero: number, fecha: Date): Observable<any>{
     const headers = new HttpHeaders();
     headers.append('Accept', 'application/pdf');

@@ -61,6 +61,7 @@
 
 .rp-card--inv { --t: 217, 119, 6; }
 .rp-card--conv { --t: 28, 128, 74; }
+.rp-card--mes { --t: 34, 122, 153; }
 .rp-card--soon { --t: 107, 114, 128; background: #fafbfc; }
 .rp-card--soon .rp-card__icon, .rp-card--soon h2 { opacity: .6; }
 

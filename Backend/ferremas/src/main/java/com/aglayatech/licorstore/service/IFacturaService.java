@@ -41,6 +41,9 @@ public interface IFacturaService {
 	/** Facturas vigentes de un dia (idUsuario 0 = todos los vendedores) en PDF o XLSX. */
 	public byte[] reporteVentasDiarias(Date fecha, int idUsuario, String formato);
 
+	/** Ventas por mes de un anio (idUsuario 0 = todos los vendedores) en PDF o XLSX. */
+	public byte[] reporteVentasMensuales(int anio, int idUsuario, String formato);
+
 	public byte[] showBill(Long idfactura) throws JRException, FileNotFoundException, SQLException;
 
 	public byte[] showBill2(Long idfactura) throws JRException, FileNotFoundException, SQLException;
